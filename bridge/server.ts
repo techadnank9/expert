@@ -63,7 +63,15 @@ export function startServer(store: CaseStore, port = Number(process.env.BRIDGE_P
         if (p[0] === 'ws' && p[1] === 'case' && p[2]) return srv.upgrade(req, { data: { kind: 'case', id: p[2] } }) ? undefined : json({ error: 'upgrade failed' }, 400);
         if (p[0] === 'ws' && p[1] === 'board') return srv.upgrade(req, { data: { kind: 'board', id: 'main' } }) ? undefined : json({ error: 'upgrade failed' }, 400);
         if (p[0] === 'health') return json({ ok: true, store: store.kind });
-        if (p[0] !== 'api') return json({ error: 'not found' }, 404);
+        if (p[0] !== 'api') {
+          // Production: serve the built web app (SPA fallback to index.html) from STATIC_DIR.
+          const dir = process.env.STATIC_DIR;
+          if (!dir) return json({ error: 'not found' }, 404);
+          const rel = url.pathname === '/' ? '/index.html' : url.pathname;
+          let f = Bun.file(`${dir}${rel}`);
+          if (!(await f.exists()) || rel.endsWith('/')) f = Bun.file(`${dir}/index.html`);
+          return new Response(f, { headers: { 'cache-control': rel.startsWith('/assets/') ? 'public, max-age=31536000, immutable' : 'no-cache' } });
+        }
 
         if (p[1] === 'board') {
           if (req.method === 'GET' && !p[2]) return json(await store.getBoard());
