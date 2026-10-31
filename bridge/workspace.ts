@@ -74,9 +74,9 @@ function put(ws: Workspace) { const all = load(); all[ws.slug] = ws; save(all); 
 export async function provisionWorkspace(owner: string, store: CaseStore, onReady?: (ws: Workspace) => void, opts: { force?: boolean } = {}): Promise<Workspace> {
   const slug = slugFor(owner);
   const existing = load()[slug];
-  if (existing && existing.status !== 'error' && !opts.force) return existing;
-  const ws: Workspace = { provider: 'superserve', slug, vmId: existing?.vmId ?? '', status: 'provisioning', agents: ROLES.map((role) => ({ role, running: false })), owner, grantedTo: existing?.grantedTo ?? [], createdAt: existing?.createdAt ?? new Date().toISOString(), ideUrl: existing?.ideUrl, idePassword: existing?.idePassword };
   await bizCall(slug, 'onboard', owner);
+  if (existing && existing.status !== 'error' && !opts.force) { void bizCall(slug, 'setWorkspace', existing); return existing; }
+  const ws: Workspace = { provider: 'superserve', slug, vmId: existing?.vmId ?? '', status: 'provisioning', agents: ROLES.map((role) => ({ role, running: false })), owner, grantedTo: existing?.grantedTo ?? [], createdAt: existing?.createdAt ?? new Date().toISOString(), ideUrl: existing?.ideUrl, idePassword: existing?.idePassword };
   put(ws);
   (async () => {
     try {
