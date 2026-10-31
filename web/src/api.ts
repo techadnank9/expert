@@ -588,6 +588,8 @@ export async function getWorkspace(slug: string): Promise<WorkspaceView> {
       files: d.files ?? [],
       sessions: d.sessions ?? [],
       shell: d.shell ?? `superserve shell ${slug}`,
+      ideUrl: d.ideUrl,
+      idePassword: d.idePassword,
     }
   } catch {
     return { ...simDetail(slug), offline: true }

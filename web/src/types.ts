@@ -114,6 +114,8 @@ export interface WorkspaceDetail {
   files: { path: string; size?: number }[]
   sessions: { id: string; role?: string; updatedAt?: string }[]
   shell: string
+  ideUrl?: string
+  idePassword?: string
 }
 
 export interface Job {

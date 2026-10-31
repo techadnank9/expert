@@ -105,7 +105,12 @@ export function startServer(store: CaseStore, port = Number(process.env.BRIDGE_P
           const s0 = await store.getCase(id);
           if (!s0) return json({ error: `no case ${id}` }, 404);
           let ws = s0.workspace ?? getWorkspaceRecord(slugFor(s0.poster?.name ?? ''));
-          if (!ws) return json({ error: 'this business has no workspace yet; onboard first' }, 400);
+          if (!ws) {
+            // The business never onboarded: provision its VM now and report provisioning; the UI polls and the user clicks again.
+            const started = await provisionWorkspace(s0.poster?.name || `case-${id}`, store, async (ready) => { await store.callCase(id, 'setWorkspace', [ready]).catch(() => {}); });
+            return json(await store.callCase(id, 'setWorkspace', [started]));
+          }
+          if (ws.status !== 'ready') return json(await store.callCase(id, 'setWorkspace', [getWorkspaceRecord(ws.slug) ?? ws]));
           ws = getWorkspaceRecord(ws.slug) ?? ws;
           const next = await startBench(id, ws);
           return json(await store.callCase(id, 'setWorkspace', [next]));

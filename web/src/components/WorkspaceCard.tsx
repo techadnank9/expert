@@ -189,6 +189,14 @@ export function WorkspaceCard({ id, c, readOnly, workerName = 'Maya R.' }: Props
         <button className="btn btn-36" disabled={busy} onClick={() => void run('startBench')}>Start bench in this workspace</button>
       )}
       {detail && <FilesAndSessions ws={detail} max={4} />}
+      {detail?.ideUrl ? (
+        <div className="fact" style={{ gap: 6 }}>
+          <a className="btn btn-dark btn-36" href={detail.ideUrl} target="_blank" rel="noreferrer" style={{ alignSelf: 'stretch', justifyContent: 'center' }}>Open workstation (VS Code in the VM)</a>
+          {detail.idePassword && <div className="sm muted">Password: <span className="mono" style={{ color: 'var(--ink)' }}>{detail.idePassword}</span></div>}
+        </div>
+      ) : (
+        <div className="sm muted">Workstation link appears once the VM finishes provisioning.</div>
+      )}
       <ShellBlock cmd={detail?.shell ?? `superserve shell ${w.slug}`} />
       {detail?.offline && <div className="sm muted">Bridge offline, simulated workspace view.</div>}
       {err && <div className="err">{err}</div>}

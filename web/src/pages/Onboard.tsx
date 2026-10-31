@@ -127,6 +127,8 @@ export function Onboard() {
               <AgentRows agents={ws?.agents ?? []} />
               {ws && <FilesAndSessions ws={ws} />}
               <div className="sm muted">Open a shell in the VM</div>
+              {ws?.ideUrl && (<a className="btn btn-dark btn-36" href={ws.ideUrl} target="_blank" rel="noreferrer" style={{ justifyContent: 'center' }}>Open workstation (VS Code in the VM)</a>)}
+              {ws?.idePassword && <div className="sm muted">Workstation password: <span className="mono">{ws.idePassword}</span></div>}
               <ShellBlock cmd={ws?.shell ?? `superserve shell ${slug}`} />
               {offline && <div className="sm muted">Bridge offline, simulated workspace.</div>}
               <Link className="btn btn-40 btn-dark" to={`/post?workspace=${encodeURIComponent(slug)}`}>Next: post a job</Link>
