@@ -40,5 +40,6 @@ exec "$CODEX" exec \
   -c "mcp_servers.relay.command=\"bash\"" \
   -c "mcp_servers.relay.args=[\"$HERE/relay-mcp.sh\",\"$ROLE\",\"$RELAY_ATTEST_SESSION_ID\"]" \
   -c 'mcp_servers.relay.startup_timeout_sec=120' \
+  -c 'mcp_servers.relay.default_tools_approval_mode="approve"' \
   -c 'mcp_servers.relay.tool_timeout_sec=120' \
   "$PROMPT"

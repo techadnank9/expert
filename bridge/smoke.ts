@@ -17,7 +17,7 @@ const fail = (m: string) => { console.error(`FAIL ${m}`); process.exit(1); };
 const ch = await openCaseChannel(CASE, 'Smoke test case');
 console.log(`opened #${ch.channel} webhook=${ch.webhookUrl.replace(/[^/]+$/, '<id>')}`);
 await store.setRelayInfo(CASE, ch);
-await Bun.sleep(1500); // let the event stream connect
+await Bun.sleep(6000); // let the event stream connect (hosted Relay is slow today)
 
 const stamp = Date.now().toString(36);
 const qid = await askAsWorker(CASE, `smoke ${stamp}: does CO-50 need a peer-to-peer first?`);
@@ -40,15 +40,22 @@ for (const m of t.filter((m) => m.text.includes(stamp))) console.log(`  mirrored
 
 if (process.env.BRIDGE_URL) {
   const B = process.env.BRIDGE_URL;
+  const BC = process.env.BRIDGE_CASE ?? CASE;
   const post = (path: string, args: unknown[]) => fetch(`${B}${path}`, { method: 'POST', body: JSON.stringify(args) }).then((r) => r.json());
-  await post(`/api/case/${CASE}/create`, [{ title: 'Smoke via bridge HTTP' }]);
-  const asked: any = await post(`/api/case/${CASE}/ask`, [`bridge ${stamp}: http ask`]);
-  const root = asked.relay?.threadRootId;
-  if (!root) fail(`bridge ask returned no threadRootId: ${JSON.stringify(asked).slice(0, 300)}`);
+  if (process.env.SMOKE_CREATE === '1') await post(`/api/case/${BC}/create`, [{ title: 'Smoke via bridge HTTP' }]);
+  const health: any = await fetch(`${B}/health`).then((r) => r.json());
+  const q = `bridge ${stamp}: http ask, what is the appeal deadline?`;
+  const asked: any = await post(`/api/case/${BC}/ask`, [q]);
+  if (asked.error) fail(`bridge ask failed: ${asked.error}`);
+  // Memory store sets threadRootId synchronously; Terse sets it after the actor's 'asked' broadcast round-trips through Relay.
   let s: any;
-  const ok = await waitFor(() => { fetch(`${B}/api/case/${CASE}`).then((r) => r.json()).then((x) => (s = x)); return s?.thread?.some((m: any) => m.id === root); });
-  if (!ok) fail('bridge did not mirror its own ask');
-  console.log(`  bridge HTTP: status=${s.status} threadRootId=${root} thread=${s.thread.length} msgs`);
+  const ok = await waitFor(() => {
+    fetch(`${B}/api/case/${BC}`).then((r) => r.json()).then((x) => (s = x));
+    return s?.thread?.some((m: any) => m.text.includes(q) && m.id === s.relay?.threadRootId);
+  }, 60000);
+  if (!ok) fail(`bridge did not mirror the ask into case ${BC}; relay=${JSON.stringify(s?.relay)}`);
+  const m = s.thread.find((x: any) => x.text.includes(q));
+  console.log(`  bridge HTTP (store=${health.store}) case ${BC}: status=${s.status} threadRootId=${s.relay.threadRootId} author=${m.author} thread=${s.thread.length} msgs`);
 }
 stop();
 console.log(`PASS in ${Date.now() - t0}ms`);

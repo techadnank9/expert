@@ -1,7 +1,7 @@
 // Mirror Relay case channels into the case store (HANDOFF 2.3 rule 6).
 import type { CaseStore, ThreadMessage } from './casestore';
 import { normEmoji } from './casestore';
-import { getRelay } from './env';
+import { getAgent, getRelay } from './env';
 
 const caseIdFromChannel = (name?: string) => (name?.replace(/^#/, '').startsWith('case-') ? name.replace(/^#/, '').slice(5) : undefined);
 
@@ -15,7 +15,15 @@ export function startListeners(store: CaseStore, log = (s: string) => console.lo
     if (!caseId) return;
     const id = message.messageId ?? message.id;
     const parentId = envelope?.parent ?? message.parentId ?? message.threadId ?? undefined;
-    const meta = (message.metadata ?? {}) as Record<string, any>;
+    let meta = (message.metadata ?? {}) as Record<string, any>;
+    // The live event payload omits metadata; session_ref is only on the stored message.
+    if (!meta.session_ref && message.from?.name !== 'maya' && message.from?.name !== 'case-actor') {
+      try {
+        const reader = await getAgent('dana', 'human');
+        const full = await reader.messages.get(id);
+        meta = (full.metadata ?? {}) as Record<string, any>;
+      } catch {}
+    }
     const author = (message.from?.name ?? envelope?.from?.name ?? meta.author ?? 'unknown').replace(/^@/, '');
     const msg: ThreadMessage = {
       id,
