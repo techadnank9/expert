@@ -82,16 +82,16 @@ export function Landing() {
 
         <div className="lp-hero-inner">
           <div className="lp-kicker lp-intro" style={d(120)}>
-            <span className="lp-dot" /> The $15 an hour expert
+            <span className="lp-dot" /> The $15 an hour expert, live on Terse + Agent Relay
           </div>
           <h1 className="lp-title lp-intro" style={d(300)}>
-            Ordinary workers.
+            Expert work.
             <br />
-            <span className="lp-accent">Specialist</span> results.
+            <span className="lp-accent">Without</span> the expert.
           </h1>
           <p className="lp-sub lp-intro" style={d(480)}>
-            One worker with good judgment, backed by a bench of specialist agents, does work that used to need a credential.
-            Every recommendation is voted on, every decision is traceable.
+            Post the job. A worker with good judgment claims it. Three specialist agents read the documents, argue it out,
+            and vote on one recommendation. The worker decides, and every step is on the record.
           </p>
           <div className="lp-ctas lp-intro" style={d(660)}>
             <Link to="/post" className="lp-pill">
