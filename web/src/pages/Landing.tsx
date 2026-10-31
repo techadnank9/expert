@@ -110,13 +110,6 @@ export function Landing() {
       </section>
 
       {/* ---------- Marquee ---------- */}
-      <div className="lp-marquee" aria-hidden="true">
-        <div className="lp-marquee-track">
-          {[...MARQUEE, ...MARQUEE].map((m, i) => (
-            <span key={i} className="lp-chip">{m}</span>
-          ))}
-        </div>
-      </div>
 
       {/* ---------- Stats ---------- */}
       <section className="lp-stats">
@@ -215,8 +208,8 @@ export function Landing() {
             HireXpert
           </div>
           <p>
-            Built at Haunted Hacks, San Francisco, October 31 2026, on Terse Durable Actors and Agent Relay. Bench agents run on
-            Codex via OpenAI.
+            HireXpert. Built at Haunted Hacks, San Francisco, October 31 2026. Cases live in Terse Durable Actors, the bench talks over Agent Relay,
+            each business gets its own Superserve VM, and the agents run on Codex.
           </p>
           <div className="lp-foot-links">
             <Link to="/case/4471">Demo case</Link>
