@@ -363,7 +363,7 @@ export function applyCase(c: Case, method: string, args: unknown[]): Case {
       break
     }
     case 'approveRecommendation': {
-      s.status = 'drafted'
+      s.status = (s as Case & { deliverable?: unknown }).deliverable ? 'awaiting_poster' : 'drafted'
       const rec = s.thread.find((m) => m.id === s.relay.recommendationId)
       if (rec) rec.reactions[':white_check_mark:'] = [...(rec.reactions[':white_check_mark:'] ?? []), 'maya']
       log(workerName(s), 'Worker approved the recommendation')
@@ -377,8 +377,13 @@ export function applyCase(c: Case, method: string, args: unknown[]): Case {
       break
     }
     case 'submitDeliverable': {
-      s.status = 'awaiting_poster'
-      log(workerName(s), 'Deliverable submitted to poster', args[1] ? String(args[1]) : undefined)
+      const files = Array.isArray(args[0]) ? (args[0] as string[]) : []
+      const note = String(args[1] ?? '')
+      ;(s as Case & { deliverable?: unknown }).deliverable = { files, note, at: nowIso() }
+      s.status = 'consulting'
+      s.recommendation = null
+      say('maya', 'Submitted my work for verification.')
+      log(workerName(s), 'Work submitted for verification')
       break
     }
     case 'posterApprove': {

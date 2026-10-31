@@ -6,6 +6,48 @@ import type { Board, Case } from './types'
 const TODAY = '2026-10-31'
 const t = (hhmm: string) => `${TODAY}T${hhmm}:00`
 
+/** Worker's submitted work. Not in types.ts yet; the bridge adds it to the case state. */
+export interface Deliverable {
+  files: string[]
+  note: string
+  at?: string
+  submittedAt?: string
+}
+
+export function deliverableOf(c: Case | null | undefined): Deliverable | null {
+  const d = (c as (Case & { deliverable?: Deliverable | null }) | null | undefined)?.deliverable
+  return d && typeof d.note === 'string' ? d : null
+}
+
+/** Starter draft shown in the Worker "Your work" box for case 4471. */
+export const DRAFT_4471 = `To: Harborline Health, Appeals Department
+Re: Level 1 appeal, claim 4471, CPT 72148 (MRI lumbar spine without contrast), denial code CO-50
+
+We request reconsideration of the denial of the lumbar MRI performed Oct 2, 2026. Harborline plan policy CG-0423, section 4.2, covers lumbar MRI without contrast when at least six weeks of conservative therapy are documented before imaging.
+
+The enclosed physical therapy records document eight weeks of treatment, Aug 4 to Sep 29, 2026, which exceeds the policy threshold. The ordering physician's re-evaluation on Sep 30, 2026 records persistent radicular symptoms despite therapy and establishes medical necessity for advanced imaging.
+
+Enclosures: denial letter, PT visit log, physician note dated Sep 30, policy CG-0423 excerpt.`
+
+export interface PastJob {
+  id: string
+  title: string
+  business: string
+  pay: number
+  completed: string
+  status: 'Verified and sent' | 'Paid' | 'Fix requested once'
+}
+
+export const PAST_JOBS: PastJob[] = [
+  { id: '4452', title: 'Appeal denied knee arthroscopy, CPT 29881', business: 'Cedar Street Clinic', pay: 50, completed: '2026-10-29', status: 'Verified and sent' },
+  { id: '4437', title: 'Corrected claim, missing modifier 25', business: 'Northgate Family Practice', pay: 30, completed: '2026-10-27', status: 'Paid' },
+  { id: '4419', title: 'Timely filing appeal, proof of submission', business: 'Lakeview Pediatrics', pay: 40, completed: '2026-10-23', status: 'Fix requested once' },
+  { id: '4408', title: 'Out of network reprocessing, ER visit', business: 'Cedar Street Clinic', pay: 55, completed: '2026-10-20', status: 'Paid' },
+  { id: '4391', title: 'Duplicate claim denial, CO-18 cleanup', business: 'Brightwater Dental Group', pay: 25, completed: '2026-10-16', status: 'Paid' },
+  { id: '4377', title: 'Prior auth appeal, sleep study CPT 95810', business: 'Harbor Sleep Center', pay: 60, completed: '2026-10-12', status: 'Fix requested once' },
+  { id: '4362', title: 'Bundling denial, NCCI edit on 97140', business: 'Northgate Family Practice', pay: 35, completed: '2026-10-07', status: 'Paid' },
+]
+
 export const CASE_IDS = ['4471', '4398'] as const
 
 export function makeCase4471(): Case {
@@ -47,7 +89,7 @@ export function makeCase4471(): Case {
       {
         id: 'm_8f21',
         author: 'maya',
-        text: 'Can we appeal this denial? What do we need to make it stick?',
+        text: 'Submitted my level 1 appeal draft for verification. Please check the policy cite, the PT dates and the enclosures.',
         at: t('12:40'),
         reactions: {},
       },
@@ -56,7 +98,7 @@ export function makeCase4471(): Case {
         author: 'policy',
         address: 'policy@sam-macbook',
         sessionRef: 'ses_policy_7Kq2a1',
-        text: 'Plan policy CG-0423 section 4.2 covers lumbar MRI when 6 weeks of conservative therapy are documented. The PT notes show 8 weeks, Aug 4 to Sep 29. Necessity is supportable.',
+        text: 'CG-0423 section 4.2 requires 6 weeks of documented conservative therapy before lumbar MRI. The draft cites 8 weeks, Aug 4 to Sep 29, which matches the PT notes p.3. VERIFIED',
         at: t('12:41'),
         reactions: {},
       },
@@ -65,7 +107,7 @@ export function makeCase4471(): Case {
         author: 'billing',
         address: 'billing@priya-thinkpad',
         sessionRef: 'ses_billing_3Hd9x4',
-        text: 'I would try a corrected claim first: resubmit 72148 with the radiculopathy diagnosis (M54.16) as primary. Faster than an appeal if the payer just missed the indication.',
+        text: 'FIX NEEDED: the draft does not name the diagnosis. Add radiculopathy M54.16 next to CPT 72148 so the reviewer can match the indication.',
         at: t('12:41'),
         reactions: {},
       },
@@ -74,7 +116,7 @@ export function makeCase4471(): Case {
         author: 'appeals',
         address: 'appeals@adnan-mbp',
         sessionRef: 'ses_appeals_9Wm4c7',
-        text: 'Disagree with a resubmit. Denial letter p.1 already lists M54.16, so a corrected claim will deny again as a duplicate and burns 10 days. CO-50 is a necessity denial; it needs an appeal.',
+        text: 'Denial letter p.1 already lists M54.16, so the payer has the diagnosis. CO-50 is a necessity denial and the draft argues necessity, which is the right frame. VERIFIED',
         at: t('12:42'),
         reactions: {},
       },
@@ -83,7 +125,7 @@ export function makeCase4471(): Case {
         author: 'billing',
         address: 'billing@priya-thinkpad',
         sessionRef: 'ses_billing_3Hd9x4',
-        text: 'Confirmed on the denial letter, the diagnosis was there. 72148 was billed clean and no modifier is required, so this is not a coding fix. Withdrawn, I agree with an appeal.',
+        text: 'Confirmed on the denial letter p.1, M54.16 is on the claim. 72148 was billed clean and no modifier is required. Withdrawing my fix. VERIFIED',
         at: t('12:42'),
         reactions: {},
       },
@@ -92,7 +134,7 @@ export function makeCase4471(): Case {
         author: 'appeals',
         address: 'appeals@adnan-mbp',
         sessionRef: 'ses_appeals_9Wm4c7',
-        text: "Level 1 appeal, cite CG-0423 section 4.2, attach the PT dates and the ordering physician's note. Harborline turns these around in 10 business days, so I would set a nudge for Nov 10.",
+        text: "Enclosures match the letter: denial letter, PT visit log, Sep 30 physician note, policy excerpt. Harborline turns level 1 appeals around in 10 business days, so keep the Nov 10 nudge. VERIFIED",
         at: t('12:42'),
         reactions: {},
       },
@@ -101,18 +143,18 @@ export function makeCase4471(): Case {
         author: 'policy',
         address: 'policy@sam-macbook',
         sessionRef: 'ses_policy_7Kq2a1',
-        text: 'Consensus. Calling post_recommendation on the case.',
+        text: 'All three checks pass. Calling post_recommendation with the verdict.',
         at: t('12:42'),
         reactions: { ':+1:': ['policy', 'billing', 'appeals'] },
       },
     ],
     recommendation: {
-      summary: 'File a level 1 appeal',
+      summary: 'Verified: appeal letter is ready to send',
       steps: [
-        'Cite plan policy CG-0423, section 4.2 (conservative therapy threshold)',
-        'Attach PT visit log, Aug 4 to Sep 29, 8 weeks',
-        'Attach ordering physician note dated Sep 30',
-        'Schedule alarm: nudge Nov 10, escalate Nov 12',
+        'Policy cite checked: CG-0423, section 4.2 (6 week conservative therapy threshold)',
+        'PT dates checked: Aug 4 to Sep 29, 8 weeks, against PT notes p.3',
+        'Physician note dated Sep 30 is enclosed and referenced',
+        'Alarms kept: nudge Nov 10, escalate Nov 12',
       ],
       sources: [
         'Plan policy CG-0423.pdf, section 4.2',
@@ -126,12 +168,13 @@ export function makeCase4471(): Case {
       { at: '2026-10-29T16:14:00', actor: 'Maya Chen', event: 'Documents ingested, 3 files' },
       { at: t('12:02'), actor: 'Maya Chen', event: 'Job claimed' },
       { at: t('12:40'), actor: 'policy', event: 'Policy agent pulled CG-0423' },
-      { at: t('12:40'), actor: 'Maya Chen', event: 'Question sent to bench' },
-      { at: t('12:42'), actor: 'bench', event: 'Bench recommendation posted' },
+      { at: t('12:40'), actor: 'Maya Chen', event: 'Work submitted for verification' },
+      { at: t('12:42'), actor: 'bench', event: 'Verification verdict posted' },
     ],
     pay: { amount: 45, released: false },
     workspace: null,
-  }
+    deliverable: { files: [], note: DRAFT_4471, at: t('12:40') },
+  } as Case
 }
 
 export function makeCase4398(): Case {

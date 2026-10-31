@@ -1,13 +1,14 @@
 import { useState } from 'react'
 import type { Case } from '../types'
 import { AGENTS, BENCH } from '../people'
-import { fmtWhen, lowerFirst, shortName } from '../format'
+import { fmtWhen, shortName } from '../format'
 
 interface Props {
   c: Case
   onApprove: () => Promise<unknown>
   onOverride: (reason: string) => Promise<unknown>
-  onSendBack: (question: string) => Promise<unknown>
+  /** Kept for callers; the verification flow uses Request another check instead. */
+  onSendBack?: (question: string) => Promise<unknown>
 }
 
 function ThumbsUp() {
@@ -29,7 +30,7 @@ export function agreeing(c: Case): string[] {
   return [...set].filter((h) => (BENCH as readonly string[]).includes(h))
 }
 
-export function RecommendationCard({ c, onApprove, onOverride, onSendBack }: Props) {
+export function RecommendationCard({ c, onApprove, onOverride }: Props) {
   const [busy, setBusy] = useState<string | null>(null)
   const [err, setErr] = useState<string | null>(null)
   const rec = c.recommendation
@@ -56,19 +57,15 @@ export function RecommendationCard({ c, onApprove, onOverride, onSendBack }: Pro
   }
 
   const override_ = () => {
-    const reason = window.prompt('Why are you overriding the bench? This is posted to the thread and saved as training signal.')
+    const reason = window.prompt('What should the bench check again? This is posted to the thread and saved as training signal.')
     if (reason && reason.trim()) void run('override', () => onOverride(reason.trim()))
-  }
-  const sendBack = () => {
-    const q = window.prompt('What should the bench reconsider?', 'Please re-check this recommendation against the denial letter.')
-    if (q && q.trim()) void run('back', () => onSendBack(q.trim()))
   }
 
   return (
     <div className={`rec${decided ? ' approved' : ''}`}>
       <div className="row wrap between center">
         <div className="fact">
-          <div className="h2">Bench recommendation: {lowerFirst(rec.summary)}</div>
+          <div className="h2">Verification verdict: {rec.summary}</div>
           <div className="sm muted">
             posted via action post_recommendation
             {c.relay?.recommendationId && `, reply ${c.relay.recommendationId}`}
@@ -78,7 +75,7 @@ export function RecommendationCard({ c, onApprove, onOverride, onSendBack }: Pro
         <div className={`agree${votes.length < total ? ' partial' : ''}`} title={votes.map((v) => AGENTS[v]?.name ?? v).join(', ')}>
           <ThumbsUp />
           <span>
-            {votes.length} of {total} agree
+            {votes.length} of {total} verified
           </span>
           <span style={{ display: 'flex', gap: 2 }}>
             {votes.map((v) => (
@@ -91,6 +88,7 @@ export function RecommendationCard({ c, onApprove, onOverride, onSendBack }: Pro
       </div>
 
       <div className="col" style={{ gap: 6 }}>
+        <div className="label">FIXES / CHECKS</div>
         {rec.steps.map((s, i) => (
           <div key={i} className="row">
             <span className="muted">{i + 1}.</span>
@@ -115,29 +113,26 @@ export function RecommendationCard({ c, onApprove, onOverride, onSendBack }: Pro
 
       {decided ? (
         <div className="outcome outcome-ok">
-          <strong>Approved</strong> by {shortName(worker)}
-          {approval ? `, ${fmtWhen(approval.at)}` : ''}. Check reaction added on {c.relay?.recommendationId ?? 'the recommendation'}, decision written to the actor.
+          <strong>Accepted and sent to the business</strong> by {shortName(worker)}
+          {approval ? `, ${fmtWhen(approval.at)}` : ''}. Check reaction added on {c.relay?.recommendationId ?? 'the verdict'}, decision written to the actor.
         </div>
       ) : overridden ? (
         <div className="outcome outcome-override">
-          <strong>Overridden</strong> by {shortName(worker)}
+          <strong>Another check requested</strong> by {shortName(worker)}
           {override?.reason ? `: "${override.reason}"` : ''}. Reason posted to the thread and persisted.
         </div>
       ) : (
         <>
           <div className="row wrap">
             <button className="btn btn-dark" disabled={!!busy} onClick={() => run('approve', onApprove)}>
-              {busy === 'approve' ? 'Approving...' : 'Approve and draft appeal'}
+              {busy === 'approve' ? 'Sending...' : 'Accept and send to business'}
             </button>
             <button className="btn" disabled={!!busy} onClick={override_}>
-              {busy === 'override' ? 'Saving...' : 'Override'}
-            </button>
-            <button className="btn" disabled={!!busy} onClick={sendBack}>
-              Send back to bench
+              {busy === 'override' ? 'Saving...' : 'Request another check'}
             </button>
           </div>
           <div className="sm muted">
-            Approve adds a check reaction on {c.relay?.recommendationId ?? 'the recommendation'} and writes the decision to the actor. Override asks for a reason, which is posted to the thread and persisted as training signal.
+            The bench checked your work; votes are Agent Relay reactions. Accept adds a check reaction on {c.relay?.recommendationId ?? 'the verdict'}, writes the decision to the actor and sends the work to the business for review. Request another check asks what to re-check; the reason is posted to the thread and persisted as training signal.
           </div>
         </>
       )}

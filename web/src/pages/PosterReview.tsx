@@ -5,6 +5,7 @@ import { Header } from '../components/Header'
 import { PosterSteps } from '../components/PosterSteps'
 import { agreeing } from '../components/RecommendationCard'
 import { fmtWhen, money, sessionUrl, shortName, useNow } from '../format'
+import { deliverableOf } from '../fixtures'
 import { NotFound } from './NotFound'
 
 export function PosterReview() {
@@ -20,6 +21,7 @@ export function PosterReview() {
   const done = c.status === 'approved' || c.pay.released
   const fee = Math.round(c.pay.amount * 0.2 * 100) / 100
   const votes = agreeing(c)
+  const deliverable = deliverableOf(c)
   const approval = [...c.decisionLog].reverse().find((e) => /approved the recommendation/i.test(e.event))
   const policyMsg = c.thread.find((m) => m.author === 'policy' && m.sessionRef)
   const appealsMsg = [...c.thread].reverse().find((m) => m.author === 'appeals' && m.sessionRef)
@@ -48,7 +50,7 @@ export function PosterReview() {
         <div className="fact" style={{ gap: 4 }}>
           <div className="h1">Review the deliverable</div>
           <div className="muted">
-            {worker} submitted a level 1 appeal packet for job {id}. Approve to release ${c.pay.amount} and send it to {c.facts.payer}.
+            {worker} did the work for job {id}: a level 1 appeal packet, verified by the bench, 3 of 3. Approve to release ${c.pay.amount} and send it to {c.facts.payer}.
           </div>
         </div>
         <div className="row wrap" style={{ gap: 24, alignItems: 'flex-start' }}>
@@ -61,6 +63,15 @@ export function PosterReview() {
                   <a href="#" style={{ fontSize: 13 }} onClick={(e) => e.preventDefault()}>Packet (4 files)</a>
                 </div>
               </div>
+              {deliverable ? (
+              <div style={{ padding: 20, display: 'flex', flexDirection: 'column', gap: 12, fontSize: 14, lineHeight: '22px' }}>
+                <div style={{ whiteSpace: 'pre-wrap' }}>{deliverable.note}</div>
+                <div className="sm muted">
+                  Written by {worker}
+                  {deliverable.at || deliverable.submittedAt ? `, submitted ${fmtWhen((deliverable.at ?? deliverable.submittedAt) as string, now)}` : ''}. Verified by the bench, {votes.length} of 3.
+                </div>
+              </div>
+              ) : (
               <div style={{ padding: 20, display: 'flex', flexDirection: 'column', gap: 12, fontSize: 14, lineHeight: '22px' }}>
                 <div>
                   To: {c.facts.payer}, Appeals Department
@@ -77,17 +88,18 @@ export function PosterReview() {
                 </div>
                 <div className="sm muted">Highlighted passages are backed by a bench citation. Hover one in the real product to see the source and the agent session that found it.</div>
               </div>
+              )}
             </div>
             <div className="card g10">
               <div className="label">PROVENANCE</div>
-              <div className="row wrap between"><span>Bench recommendation, {votes.length} of 3 agents agreed</span><a href={(import.meta.env.VITE_RELAY_OBSERVER_URL as string | undefined) ?? "https://agentrelay.com"} target="_blank" rel="noreferrer" style={{ fontSize: 13 }}>thread {c.relay?.threadRootId ?? ''}</a></div>
+              <div className="row wrap between"><span>Verified by the bench, {votes.length} of 3</span><a href={(import.meta.env.VITE_RELAY_OBSERVER_URL as string | undefined) ?? "https://agentrelay.com"} target="_blank" rel="noreferrer" style={{ fontSize: 13 }}>thread {c.relay?.threadRootId ?? ''}</a></div>
               <div className="row wrap between"><span>Policy CG-0423 s4.2 pulled by Policy agent</span>{policyMsg?.sessionRef && <a href={sessionUrl(policyMsg.sessionRef)} target="_blank" rel="noreferrer" style={{ fontSize: 13 }}>session</a>}</div>
               <div className="row wrap between"><span>PT dates verified against clinical notes p.3</span>{policyMsg?.sessionRef && <a href={sessionUrl(policyMsg.sessionRef)} target="_blank" rel="noreferrer" style={{ fontSize: 13 }}>session</a>}</div>
               <div className="row wrap between">
-                <span>{approval ? 'Worker approved the recommendation, no overrides' : 'Worker has not approved the recommendation yet'}</span>
+                <span>{approval ? 'Worker accepted the verdict and sent the work' : 'Worker has not accepted the verdict yet'}</span>
                 {approval && <span className="muted" style={{ fontSize: 13 }}>{fmtWhen(approval.at, now)}</span>}
               </div>
-              <div className="row wrap between"><span>Draft reviewed by Appeals agent, 2 edits</span>{appealsMsg?.sessionRef && <a href={sessionUrl(appealsMsg.sessionRef)} target="_blank" rel="noreferrer" style={{ fontSize: 13 }}>session</a>}</div>
+              <div className="row wrap between"><span>Enclosures checked by Appeals agent</span>{appealsMsg?.sessionRef && <a href={sessionUrl(appealsMsg.sessionRef)} target="_blank" rel="noreferrer" style={{ fontSize: 13 }}>session</a>}</div>
             </div>
           </div>
           <div className="col col-side">
