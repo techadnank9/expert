@@ -136,6 +136,10 @@ export declare namespace actors {
                 Args: Parameters<Stub["create"]>
                 Result: Awaited<ReturnType<Stub["create"]>>
             }
+            ["devReset"]: {
+                Args: Parameters<Stub["devReset"]>
+                Result: Awaited<ReturnType<Stub["devReset"]>>
+            }
             ["escalate"]: {
                 Args: Parameters<Stub["escalate"]>
                 Result: Awaited<ReturnType<Stub["escalate"]>>
@@ -216,6 +220,10 @@ export declare namespace actors {
             namespace create {
                 type Args = $MethodTypes["create"]["Args"]
                 type Result = $MethodTypes["create"]["Result"]
+            }
+            namespace devReset {
+                type Args = $MethodTypes["devReset"]["Args"]
+                type Result = $MethodTypes["devReset"]["Result"]
             }
             namespace escalate {
                 type Args = $MethodTypes["escalate"]["Args"]

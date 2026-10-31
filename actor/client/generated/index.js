@@ -52,6 +52,7 @@ export const actors = {
                     { name: "ask", result: "value" },
                     { name: "claim", result: "value" },
                     { name: "create", result: "value" },
+                    { name: "devReset", result: "value" },
                     { name: "escalate", result: "value" },
                     { name: "exists", result: "value" },
                     { name: "fireAlarm", result: "value" },

@@ -70,6 +70,8 @@ interface $CaseContract {
         ask(question: string): Promise<CaseState>
         claim(worker: { name: string }): Promise<CaseState>
         create(input: CaseInput): Promise<CaseState>
+        /** Dev only: clear the consultation so the demo can run again. Keeps identity, facts, docs, alarms, relay channel. */
+        devReset(): Promise<CaseState>
         escalate(reason: string): Promise<CaseState>
         exists(): Promise<boolean>
         fireAlarm(id: string): Promise<CaseState>

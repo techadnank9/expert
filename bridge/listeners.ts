@@ -39,6 +39,16 @@ export function startListeners(store: CaseStore, log = (s: string) => console.lo
     seen.add(id);
     await store.appendThreadMessage(caseId, msg);
     if (first) log(`[mirror] #${chan} ${author}: ${msg.text.slice(0, 80)}${msg.sessionRef ? ` (session ${msg.sessionRef})` : ''}`);
+    // Fallback for HANDOFF 2.3 rule 4 when the Relay action is not visible to the agent:
+    // appeals posts a structured **Recommendation** reply and the bridge lifts it into the actor.
+    if (first && author !== 'case-actor' && /^\s*\*\*Recommendation\*\*/i.test(msg.text)) {
+      const rec = parseRecommendation(msg.text);
+      if (rec) {
+        await store.setRelayInfo(caseId, { recommendationId: id });
+        await store.postRecommendation(caseId, { ...rec, messageId: id, by: author } as any);
+        log(`[mirror] recommendation lifted from ${author} on ${id}: ${rec.summary.slice(0, 60)}`);
+      }
+    }
   };
 
   const onReaction = async (e: { messageId: string; emoji: string; agentName: string; action: 'added' | 'removed' }) => {
@@ -59,4 +69,28 @@ export function startListeners(store: CaseStore, log = (s: string) => console.lo
     relay.addListener('message.reacted', onReaction as any),
   ];
   return () => offs.forEach((f) => f());
+}
+
+
+/** Parse a **Recommendation** message: first non-empty line after the header is the summary,
+ *  numbered or bulleted lines are steps, a line starting with "Sources:" lists sources (; or , separated). */
+export function parseRecommendation(text: string): { summary: string; steps: string[]; sources: string[] } | null {
+  const lines = text.split(/\r?\n/).map((l) => l.trim());
+  const body = lines.filter((l, i) => !(i === 0 && /\*\*Recommendation\*\*/i.test(l)) || l.replace(/\*\*Recommendation\*\*/i, '').replace(/^[\s:(-]*(from\s+@\w+)?[)\s:-]*/i, '').trim());
+  const steps: string[] = [];
+  const sources: string[] = [];
+  let summary = '';
+  for (let raw of body) {
+    let l = raw.replace(/^\*\*Recommendation\*\*/i, '').replace(/^[\s:(-]*(from\s+@\w+)?[)\s:-]*/i, '').trim();
+    if (!l) continue;
+    if (/^(sources?|citations?)\s*:/i.test(l)) {
+      sources.push(...l.replace(/^(sources?|citations?)\s*:/i, '').split(/;|(?<=\))\s*,/).map((x) => x.trim()).filter(Boolean));
+      continue;
+    }
+    if (/^(\d+[.)]|[-*•])\s+/.test(l)) { steps.push(l.replace(/^(\d+[.)]|[-*•])\s+/, '')); continue; }
+    if (/react\s*:\+1:|thumbs up if you agree/i.test(l)) continue;
+    if (!summary) summary = l; else if (steps.length === 0) summary += ' ' + l;
+  }
+  if (!summary && steps.length === 0) return null;
+  return { summary: summary || steps[0], steps, sources };
 }

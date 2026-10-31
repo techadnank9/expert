@@ -14,6 +14,7 @@ UPPER="$(echo "$ROLE" | tr '[:lower:]' '[:upper:]')"
 grep -q "^RELAY_TOKEN_$UPPER=" "$ENV_FILE" || { echo "RELAY_TOKEN_$UPPER missing; run: bun bridge/setup.ts"; exit 1; }
 
 export RELAY_ATTEST_SESSION_ID="$(uuidgen | tr 'A-Z' 'a-z')"
+LAUNCHED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 export RELAY_WORKSPACE_KEY="$(grep -E '^RELAY_WORKSPACE_KEY=' "$ENV_FILE" | tail -1 | cut -d= -f2-)"
 CODEX="${CODEX:-$HOME/.bun/bin/codex}"
 echo "[launch] $ROLE on #case-$CASE session=$RELAY_ATTEST_SESSION_ID"

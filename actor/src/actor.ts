@@ -246,6 +246,21 @@ export class Case extends Actor<Meta, Incoming, Outgoing> {
         return this.getState()
     }
 
+    /** Dev only: clear the consultation so the demo can run again. Keeps identity, facts, docs, alarms, relay channel. */
+    async devReset(): Promise<CaseState> {
+        this.thread = []
+        this.recommendation = null
+        this.pendingQuestion = null
+        this.deliverable = null
+        this.relay = { channel: this.relay.channel, webhookUrl: this.relay.webhookUrl, webhookToken: this.relay.webhookToken }
+        this.alarms = this.alarms.map(a => ({ ...a, fired: false }))
+        this.status = this.worker ? "claimed" : "open"
+        this.decisionLog = this.decisionLog.filter(e => e.event === "case_opened" || e.event === "claimed" || e.event === "alarm_scheduled")
+        await this.log("system", "dev_reset")
+        await this.rearm()
+        return this.getState()
+    }
+
     // ----- alarms: one hardware alarm, many logical alarms -----
 
     async scheduleAlarm(at: string, kind: "nudge" | "escalate" = "nudge"): Promise<CaseState> {
