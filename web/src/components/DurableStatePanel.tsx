@@ -9,7 +9,8 @@ const ALARM_LABEL: Record<string, string> = {
   escalate: 'Alarm: escalate to supervisor',
 }
 
-const RELAY_DASH = 'https://agentrelay.com'
+const RELAY_DASH = (import.meta.env.VITE_RELAY_OBSERVER_URL as string | undefined) ?? 'https://agentrelay.com'
+const DEV = typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('dev')
 
 /** Left column card in the Worker view: deadline plus every alarm with a live countdown. */
 export function DeadlinesCard({ c }: { c: Case }) {
@@ -111,7 +112,7 @@ export function DurableStatePanel({ id, c, live, onFire, onFireDue }: PanelProps
         <div className="kv"><span>Open thread</span><span>{c.relay?.threadRootId ?? 'none'}</span></div>
         <div className="kv"><span>Last write</span><span>{ago(live.lastWrite, now)}</span></div>
 
-        <div className="dev">
+        {DEV && <div className="dev">
           <div className="sm muted">Dev only: alarms</div>
           {c.alarms.map((a) => (
             <div key={a.id} className="alarm-row sm">
@@ -128,7 +129,7 @@ export function DurableStatePanel({ id, c, live, onFire, onFireDue }: PanelProps
           </button>
           <div className="sm muted">Calls fireDueAlarms(): only alarms whose time has passed fire. Use "fire" to force one.</div>
           {err && <div className="err">{err}</div>}
-        </div>
+        </div>}
       </div>
 
       <div className="note">Supervisor Dana K. is viewing this case. Any note she adds shows here immediately.</div>

@@ -103,7 +103,8 @@ export function shortName(name: string) {
 }
 
 export function sessionUrl(ref: string) {
-  return `https://agentrelay.com/sessions/${ref}`
+  const obs = (import.meta.env.VITE_RELAY_OBSERVER_URL as string | undefined) ?? ''
+  return obs ? `${obs}#session=${ref}` : `https://agentrelay.com/sessions/${ref}`
 }
 
 export function lowerFirst(s: string) {

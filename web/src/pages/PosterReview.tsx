@@ -80,7 +80,7 @@ export function PosterReview() {
             </div>
             <div className="card g10">
               <div className="label">PROVENANCE</div>
-              <div className="row wrap between"><span>Bench recommendation, {votes.length} of 3 agents agreed</span><a href="https://agentrelay.com" target="_blank" rel="noreferrer" style={{ fontSize: 13 }}>thread {c.relay?.threadRootId ?? ''}</a></div>
+              <div className="row wrap between"><span>Bench recommendation, {votes.length} of 3 agents agreed</span><a href={(import.meta.env.VITE_RELAY_OBSERVER_URL as string | undefined) ?? "https://agentrelay.com"} target="_blank" rel="noreferrer" style={{ fontSize: 13 }}>thread {c.relay?.threadRootId ?? ''}</a></div>
               <div className="row wrap between"><span>Policy CG-0423 s4.2 pulled by Policy agent</span>{policyMsg?.sessionRef && <a href={sessionUrl(policyMsg.sessionRef)} target="_blank" rel="noreferrer" style={{ fontSize: 13 }}>session</a>}</div>
               <div className="row wrap between"><span>PT dates verified against clinical notes p.3</span>{policyMsg?.sessionRef && <a href={sessionUrl(policyMsg.sessionRef)} target="_blank" rel="noreferrer" style={{ fontSize: 13 }}>session</a>}</div>
               <div className="row wrap between">
