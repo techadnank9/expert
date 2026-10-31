@@ -195,9 +195,9 @@ export function WorkspaceCard({ id, c, readOnly, workerName = 'Maya R.' }: Props
           {detail.idePassword && <div className="sm muted">Password: <span className="mono" style={{ color: 'var(--ink)' }}>{detail.idePassword}</span></div>}
         </div>
       ) : (
-        <div className="sm muted">Workstation link appears once the VM finishes provisioning.</div>
+        <div className="sm muted">Workstation opens here once the VM finishes provisioning.</div>
       )}
-      <ShellBlock cmd={detail?.shell ?? `superserve shell ${w.slug}`} />
+      <details className="sm muted"><summary style={{ cursor: 'pointer' }}>Advanced: shell access</summary><ShellBlock cmd={detail?.shell ?? `superserve shell ${w.slug}`} /></details>
       {detail?.offline && <div className="sm muted">Bridge offline, simulated workspace view.</div>}
       {err && <div className="err">{err}</div>}
     </div>
