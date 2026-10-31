@@ -16,6 +16,8 @@ export type Workspace = {
   grantedTo: string[];
   createdAt: string;
   error?: string;
+  ideUrl?: string;
+  idePassword?: string;
 };
 
 const ROOT = join(import.meta.dir, '..');
@@ -62,7 +64,7 @@ export async function provisionWorkspace(owner: string, store: CaseStore, onRead
         }
       }
       if (!vmId) {
-        const created = await ss(['sandbox', 'create', '--name', slug, '--timeout', '7d', '--json'], { timeoutMs: 120_000 });
+        const created = await ss(['sandbox', 'create', '--name', slug, '--timeout', '7d', '--preview-access', 'public', '--json'], { timeoutMs: 120_000 });
         if (!created.ok) throw new Error(created.out.slice(0, 300));
         vmId = JSON.parse(created.out).id;
       } else {
@@ -85,7 +87,22 @@ export async function provisionWorkspace(owner: string, store: CaseStore, onRead
         'echo SETUP_OK',
       ].join(' && '), 420_000);
       if (!setup.ok || !setup.out.includes('SETUP_OK')) throw new Error('setup failed: ' + setup.out.slice(-300));
-      const ready = put({ ...ws, vmId, status: 'ready' });
+      // Full workstation in the browser: code-server (VS Code web) with a per-workspace password, published on a preview URL.
+      const idePassword = existing?.idePassword ?? Math.random().toString(36).slice(2, 10) + Math.random().toString(36).slice(2, 6);
+      let ideUrl = existing?.ideUrl;
+      try {
+        const ide = await exec(vmId, [
+          'command -v code-server >/dev/null || (curl -fsSL https://code-server.dev/install.sh | sh >/tmp/cs.log 2>&1)',
+          'mkdir -p /home/user/.config/code-server',
+          `printf "bind-addr: 0.0.0.0:8080\nauth: password\npassword: ${idePassword}\ncert: false\n" > /home/user/.config/code-server/config.yaml`,
+          'pgrep -f "code-server" >/dev/null || (setsid nohup code-server --config /home/user/.config/code-server/config.yaml /home/user/agents > /home/user/code-server.log 2>&1 < /dev/null & disown)',
+          'sleep 3; curl -s -o /dev/null -w "%{http_code}" localhost:8080/ || true',
+        ].join(' && '), 420_000);
+        const pub = await ss(['preview', 'publish', vmId, '8080', '--json'], { timeoutMs: 60_000 });
+        if (pub.ok) ideUrl = JSON.parse(pub.out).url;
+        console.log(`[workspace] ${slug} workstation ${ideUrl ?? 'not published'} (code-server http ${ide.out.trim().slice(-3)})`);
+      } catch (e) { console.warn(`[workspace] ${slug} workstation failed:`, (e as Error).message); }
+      const ready = put({ ...ws, vmId, status: 'ready', ideUrl, idePassword });
       onReady?.(ready);
       console.log(`[workspace] ${slug} ready (${vmId})`);
     } catch (e) {
