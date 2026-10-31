@@ -42,3 +42,10 @@ Updated: 13:08
 - Decision: single laptop runs all three agents (user: this laptop owns everything). Each has its own RELAY_ATTEST_SESSION_ID so session_ref provenance still differs per agent. Cut-list item 4 partially taken.
 - Decision: Freestyle over Superserve for the optional 15:10 deploy (key present, event sponsor).
 - Stubbed: votes (:+1:) -> agrees path coded, not yet seen live. Approve -> ✅ reaction coded, not yet seen live.
+
+## 14:00 update — both demo moments verified live on the hosted actor
+- Moment 1-3: ask -> three Codex agents reply with document citations (agents/docs) -> appeals **Recommendation** lifted -> policy + billing :+1: -> Approve -> status drafted, maya :white_check_mark: in Relay, case-actor posts "Approval recorded" via webhook.
+- Moment 5: `devReset 4398 {escalateInSeconds:75}` -> Terse onAlarm fired at the scheduled second -> status escalated -> bridge posted "Alarm fired" into #case-4398 as case-actor via webhook.
+- Moment 4 (durability): state lives in the hosted Terse actor; kill bridge + web, restart, reload: intact. Also actor hibernates after 10 s idle between every step and wakes with state. Local `terse actor dev` kill/restart verified earlier too.
+- Relay observer link for judges minted (12 h), scoped to case-4471 + case-4398. Command in DEMO.md.
+- Next: Freestyle deploy of bridge + built web on one VM (style.dev name), then FLOWS.html walkthrough (subagent running).
