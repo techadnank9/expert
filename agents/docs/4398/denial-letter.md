@@ -1,0 +1,2 @@
+# Denial letter.pdf (1 page) — Harborline Health, Claim 4398
+Provider: Harbor Family Medicine. DOS Sep 18, 2026. CPT 97110 x6 units. Billed $620.00. Denied CO-151: "Payment adjusted because the payer deems the information submitted does not support this many/frequency of services." Plan frequency limit: 4 units 97110 per date of service unless medical necessity documented. Appeal within 180 days. Reference HL-2210-4398.
