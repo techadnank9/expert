@@ -61,3 +61,8 @@ Updated: 13:08
 - Bench agents still run on this laptop (agents/launch.sh), talking to Relay directly; the cloud bridge mirrors them.
 - Redeploy: rebuild tarball (bridge, actor/client/generated, web/dist, trimmed .env), `superserve cp`, `superserve exec understudy -- bash -c 'pkill bun; cd /home/user/app/bridge && set -a && . ../.env && set +a && nohup /opt/bun/bin/bun index.ts > /home/user/bridge.log 2>&1 &'`.
 - FLOWS.html + docs/screens/: walkthrough of both flows with live screenshots.
+
+## 14:12 update
+- Works (cloud): poster flow live. Board.post -> bridge creates Case actor + #case-<id> channel + webhook; Board.claim -> Case.claim; second claim rejected ("already claimed"). Tested with job 4490.
+- Deploy script: deploy/superserve.sh (rebuild web, tarball, cp, restart bridge).
+- Rehearsal 1 started 14:12 on the deployed stack.
