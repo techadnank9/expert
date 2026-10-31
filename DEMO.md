@@ -1,6 +1,7 @@
 # Demo runbook (operator notes)
 
-Terminals: T1 actor, T2 bridge, T3 web, T4 commands. Browser tabs: /case/4471, /supervisor, Agent Relay dashboard on #case-4471 and #case-4398.
+Terminals: T1 actor, T2 bridge, T3 web, T4 commands. Browser tabs: /case/4471, /supervisor, and the Relay observer (read-only, channels case-4471 + case-4398).
+Mint the observer link: `bunx agent-relay@15.0.1 observer --channels case-4471,case-4398 --expires 12h` (RELAY_WORKSPACE_KEY from .env). Keep the printed URL out of the repo.
 
 ## Before going on stage (T-3 min)
 ```bash
@@ -9,7 +10,8 @@ cd bridge && bun index.ts                        # T2
 cd web && bun run dev                            # T3
 bun seed/seed-cases.ts --alarm-seconds 240       # T4, 4398 escalates in 4 min: fires during step 5
 ```
-Agents: `agents/launch.sh policy|billing|appeals` on each laptop, all joined to #case-4471.
+Agents (this laptop, three terminal tabs, launch BEFORE asking): `agents/launch.sh policy 4471 30`, same for billing and appeals.
+Reset 4471 between runs: `curl -s -X POST localhost:8788/api/case/4471/devReset -H 'content-type: application/json' -d '[]'`
 
 ## Moments
 1. /case/4471: type the question, Ask. Switch to Relay dashboard #case-4471.
