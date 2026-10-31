@@ -101,3 +101,8 @@ Updated: 13:08
 - Workstations: code-server per business VM under a supervisor loop; GET /api/workspace/:slug self-heals it; three VMs live (biz-taxing, biz-cedar-street-clinic, biz-accounting). Password shown on the case card only after access is granted.
 - Provisioning now also runs `agent-relay init --key` inside each VM so the VM's Codex is connected to the Relay workspace.
 - Pending: GitHub push (user runs: gh auth switch -u techadnank9 && git push -u origin main); Relay share upload (both links returned 404/expired on POST); Claude MCP agent-relay-sessions needs /mcp sign-in in an interactive claude session.
+
+## 16:30 (second session)
+- Demo video: demo/demo.mp4 (also docs/demo.mp4), 69 s, 1080p, ElevenLabs narration; scenes are live screenshots; rebuild with demo/build.sh (script in demo/script.json).
+- Terse Business actor added (one per business: workspace, documents, access, jobs); bridge writes through; GET /api/business/:slug. Three businesses backfilled.
+- Landing: sourced comparison strip (SHRM, BLS, Fiverr, Upwork, KFF), proof line, sources block, announcement bar.
