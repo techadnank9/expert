@@ -45,7 +45,7 @@ export function startListeners(store: CaseStore, log = (s: string) => console.lo
       const rec = parseRecommendation(msg.text);
       if (rec) {
         await store.setRelayInfo(caseId, { recommendationId: id });
-        await store.postRecommendation(caseId, { ...rec, messageId: id, by: author } as any);
+        await store.postRecommendation(caseId, { ...rec, agrees: [author], messageId: id, by: author } as any);
         log(`[mirror] recommendation lifted from ${author} on ${id}: ${rec.summary.slice(0, 60)}`);
       }
     }
@@ -59,7 +59,8 @@ export function startListeners(store: CaseStore, log = (s: string) => console.lo
     log(`[mirror] reaction ${normEmoji(e.emoji)} by ${e.agentName} on ${e.messageId} (case ${caseId})`);
     if (state.relay.recommendationId === e.messageId && normEmoji(e.emoji) === ':+1:') {
       const m = state.thread.find((x) => x.id === e.messageId);
-      await store.setAgrees(caseId, m?.reactions[':+1:'] ?? []);
+      const author = m?.author ? [m.author] : [];
+      await store.setAgrees(caseId, Array.from(new Set([...author, ...(state.recommendation?.agrees ?? []), ...(m?.reactions[':+1:'] ?? [])])));
     }
   };
 

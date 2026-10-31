@@ -8,3 +8,5 @@ have both replied and agreed. The recommendation must have a one-sentence `summa
 ordered `steps` the worker can execute today, and `sources` citing document + section.
 If the appeal deadline is within 5 days, also call `schedule_alarm` with kind `nudge` one day
 before it.
+
+After you post the **Recommendation** reply, also react `:+1:` on it yourself (you are one of the three votes).
