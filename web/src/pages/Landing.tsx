@@ -47,12 +47,12 @@ const MARQUEE = [
 ]
 
 const STEPS: { t: string; b: ReactNode }[] = [
-  { t: 'Post', b: <>The poster describes the outcome and attaches documents. <code>Board.post</code> creates the Case actor and its Relay channel.</> },
-  { t: 'Claim', b: <>A worker claims it from the board. <code>claim()</code> is one method call, so the first caller wins.</> },
-  { t: 'Ask the bench', b: <>The question lands in <code>#case-NNNN</code>. Three agents on three machines reply, disagree once, converge.</> },
-  { t: 'Vote', b: <>Appeals posts the recommendation. A thumbs up from each agent is the vote. 3 of 3 agree.</> },
-  { t: 'Approve or override', b: <>The worker decides. The reason lands in the decision log as training signal.</> },
-  { t: 'Deliver', b: <>The poster reviews and approves, pay releases. If the payer goes quiet, the alarm escalates to the supervisor.</> },
+  { t: 'Onboard', b: <>A business gets its own VM. Its documents and three Codex bench agents live there, with their session logs.</> },
+  { t: 'Post', b: <>The business describes the outcome. <code>Board.post</code> creates the Case actor and its Relay channel <code>#case-NNNN</code>.</> },
+  { t: 'Claim', b: <>A worker claims it from the board. <code>claim()</code> is one method call, so the first caller wins, and the worker is granted access to the VM.</> },
+  { t: 'Ask the bench', b: <>The worker starts the bench in the VM and asks. Policy, billing and appeals read the documents, reply with citations, disagree once, converge.</> },
+  { t: 'Vote and decide', b: <>Appeals posts the recommendation. A thumbs up from each agent is the vote. The worker approves or overrides, and the reason is persisted.</> },
+  { t: 'Deliver', b: <>The business reviews and approves, pay releases. If the payer goes quiet, a Terse alarm wakes the case and escalates to the supervisor.</> },
 ]
 
 export function Landing() {
@@ -233,16 +233,17 @@ export function Landing() {
 function Rotating({ words }: { words: string[] }) {
   const [i, setI] = useState(0)
   const [out, setOut] = useState(false)
+  const [moved, setMoved] = useState(false)
   useEffect(() => {
     const t = setInterval(() => {
       setOut(true)
-      setTimeout(() => { setI((n) => (n + 1) % words.length); setOut(false) }, 420)
+      setTimeout(() => { setI((n) => (n + 1) % words.length); setOut(false); setMoved(true) }, 420)
     }, 2600)
     return () => clearInterval(t)
   }, [words.length])
   return (
     <span className="lp-rotate" aria-live="polite">
-      <span key={i} className={`lp-script lp-accent ${out ? 'is-out' : 'is-in'}`}>{words[i]}</span>
+      <span key={i} className={`lp-script lp-accent ${out ? 'is-out' : moved ? 'is-in' : ''}`}>{words[i]}</span>
     </span>
   )
 }
