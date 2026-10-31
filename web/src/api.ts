@@ -126,7 +126,7 @@ async function connect(key: string) {
     const cur = getEntry(key)
     // Bridge down: keep whatever we have (fixtures or locally simulated state).
     if (!cur.offline || cur.data === null) {
-      setEntry(key, { data: cur.data ?? fixtureFor(key), offline: true, loading: false, connected: false })
+      setEntry(key, { data: cur.data ?? fixtureFor(key), offline: true, loading: false, connected: false, lastWrite: cur.lastWrite ?? Date.now() })
     }
     conn.timer = setTimeout(() => connect(key), RETRY_MS)
     return

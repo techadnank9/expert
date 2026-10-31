@@ -64,8 +64,13 @@ export function countdown(iso: string, now: number) {
   return `in ${days}d ${hours}h`
 }
 
+/** Calendar days from today to the given date (Nov 14 seen on Oct 31 = 14). */
 export function daysUntil(iso: string, now: number) {
-  return Math.max(0, Math.ceil((d(iso).getTime() - now) / 86400000))
+  const a = d(iso)
+  const b = new Date(now)
+  const ua = Date.UTC(a.getFullYear(), a.getMonth(), a.getDate())
+  const ub = Date.UTC(b.getFullYear(), b.getMonth(), b.getDate())
+  return Math.max(0, Math.round((ua - ub) / 86400000))
 }
 
 export function ago(ms: number | null, now: number) {
