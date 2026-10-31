@@ -25,3 +25,7 @@ Updated: 13:08
 - Works: actor smoke test (actor/client/smoke.ts) passes end to end incl. real alarm firing over WebSocket. Durability verified: killed `terse actor dev`, restarted, case state + pending alarm intact (actor/client/durability.ts).
 - Works: seed/seed-cases.ts seeds cases 4471 and 4398 + 2 open board jobs. `--alarm-seconds N` controls 4398's escalate alarm.
 - Note: `terse auth login` says already logged in but `terse init` says not authenticated. Not needed; dev works. Will matter only for `terse deploy` (cut list item 5).
+
+## 13:32 update
+- Works: `terse deploy` succeeded. Hosted actors at https://api.useterse.ai/cmvwuohyf00zwjy2a2dm8cjel/actors (TERSE_ACTOR_URL in .env). Local dev remains default; bridge switches to hosted by exporting TERSE_ACTOR_URL + TERSE_API_KEY before `terse actor generate`.
+- Decision: `terse init` and `terse deploy` only authenticate when TERSE_API_KEY is exported (the browser login is not picked up). Copied terse.config.json from a scratch init into actor/.

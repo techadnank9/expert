@@ -45,7 +45,7 @@ function LiveRow({ id }: { id: string }) {
         <div className="medium">{id}: {short.charAt(0).toLowerCase() + short.slice(1)}</div>
         <div className="sm muted">{c.facts.payer}, {money(c.facts.amount, false)}</div>
       </td>
-      <td>{c.worker ? shortName(c.worker.name) : 'unclaimed'}</td>
+      <td style={{ whiteSpace: 'nowrap' }}>{c.worker ? shortName(c.worker.name) : 'unclaimed'}</td>
       <td>
         <span className={`pill tight ${c.status === 'escalated' ? 'pill-amber-strong' : st.pill}`}>{statusText}</span>
       </td>

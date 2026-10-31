@@ -11,7 +11,7 @@ if (!process.env.RELAY_WORKSPACE_KEY) {
   console.error('RELAY_WORKSPACE_KEY missing. Run: bun bridge/setup.ts');
   process.exit(1);
 }
-for (const a of AGENTS) await getAgent(a.name, a.type);
+await Promise.all(AGENTS.map((a) => getAgent(a.name, a.type)));
 console.log(`[bridge] relay identities ready: ${AGENTS.map((a) => a.name).join(', ')}`);
 
 export const store = makeCaseStore();

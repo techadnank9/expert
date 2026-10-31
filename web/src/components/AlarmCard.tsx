@@ -14,7 +14,7 @@ export function AlarmCard({ id, c }: { id: string; c: Case }) {
   const firedAlarm = [...c.alarms].filter((a) => a.fired).sort((a, b) => b.at.localeCompare(a.at))[0]
   const when = firedAlarm?.at ?? [...c.decisionLog].reverse().find((e) => /escalat/i.test(e.event))?.at
   const lastActorMsg = [...c.thread].reverse().find((m) => m.author === 'case-actor' && /alarm|escalat/i.test(m.text))
-  const suggestion = [...c.thread].reverse().find((m) => /reference number|call the payer/i.test(m.text))
+  const suggestion = [...c.thread].reverse().find((m) => /call the payer/i.test(m.text))
   const taken = c.worker?.name === 'Dana K.'
 
   const act = async (fn: () => Promise<unknown>) => {

@@ -1,13 +1,22 @@
 // Relay-side operations the bridge performs on behalf of the case actor and the worker.
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { AGENTS, SPECIALISTS, getAgent, getRelay, withRetry } from './env';
+
+// Inbound webhook tokens are shown once; cache them locally (gitignored) so a
+// bridge restart reuses the same webhook instead of minting a new one.
+const CACHE = join(import.meta.dir, '.webhooks.json');
 
 export const channelFor = (caseId: string) => `case-${caseId}`;
 
-const webhooks = new Map<string, { url: string; token: string }>();
+const webhooks = new Map<string, { url: string; token: string }>(
+  existsSync(CACHE) ? Object.entries(JSON.parse(readFileSync(CACHE, 'utf8'))) : [],
+);
+const saveCache = () => writeFileSync(CACHE, JSON.stringify(Object.fromEntries(webhooks), null, 2));
 
 /** Seed known webhooks (e.g. from case.relay) so postAsActor works after a restart. */
 export function rememberWebhook(caseId: string, url?: string, token?: string) {
-  if (url && token) webhooks.set(caseId, { url, token });
+  if (url && token) { webhooks.set(caseId, { url, token }); saveCache(); }
 }
 
 /** Create #case-<id> (idempotent), join all six participants, create inbound webhook. */
@@ -19,20 +28,26 @@ export async function openCaseChannel(caseId: string, title: string) {
   } catch (e: any) {
     if (!/409|conflict|exists/i.test(`${e?.statusCode} ${e?.code} ${e?.rawCode} ${e?.message}`)) throw e;
   }
-  for (const a of AGENTS) {
-    const c = await getAgent(a.name, a.type);
-    await withRetry(`join ${a.name}`, () => c.channels.join(channel)).catch((e) => console.warn(`[relay] join ${a.name} ${channel}:`, e.message));
-  }
-  let hook = webhooks.get(caseId);
-  if (!hook) {
-    const relay = getRelay();
-    const existing = await withRetry('webhooks.list', () => relay.webhooks.list()).catch(() => []);
-    // Tokens are shown once, so an existing webhook is unusable without its token: make a fresh one.
-    void existing;
-    const wh = await withRetry('webhooks.createInbound', () => relay.webhooks.createInbound({ channel, name: `case-actor-${caseId}` }));
-    hook = { url: wh.url, token: wh.token };
-    webhooks.set(caseId, hook);
-  }
+  // Hosted Relay calls take seconds each: only join missing members, in parallel.
+  const members = new Set(
+    (await withRetry('channels.members', () => actor.channels.members(channel)).catch(() => [] as any[])).map((m: any) => m.agentName ?? m.name ?? m.agent_name),
+  );
+  const relay = getRelay();
+  const hookP = webhooks.get(caseId)
+    ? Promise.resolve(webhooks.get(caseId)!)
+    : withRetry('webhooks.createInbound', () => relay.webhooks.createInbound({ channel, name: `case-actor-${caseId}` })).then((wh) => {
+        const h = { url: wh.url, token: wh.token };
+        webhooks.set(caseId, h);
+        saveCache();
+        return h;
+      });
+  await Promise.all(
+    AGENTS.filter((a) => !members.has(a.name)).map(async (a) => {
+      const c = await getAgent(a.name, a.type);
+      await withRetry(`join ${a.name}`, () => c.channels.join(channel)).catch((e) => console.warn(`[relay] join ${a.name} ${channel}:`, e.message));
+    }),
+  );
+  const hook = await hookP;
   return { channel, webhookUrl: hook.url, webhookToken: hook.token };
 }
 
