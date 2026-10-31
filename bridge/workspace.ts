@@ -99,7 +99,7 @@ export async function provisionWorkspace(owner: string, store: CaseStore, onRead
 /** Launch the three bench agents inside the business VM for one case. */
 export async function startBench(caseId: string, ws: Workspace, rounds = 30): Promise<Workspace> {
   if (ws.status !== 'ready') throw new Error(`workspace ${ws.slug} is ${ws.status}`);
-  const script = ROLES.map((r) => `(cd /home/user && CODEX_SANDBOX_MODE=danger-full-access nohup agents/launch.sh ${r} ${caseId} ${rounds} > /home/user/${r}-${caseId}.log 2>&1 &)`).join('; ') + '; sleep 2; pgrep -x codex | wc -l';
+  const script = ROLES.map((r) => `cd /home/user && CODEX_SANDBOX_MODE=danger-full-access setsid nohup agents/launch.sh ${r} ${caseId} ${rounds} > /home/user/${r}-${caseId}.log 2>&1 < /dev/null & disown`).join('; ') + '; sleep 3; pgrep -x codex | wc -l';
   const r = await exec(ws.vmId || ws.slug, script, 60_000);
   const running = r.ok && Number(r.out.trim().split('\n').pop()) > 0;
   const next = put({ ...ws, agents: ROLES.map((role) => ({ role, running })) });
