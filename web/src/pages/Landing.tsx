@@ -34,17 +34,6 @@ function useReveal() {
   return root
 }
 
-const MARQUEE = [
-  'payer policy lookup',
-  'CPT, modifiers, LCDs',
-  'appeal drafting',
-  'filing deadlines',
-  'session_ref provenance',
-  '@Persisted case state',
-  'alarms that wake the actor',
-  'reactions are votes',
-  'approve or override',
-]
 
 const STEPS: { t: string; b: ReactNode }[] = [
   { t: 'Onboard', b: <>A business gets its own VM. Its documents and three Codex bench agents live there, with their session logs.</> },
