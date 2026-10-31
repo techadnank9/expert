@@ -237,8 +237,8 @@ export class Case extends Actor<Meta, Incoming, Outgoing> {
     }
 
     async approveRecommendation(): Promise<CaseState> {
-        if (!this.recommendation) throw new Error("No recommendation to approve")
-        this.status = "drafted"
+        if (!this.recommendation) throw new Error("No verdict to accept")
+        this.status = this.deliverable ? "awaiting_poster" : "drafted"
         await this.log(this.worker?.name ?? "worker", "recommendation_approved")
         this.broadcast({ type: "event", caseId: this.id, event: "recommendation_approved" })
         return this.getState()
@@ -253,11 +253,16 @@ export class Case extends Actor<Meta, Incoming, Outgoing> {
 
     // ----- deliverable -----
 
+    /** The worker submits their work. The bench verifies it (bridge posts it into #case-<id> as a verification request). */
     async submitDeliverable(files: string[], note: string): Promise<CaseState> {
         this.deliverable = { files, note, at: now() }
-        this.status = "awaiting_poster"
-        await this.log(this.worker?.name ?? "worker", "deliverable_submitted", note)
-        this.broadcast({ type: "event", caseId: this.id, event: "deliverable_submitted" })
+        this.recommendation = null
+        this.relay = { ...this.relay, recommendationId: undefined }
+        this.status = "consulting"
+        const question = `Please verify my work before it goes to the payer. Check it against the documents, cite what supports or contradicts it, and vote.\n\n--- WORK SUBMITTED ---\n${note}${files.length ? `\n\nFiles in the workspace: ${files.join(", ")}` : ""}`
+        this.pendingQuestion = question
+        await this.log(this.worker?.name ?? "worker", "work_submitted_for_verification", note.slice(0, 200))
+        this.broadcast({ type: "asked", caseId: this.id, question })
         return this.getState()
     }
 

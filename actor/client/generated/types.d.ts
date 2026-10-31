@@ -128,6 +128,7 @@ interface $CaseContract {
         scheduleAlarm(at: string, kind?: "nudge" | "escalate"): Promise<CaseState>
         setRelayInfo(info: Partial<RelayInfo>): Promise<CaseState>
         setWorkspace(ws: Workspace$1 | null): Promise<CaseState>
+        /** The worker submits their work. The bench verifies it (bridge posts it into #case-<id> as a verification request). */
         submitDeliverable(files: string[], note: string): Promise<CaseState>
     }
 }
