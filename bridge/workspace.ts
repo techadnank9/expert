@@ -95,7 +95,7 @@ export async function provisionWorkspace(owner: string, store: CaseStore, onRead
           'command -v code-server >/dev/null || (curl -fsSL https://code-server.dev/install.sh | sh >/tmp/cs.log 2>&1)',
           'mkdir -p /home/user/.config/code-server',
           `printf "bind-addr: 0.0.0.0:8080\nauth: password\npassword: ${idePassword}\ncert: false\n" > /home/user/.config/code-server/config.yaml`,
-          'pgrep -f "code-server" >/dev/null || (setsid nohup code-server --config /home/user/.config/code-server/config.yaml /home/user/agents > /home/user/code-server.log 2>&1 < /dev/null & disown)',
+          '(ss -ltn 2>/dev/null | grep -q ":8080") || (cd /home/user && setsid nohup code-server --config /home/user/.config/code-server/config.yaml /home/user/agents > /home/user/code-server.log 2>&1 < /dev/null & disown)',
           'sleep 3; curl -s -o /dev/null -w "%{http_code}" localhost:8080/ || true',
         ].join(' && '), 420_000);
         const pub = await ss(['preview', 'publish', vmId, '8080', '--json'], { timeoutMs: 60_000 });
