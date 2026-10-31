@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
 import { Worker } from './pages/Worker'
 import { Supervisor } from './pages/Supervisor'
 import { BoardPage } from './pages/Board'
@@ -7,11 +7,12 @@ import { PostJob } from './pages/PostJob'
 import { PosterProgress } from './pages/PosterProgress'
 import { PosterReview } from './pages/PosterReview'
 import { NotFound } from './pages/NotFound'
+import { Landing } from './pages/Landing'
 
 export default function App() {
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/case/4471" replace />} />
+      <Route path="/" element={<Landing />} />
       <Route path="/case/:id" element={<Worker />} />
       <Route path="/case/:id/brief" element={<Brief />} />
       <Route path="/supervisor" element={<Supervisor />} />
