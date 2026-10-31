@@ -160,6 +160,10 @@ export declare namespace actors {
                 Args: Parameters<Stub["getState"]>
                 Result: Awaited<ReturnType<Stub["getState"]>>
             }
+            ["grantWorkspace"]: {
+                Args: Parameters<Stub["grantWorkspace"]>
+                Result: Awaited<ReturnType<Stub["grantWorkspace"]>>
+            }
             ["overrideRecommendation"]: {
                 Args: Parameters<Stub["overrideRecommendation"]>
                 Result: Awaited<ReturnType<Stub["overrideRecommendation"]>>
@@ -183,6 +187,10 @@ export declare namespace actors {
             ["setRelayInfo"]: {
                 Args: Parameters<Stub["setRelayInfo"]>
                 Result: Awaited<ReturnType<Stub["setRelayInfo"]>>
+            }
+            ["setWorkspace"]: {
+                Args: Parameters<Stub["setWorkspace"]>
+                Result: Awaited<ReturnType<Stub["setWorkspace"]>>
             }
             ["submitDeliverable"]: {
                 Args: Parameters<Stub["submitDeliverable"]>
@@ -245,6 +253,10 @@ export declare namespace actors {
                 type Args = $MethodTypes["getState"]["Args"]
                 type Result = $MethodTypes["getState"]["Result"]
             }
+            namespace grantWorkspace {
+                type Args = $MethodTypes["grantWorkspace"]["Args"]
+                type Result = $MethodTypes["grantWorkspace"]["Result"]
+            }
             namespace overrideRecommendation {
                 type Args = $MethodTypes["overrideRecommendation"]["Args"]
                 type Result = $MethodTypes["overrideRecommendation"]["Result"]
@@ -268,6 +280,10 @@ export declare namespace actors {
             namespace setRelayInfo {
                 type Args = $MethodTypes["setRelayInfo"]["Args"]
                 type Result = $MethodTypes["setRelayInfo"]["Result"]
+            }
+            namespace setWorkspace {
+                type Args = $MethodTypes["setWorkspace"]["Args"]
+                type Result = $MethodTypes["setWorkspace"]["Result"]
             }
             namespace submitDeliverable {
                 type Args = $MethodTypes["submitDeliverable"]["Args"]

@@ -58,12 +58,14 @@ export const actors = {
                     { name: "fireAlarm", result: "value" },
                     { name: "fireDueAlarms", result: "value" },
                     { name: "getState", result: "value" },
+                    { name: "grantWorkspace", result: "value" },
                     { name: "overrideRecommendation", result: "value" },
                     { name: "postRecommendation", result: "value" },
                     { name: "posterApprove", result: "value" },
                     { name: "requestDocument", result: "value" },
                     { name: "scheduleAlarm", result: "value" },
                     { name: "setRelayInfo", result: "value" },
+                    { name: "setWorkspace", result: "value" },
                     { name: "submitDeliverable", result: "value" }
                 ],
                 transport

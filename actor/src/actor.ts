@@ -35,6 +35,16 @@ export type ThreadMessage = {
 export type Recommendation = { summary: string; steps: string[]; sources: string[]; agrees: string[] }
 export type LogEntry = { at: string; actor: string; event: string; reason?: string }
 export type Pay = { amount: number; released: boolean }
+export type Workspace = {
+    provider: "superserve"
+    slug: string
+    vmId: string
+    status: "provisioning" | "ready" | "paused" | "error"
+    agents: { role: string; running: boolean; sessionRef?: string }[]
+    owner: string
+    grantedTo: string[]
+    createdAt: string
+}
 export type Deliverable = { files: string[]; note: string; at: string } | null
 
 export type CaseInput = {
@@ -68,6 +78,7 @@ export type CaseState = {
     pay: Pay
     deliverable: Deliverable
     pendingQuestion: string | null
+    workspace: Workspace | null
 }
 
 type Meta = { userId: string }
@@ -101,6 +112,7 @@ export class Case extends Actor<Meta, Incoming, Outgoing> {
     @Persisted @Emittable deliverable: Deliverable = null
     @Persisted @Emittable pendingQuestion: string | null = null
     @Persisted @Emittable estMinutes = 45
+    @Persisted @Emittable workspace: Workspace | null = null
 
     // ----- read -----
 
@@ -123,6 +135,7 @@ export class Case extends Actor<Meta, Incoming, Outgoing> {
             pay: this.pay,
             deliverable: this.deliverable,
             pendingQuestion: this.pendingQuestion,
+            workspace: this.workspace,
         }
     }
 
@@ -153,6 +166,21 @@ export class Case extends Actor<Meta, Incoming, Outgoing> {
         this.worker = worker
         this.status = "claimed"
         await this.log(worker.name, "claimed")
+        return this.getState()
+    }
+
+    async setWorkspace(ws: Workspace | null): Promise<CaseState> {
+        this.workspace = ws
+        if (ws) await this.log("system", "workspace_" + ws.status, `${ws.provider} ${ws.slug} (${ws.vmId})`)
+        return this.getState()
+    }
+
+    async grantWorkspace(worker: string): Promise<CaseState> {
+        if (!this.workspace) throw new Error("No workspace on this case")
+        if (!this.workspace.grantedTo.includes(worker)) {
+            this.workspace = { ...this.workspace, grantedTo: [...this.workspace.grantedTo, worker] }
+            await this.log("system", "workspace_access_granted", worker)
+        }
         return this.getState()
     }
 
@@ -345,6 +373,7 @@ export type Job = {
     worker?: string
     facts?: Facts
     documents?: Doc[]
+    workspace?: string
 }
 
 export class Board extends Actor<Meta, Incoming, { type: "posted"; job: Job } | { type: "claimed"; job: Job }> {

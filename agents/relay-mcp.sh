@@ -12,5 +12,6 @@ export RELAY_AGENT_NAME="$ROLE"
 export RELAY_AGENT_TOKEN="$(get "RELAY_TOKEN_$UPPER")"
 export RELAY_AGENT_TYPE=agent
 [ -n "$SESSION" ] && export RELAY_ATTEST_SESSION_ID="$SESSION"
-BUN="${BUN:-$(command -v bun || echo /opt/homebrew/bin/bun)}"
-exec "$BUN" x agent-relay@15.0.1 mcp
+if command -v bun >/dev/null 2>&1; then exec bun x agent-relay@15.0.1 mcp; fi
+if [ -x /opt/homebrew/bin/bun ]; then exec /opt/homebrew/bin/bun x agent-relay@15.0.1 mcp; fi
+exec npx -y agent-relay@15.0.1 mcp

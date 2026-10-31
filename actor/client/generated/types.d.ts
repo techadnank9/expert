@@ -62,6 +62,7 @@ interface $CaseContract {
         deliverable: Deliverable
         pendingQuestion: string | null
         estMinutes: number
+        workspace: Workspace | null
     }
     Methods: {
         addReaction(messageId: string, emoji: string, handle: string): Promise<CaseState>
@@ -77,6 +78,7 @@ interface $CaseContract {
         fireAlarm(id: string): Promise<CaseState>
         fireDueAlarms(): Promise<CaseState>
         getState(): Promise<CaseState>
+        grantWorkspace(worker: string): Promise<CaseState>
         overrideRecommendation(reason: string): Promise<CaseState>
         posterApprove(): Promise<CaseState>
         postRecommendation(
@@ -89,6 +91,7 @@ interface $CaseContract {
         requestDocument(name: string, reason: string, by?: string): Promise<CaseState>
         scheduleAlarm(at: string, kind?: "nudge" | "escalate"): Promise<CaseState>
         setRelayInfo(info: Partial<RelayInfo>): Promise<CaseState>
+        setWorkspace(ws: Workspace | null): Promise<CaseState>
         submitDeliverable(files: string[], note: string): Promise<CaseState>
     }
 }
@@ -136,6 +139,7 @@ type CaseState = {
     pay: Pay
     deliverable: Deliverable
     pendingQuestion: string | null
+    workspace: Workspace | null
 }
 type CaseStatus =
     "open" | "claimed" | "consulting" | "recommended" | "drafted" | "awaiting_poster" | "approved" | "escalated"
@@ -186,6 +190,7 @@ type Job = {
     worker?: string
     facts?: Facts
     documents?: Doc[]
+    workspace?: string
 }
 type LogEntry = {
     at: string
@@ -242,6 +247,20 @@ type ThreadMessage = {
     text: string
     at: string
     reactions: Record<string, string[]>
+}
+type Workspace = {
+    provider: "superserve"
+    slug: string
+    vmId: string
+    status: "provisioning" | "ready" | "paused" | "error"
+    agents: {
+        role: string
+        running: boolean
+        sessionRef?: string
+    }[]
+    owner: string
+    grantedTo: string[]
+    createdAt: string
 }
 
 export {}
