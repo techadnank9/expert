@@ -125,3 +125,26 @@ export async function inspectWorkspace(slug: string) {
   const sessions = sect('S').map((l) => { const [ts, path] = l.trim().split(/\s+/); return { id: (path ?? '').split('/').pop()?.replace('.jsonl', '') ?? path, updatedAt: ts ? new Date(Number(ts) * 1000).toISOString() : undefined }; });
   return { ...ws, status, agents: ROLES.map((role) => ({ role, running: running.has(role) })), files, sessions, shell: `superserve shell ${ws.vmId || slug}` };
 }
+
+
+/** Copy uploaded files into the business VM at /home/user/agents/docs/business/. Returns the stored names. */
+export async function uploadFiles(slug: string, files: { name: string; bytes: Uint8Array }[]): Promise<string[]> {
+  const ws = load()[slug];
+  if (!ws) throw new Error(`no workspace ${slug}`);
+  if (!ws.vmId) throw new Error(`workspace ${slug} has no VM yet`);
+  const target = ws.vmId;
+  await exec(target, 'mkdir -p /home/user/agents/docs/business', 30_000);
+  const stored: string[] = [];
+  for (const f of files) {
+    const safe = f.name.replace(/[^A-Za-z0-9._ -]+/g, '_').slice(0, 120) || 'file';
+    const tmp = join(ROOT, `.upload-${Date.now()}-${safe}`);
+    await Bun.write(tmp, f.bytes);
+    const r = await ss(['cp', tmp, `${target}:/home/user/agents/docs/business/${safe}`], { timeoutMs: 120_000 });
+    try { await Bun.spawn(['rm', '-f', tmp]).exited; } catch {}
+    if (!r.ok) throw new Error(`copy ${safe} failed: ${r.out.slice(0, 200)}`);
+    stored.push(safe);
+  }
+  // PDFs: extract text next to them when pdftotext exists so the agents can read them.
+  await exec(target, 'cd /home/user/agents/docs/business && (command -v pdftotext >/dev/null || (apt-get install -y -qq poppler-utils >/dev/null 2>&1 || true)); for f in *.pdf *.PDF; do [ -f "$f" ] && command -v pdftotext >/dev/null && pdftotext -layout "$f" "${f%.*}.txt" 2>/dev/null; done; chown -R root:root /home/user/agents/docs; true', 180_000);
+  return stored;
+}

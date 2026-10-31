@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { provisionWorkspace, saveWorkspace, savedWorkspace } from '../api'
+import { provisionWorkspace, saveWorkspace, savedWorkspace, uploadWorkspaceFiles } from '../api'
 import { Header } from '../components/Header'
 import { AgentRows, FilesAndSessions, ShellBlock, WorkspaceStatusPill, useWorkspace } from '../components/WorkspaceCard'
 
@@ -23,6 +23,9 @@ export function OnboardSteps({ step }: { step: 1 | 2 | 3 }) {
 export function Onboard() {
   const [name, setName] = useState('Cedar Street Clinic')
   const [docs, setDocs] = useState(DEMO_DOCS)
+  const [queue, setQueue] = useState<File[]>([])
+  const [uploading, setUploading] = useState(false)
+  const fileInput = useRef<HTMLInputElement>(null)
   const [slug, setSlug] = useState<string | null>(() => savedWorkspace())
   const [busy, setBusy] = useState(false)
   const [offline, setOffline] = useState(false)
@@ -48,7 +51,27 @@ export function Onboard() {
     }
   }
 
-  const addFile = () => setDocs((d) => [...d, { name: `Untitled document ${d.length - DEMO_DOCS.length + 1}.pdf`, size: 'pending' }])
+  const fmtSize = (n: number) => (n > 1e6 ? `${(n / 1e6).toFixed(1)} MB` : `${Math.max(1, Math.round(n / 1024))} KB`)
+  const addFile = () => fileInput.current?.click()
+  const onPick = (list: FileList | null) => {
+    if (!list) return
+    const picked = Array.from(list)
+    setQueue((q) => [...q, ...picked])
+    setDocs((d) => [...d, ...picked.map((f) => ({ name: f.name, size: `${fmtSize(f.size)} · queued` }))])
+    if (fileInput.current) fileInput.current.value = ''
+  }
+  useEffect(() => {
+    if (!slug || !ws || ws.status !== 'ready' || !queue.length || uploading || offline) return
+    const batch = queue
+    setUploading(true)
+    uploadWorkspaceFiles(slug, batch)
+      .then(() => {
+        setDocs((d) => d.map((x) => { const f = batch.find((b) => b.name === x.name); return f ? { ...x, size: `${fmtSize(f.size)} · in VM` } : x }))
+        setQueue((q) => q.filter((f) => !batch.includes(f)))
+      })
+      .catch((e) => setErr(`Upload failed: ${e instanceof Error ? e.message : String(e)}`))
+      .finally(() => setUploading(false))
+  }, [slug, ws?.status, queue, uploading, offline])
 
   return (
     <div className="page">
@@ -76,7 +99,8 @@ export function Onboard() {
               {docs.map((d) => (
                 <div key={d.name} className="kv"><span style={{ color: 'var(--ink)' }}>{d.name}</span><span className="sm muted" style={{ fontWeight: 400 }}>{d.size}</span></div>
               ))}
-              <button type="button" className="btn btn-36" style={{ alignSelf: 'flex-start', padding: '0 12px' }} onClick={addFile}>Add files</button>
+              <input ref={fileInput} type="file" multiple hidden onChange={(e) => onPick(e.target.files)} accept=".pdf,.txt,.md,.csv,.doc,.docx" />
+              <button type="button" className="btn btn-36" style={{ alignSelf: 'flex-start', padding: '0 12px' }} onClick={addFile}>{uploading ? 'Uploading…' : 'Add files'}</button>
             </div>
           </div>
           <div className="row wrap center">

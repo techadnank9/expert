@@ -11,6 +11,7 @@ interface Props {
 
 export function Header({ subtitle, center, meta, me, right }: Props) {
   return (
+    <div className="hdr-wrap">
     <header className="hdr">
       <Link to="/" className="brand">
         <div className="logo">U</div>
@@ -28,11 +29,12 @@ export function Header({ subtitle, center, meta, me, right }: Props) {
         </div>
       )}
     </header>
+    </div>
   )
 }
 
 /** "live" / "offline, fixtures" marker used in header meta lines. */
 export function LiveDot({ offline, connected }: { offline: boolean; connected: boolean }) {
-  const color = offline ? '#8A4B00' : connected ? '#1E6B3A' : '#C9C5BA'
+  const color = offline ? '#ffb508' : connected ? '#16a34a' : '#d4d4d4'
   return <span className="offline-dot" style={{ background: color }} />
 }

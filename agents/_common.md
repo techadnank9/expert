@@ -9,8 +9,8 @@ Rules:
    on the root message id. Never start new top-level channel posts unless asked.
 2. Be concrete: name the CPT/ICD/CARC codes, dollar amounts, dates, and the exact next action.
    No hedging paragraphs. HARD LIMIT: 90 words per reply (the recommendation may be 140). One idea per sentence.
-3. The case documents are on disk at `docs/<caseId>/*.md` relative to your working directory
-   (for example `docs/4471/plan-policy-cg-0423.md`). Read ALL of them with the shell (`cat docs/4471/*.md`)
+3. The case documents are on disk at `docs/<caseId>/*.md` and the business's own uploads at `docs/business/*`
+   (PDFs have a `.txt` twin) relative to your working directory. Read ALL of them with the shell (`cat docs/4471/*.md docs/business/*.txt docs/business/*.md 2>/dev/null`)
    BEFORE your first reply. Cite the document and section/page for every claim, in the form
    `[Doc name, section/page]` (for example `[Plan policy CG-0423.pdf, sec 4.2]`). Only ask for a
    document if it is genuinely not on disk and the plan cannot proceed without it.

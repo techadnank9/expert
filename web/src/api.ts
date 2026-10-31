@@ -606,3 +606,14 @@ export async function provisionWorkspace(owner: string): Promise<Workspace & { o
     return { ...ws, offline: true }
   }
 }
+
+
+/** Upload files into the business workspace VM. Returns stored names; throws offline. */
+export async function uploadWorkspaceFiles(slug: string, files: File[]): Promise<string[]> {
+  const fd = new FormData()
+  files.forEach((f) => fd.append('files', f, f.name))
+  const res = await fetch(`${BRIDGE_URL}/api/workspace/${encodeURIComponent(slug)}/files`, { method: 'POST', body: fd })
+  if (!res.ok) throw new Error(`upload ${res.status}`)
+  const d = (await res.json()) as { stored?: string[] }
+  return d.stored ?? files.map((f) => f.name)
+}

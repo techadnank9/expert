@@ -1,6 +1,6 @@
 // HTTP + WS bridge for the browser (CONTRACT.md "WebSocket to browser").
 import type { ServerWebSocket } from 'bun';
-import { getWorkspaceRecord, inspectWorkspace, listWorkspaces, provisionWorkspace, slugFor, startBench } from './workspace';
+import { getWorkspaceRecord, inspectWorkspace, listWorkspaces, provisionWorkspace, slugFor, startBench, uploadFiles } from './workspace';
 import type { CaseState, CaseStore, TerseCaseStore } from './casestore';
 import { approveAsWorker, askAsWorker, openCaseChannel, postAsActor, rememberWebhook } from './relay';
 
@@ -86,6 +86,14 @@ export function startServer(store: CaseStore, port = Number(process.env.BRIDGE_P
               for (const id of await caseIdsFor(store, owner)) await store.callCase(id, 'setWorkspace', [ready]).catch(() => {});
             });
             return json(ws);
+          }
+          if (req.method === 'POST' && p[2] && p[3] === 'files') {
+            const form = await req.formData();
+            const files: { name: string; bytes: Uint8Array }[] = [];
+            for (const [, v] of form.entries()) if (v instanceof File) files.push({ name: v.name, bytes: new Uint8Array(await v.arrayBuffer()) });
+            if (!files.length) return json({ error: 'no files' }, 400);
+            const stored = await uploadFiles(p[2], files);
+            return json({ ok: true, stored, workspace: await inspectWorkspace(p[2]) });
           }
           if (req.method === 'GET' && p[2]) {
             const ws = await inspectWorkspace(p[2]);
