@@ -79,9 +79,27 @@ export function startServer(store: CaseStore, port = Number(process.env.BRIDGE_P
           if (req.method === 'POST' && p[2]) {
             const args = await readArgs(req);
             const board = await store.callBoard(p[2], args);
-            if (p[2] === 'post' && args[0]?.id) {
-              const s = await store.getCase(String(args[0].id));
-              if (s) await afterCaseCall(store, s.id, 'create', [], null, s).catch((e) => console.warn('[bridge] open channel failed:', e.message));
+            if (p[2] === 'post') {
+              // Board.post returns the job; create the Case actor for it (HANDOFF 3: post() creates the Case + Relay channel via bridge).
+              const job: any = board && !('jobs' in (board as any)) ? board : null;
+              const id = String(job?.id ?? args[0]?.id ?? '');
+              if (id) {
+                let s = await store.getCase(id);
+                if (!s && job) {
+                  s = await store.callCase(id, 'create', [{
+                    id, title: job.title, domain: job.domain ?? 'medical-billing', poster: { name: job.poster },
+                    facts: job.facts ?? { payer: '', amount: job.pay ?? 0, denialCode: '', dateOfService: '', reason: '' },
+                    documents: job.documents ?? [], deadline: job.deadline, pay: { amount: job.pay ?? 0 }, estMinutes: job.estMinutes ?? 45,
+                  }]);
+                }
+                if (s) await afterCaseCall(store, id, 'create', [], null, s).catch((e) => console.warn('[bridge] open channel failed:', e.message));
+              }
+              return json(await store.getBoard());
+            }
+            if (p[2] === 'claim') {
+              const job: any = board && !('jobs' in (board as any)) ? board : null;
+              if (job?.id) await store.callCase(String(job.id), 'claim', [args[1]]).catch((e) => console.warn('[bridge] case claim:', e.message));
+              return json(await store.getBoard());
             }
             return json(board);
           }
