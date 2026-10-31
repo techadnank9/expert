@@ -17,6 +17,10 @@ bun seed/seed-cases.ts --alarm-seconds 240       # T4, 4398 escalates in 4 min: 
 Agents (this laptop, three terminal tabs, launch BEFORE asking): `agents/launch.sh policy 4471 30`, same for billing and appeals.
 Reset 4471 between runs: `curl -s -X POST https://8788-5975fada-698b-4c43-8ec3-1e554ae9d97c.sandbox.superserve.ai/api/case/4471/devReset -H 'content-type: application/json' -d '[]'`
 
+## Bench: two ways
+- Product way (story): /onboard shows the business VM biz-cedar-street-clinic ready; on /case/4471 click "Start bench" (POST /api/case/4471/startBench), wait ~40 s, then Ask. Agents run inside the VM; session logs listed on the Worker card.
+- Reliable fallback (Relay is flaky today): `agents/launch.sh policy|billing|appeals 4471 30` in three terminals on this laptop, then devReset + Ask.
+
 ## Moments
 1. /case/4471: type the question, Ask. Switch to Relay dashboard #case-4471.
 2. Agents reply in the thread, one disagreement, converge, :+1: on the recommendation.

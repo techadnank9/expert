@@ -83,3 +83,8 @@ Updated: 13:08
 - Verified: biz-cedar-street-clinic VM provisioned by the bridge; startBench launched 3 Codex agents inside it; they picked up the 4471 question from Relay.
 - Web: /onboard page, WorkspaceCard on Worker + Poster screens, workspace badge on board jobs (offline simulation when bridge down).
 - Known: workspace registry is a JSON file on the bridge VM (/home/user/workspaces.json), not in the actor; Vercel direct deployment URLs are SSO-protected (use the alias).
+
+## 15:50 final
+- Web: https://hirexpert-eta.vercel.app (landing: light hero, rotating cursive word, onboarding CTA; /onboard, /post, /board, /case/4471, /poster/4471, /supervisor). Deploy: deploy/vercel.sh (relinks project "hirexpert"; vite wipes dist/.vercel). Bridge + web: https://8788-5975fada-698b-4c43-8ec3-1e554ae9d97c.sandbox.superserve.ai (deploy/superserve.sh).
+- Business VM path (startBench): verified that provision -> 3 Codex agents start inside biz-cedar-street-clinic -> policy and billing replied in #case-4471 with their own session refs, documents read from the VM. Appeals timed out on Relay (503/overload) in that run, so no recommendation from the VM path yet. Laptop path (agents/launch.sh) passed twice end to end. DEMO: start the VM bench for the story, keep laptop agents as the reliable fallback.
+- Cut / not done: Codex docs refresh (.codex-tasks/docs-refresh.md) not run (sandbox blocked launching Codex); FLOWS.html still describes the pre-VM flow; 390px landing unverified; GitHub push pending user OK; Vercel project "dist" created by accident, not deleted (needs user).
