@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Understudy: how it works</title>
+<title>HireXpert: how it works</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{--ground:#F6F5F1;--surface:#fff;--border:#E2DFD6;--ink:#1C1C1E;--muted:#5F5E5A;--blue:#2F4BD6;--green:#1E6B3A;--amber:#8A4B00;--amberbg:#FBEFD5}
@@ -30,19 +30,19 @@ figcaption{padding:10px 14px;font-size:13px;color:var(--muted)}
 .cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}@media(max-width:720px){.cols{grid-template-columns:1fr}}
 svg text{font-family:Inter,sans-serif}
 </style></head><body>
-<header><div class="in"><h1>Understudy <small>How a case flows through the app, for the poster, the worker, the supervisor and the bench. Captured live on October 31 2026.</small></h1>
-<nav><a href="#what">1 What it is</a><a href="#arch">2 Architecture</a><a href="#poster">3 Poster flow</a><a href="#worker">4 Worker flow</a><a href="#sup">5 Supervisor and alarms</a><a href="#dur">6 Durability</a><a href="#run">7 Run it</a></nav></div></header>
+<header><div class="in"><h1>HireXpert <small>How a case flows through the app, for the poster, the worker, the supervisor and the bench. Captured live on October 31 2026.</small></h1>
+<nav><a href="#what">1 What it is</a><a href="#arch">2 Architecture</a><a href="#onboard">0 Business onboarding</a><a href="#poster">3 Poster flow</a><a href="#worker">4 Worker flow</a><a href="#sup">5 Supervisor and alarms</a><a href="#dur">6 Durability</a><a href="#run">7 Run it</a></nav></div></header>
 <main>
 
-<section id="what"><h2>1. What Understudy is</h2>
-<p>Understudy is "the $15 an hour expert": a worker with judgment but no credential takes a job that used to need one, asks a bench of specialist agents, and approves what they agree on. Every decision is traceable to the agent session and the document that backed it.</p>
+<section id="what"><h2>1. What HireXpert is</h2>
+<p>HireXpert (codename Understudy) is "the $15 an hour expert": a worker with judgment but no credential takes a job that used to need one, asks a bench of specialist agents, and approves what they agree on. Every decision is traceable to the agent session and the document that backed it.</p>
 <p>Each case is a Terse Durable Actor that holds the claim, documents, deadlines, alarms and decision log. The bench coordinates over an Agent Relay channel per case, and both are load bearing.</p>
 <p>Four roles use it: the <b>poster</b> (a clinic that needs an appeal filed), the <b>worker</b> (Maya R.), the <b>supervisor</b> (Dana K.) and the <b>bench</b> of three agents: policy, billing codes and appeals.</p>
 </section>
 
 <section id="arch"><h2>2. Architecture</h2>
 <p>The browsers never talk to Relay directly. They talk to the bridge, which keeps the case actor and the Relay channel in step. The rule: the <b>actor is the system of record for case state</b>; <b>Relay is the system of record for reasoning and provenance</b>.</p>
-<svg viewBox="0 0 940 420" width="100%" role="img" aria-label="Architecture diagram">
+<svg viewBox="0 0 940 590" width="100%" role="img" aria-label="Architecture diagram">
 <defs><marker id="a" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8z" fill="#5F5E5A"/></marker></defs>
 <g stroke="#E2DFD6" fill="#fff" stroke-width="1.5">
 <rect x="10" y="40" width="150" height="56" rx="8"/><rect x="10" y="130" width="150" height="56" rx="8"/><rect x="10" y="220" width="150" height="56" rx="8"/>
@@ -53,14 +53,16 @@ svg text{font-family:Inter,sans-serif}
 <g font-size="14" fill="#1C1C1E" font-weight="600"><text x="85" y="63" text-anchor="middle">Worker browser</text><text x="85" y="153" text-anchor="middle">Poster browser</text><text x="85" y="243" text-anchor="middle">Supervisor browser</text>
 <text x="325" y="150" text-anchor="middle">Bridge</text><text x="325" y="172" text-anchor="middle" font-weight="400" font-size="12" fill="#5F5E5A">Bun, :8788</text>
 <text x="540" y="46">Terse Durable Actors (hosted)</text><text x="540" y="268" fill="#2F4BD6">Agent Relay channel #case-&lt;id&gt;</text></g>
-<g font-size="12" fill="#5F5E5A"><text x="85" y="80" text-anchor="middle">/board /case/4471</text><text x="85" y="170" text-anchor="middle">/post /poster/4471</text><text x="85" y="260" text-anchor="middle">/supervisor</text></g>
+<g font-size="12" fill="#5F5E5A"><text x="85" y="80" text-anchor="middle">/board /case/4471</text><text x="85" y="170" text-anchor="middle">/onboard /post /poster</text><text x="85" y="260" text-anchor="middle">/supervisor</text></g>
 <g fill="#F6F5F1" stroke="#E2DFD6"><rect x="540" y="62" width="170" height="86" rx="6"/><rect x="725" y="62" width="180" height="86" rx="6"/></g>
 <g font-size="12.5" fill="#1C1C1E"><text x="552" y="82" font-weight="600">Case:4471</text><text x="552" y="100">@Persisted claim, docs,</text><text x="552" y="116">thread, decision log</text><text x="552" y="132">@Emittable to clients</text>
 <text x="737" y="82" font-weight="600">Board:main</text><text x="737" y="100">open jobs, claim()</text><text x="737" y="116">first caller wins</text>
 <text x="737" y="132" fill="#8A4B00" font-weight="600">Alarms: onAlarm()</text></g>
-<g fill="#F6F5F1" stroke="#2F4BD6"><rect x="540" y="284" width="118" height="90" rx="6"/><rect x="668" y="284" width="118" height="90" rx="6"/><rect x="796" y="284" width="108" height="90" rx="6"/></g>
-<g font-size="12.5" fill="#1C1C1E" font-weight="600"><text x="552" y="306">Policy agent</text><text x="680" y="306">Billing agent</text><text x="808" y="306">Appeals agent</text></g>
-<g font-size="11.5" fill="#5F5E5A"><text x="552" y="326">Codex</text><text x="552" y="342">session_ref</text><text x="680" y="326">Codex</text><text x="680" y="342">session_ref</text><text x="808" y="326">Codex</text><text x="808" y="342">session_ref</text></g>
+<g font-size="13" fill="#5F5E5A"><text x="540" y="300">Questions and cited replies in case threads</text><text x="540" y="326">Recommendation + reaction votes</text><text x="540" y="352">session_ref provenance + actor webhook posts</text></g>
+<rect x="230" y="450" width="690" height="120" rx="10" fill="#fff" stroke="#1E6B3A" stroke-width="1.5"/>
+<g font-size="14" fill="#1C1C1E"><text x="250" y="477" font-weight="600">Business VM (Superserve): Codex agents + documents + session logs</text><text x="250" y="502">Policy, billing codes and appeals run inside the business VM</text><text x="250" y="527">agents/docs + uploaded business files; Codex session logs stay here</text><text x="250" y="552">code-server workstation: preview URL + per-workspace password</text></g>
+<g stroke="#1E6B3A" stroke-width="1.5" fill="none" marker-end="url(#a)"><path d="M280 196 L200 420 L300 450"/><path d="M720 450 L720 400"/></g>
+<g font-size="12" fill="#1E6B3A"><text x="240" y="426">Bridge: provision, grant access, startBench</text><text x="735" y="430">Relay MCP</text></g>
 <g stroke="#5F5E5A" stroke-width="1.5" fill="none" marker-end="url(#a)">
 <path d="M160 68 L250 140"/><path d="M160 158 L250 158"/><path d="M160 248 L250 176"/>
 <path d="M400 140 L520 100"/><path d="M400 180 L520 300" stroke="#2F4BD6"/></g>
@@ -70,14 +72,22 @@ svg text{font-family:Inter,sans-serif}
 <text x="325" y="326" text-anchor="middle" font-size="12.5" fill="#8A4B00" font-weight="600">Actor to bridge</text><text x="325" y="344" text-anchor="middle" font-size="12" fill="#8A4B00">broadcast asked, alarm_fired</text>
 </svg>
 <p style="font-size:13px;color:var(--muted)">The actor cannot be assumed to make outbound HTTP, so it <code>broadcast</code>s <code>asked</code>, <code>alarm_fired</code> and <code>event</code> messages and the bridge posts into Relay on its behalf. Each agent runs with its own <code>RELAY_ATTEST_SESSION_ID</code>, so every reply carries <code>session_ref</code>.</p>
-<div class="card"><b>Where things live</b><ol class="steps" style="margin:6px 0 0"><li><code>actor/src/actor.ts</code>: Case and Board actors, alarms via <code>this.alarm.set()</code> and <code>onAlarm()</code>.</li><li><code>bridge/</code>: Relay SDK, listeners, inbound webhooks, HTTP and WS server for the web app.</li><li><code>web/</code>: the seven screens. <code>agents/</code>: the three system prompts and launcher.</li></ol></div>
+<div class="card"><b>Where things live</b><ol class="steps" style="margin:6px 0 0"><li><code>actor/src/actor.ts</code>: Case and Board actors, alarms via <code>this.alarm.set()</code> and <code>onAlarm()</code>.</li><li><code>bridge/</code>: Relay SDK, listeners, inbound webhooks, HTTP and WS server for the web app.</li><li><code>bridge/workspace.ts</code>: business VM provisioning, worker access, uploads and bench launch.</li><li><code>web/</code>: business, worker and supervisor screens, including <code>web/src/pages/Onboard.tsx</code>. <code>agents/</code>: the three system prompts, documents and launcher copied into the VM.</li></ol></div>
+</section>
+
+<section id="onboard"><h2>0. Business onboarding and its VM</h2>
+<p>The business starts at <code>/onboard</code>. <b>Provision my workspace</b> calls <code>POST /api/workspace/provision</code>; <code>bridge/workspace.ts</code> creates or reuses a persistent Superserve VM, such as <code>biz-cedar-street-clinic</code>. It installs Codex CLI and the Agent Relay MCP server, copies <code>agents/docs</code> and the policy, billing and appeals prompts, and logs Codex in with the OpenAI API key. Provisioning connects the VM to Agent Relay with <code>agent-relay init --key</code>.</p>
+<p>Each business VM also runs <b>code-server (VS Code in the browser)</b>, published on a preview URL with a per-workspace password. The onboarding and workspace cards show <b>Open workstation</b> and the password; shell access is under Advanced.</p>
+<p><b>Add files</b> queues real uploads until the VM is ready. The bridge copies them into <code>/home/user/agents/docs/business</code> and extracts PDF text alongside the originals so agents can read it. The VM remains available across cases; each Case actor persists its VM id and slug in <code>workspace</code>. The bridge also keeps a workspace registry on disk.</p>
+<p>Provisioning prepares the bench; the worker starts the three Codex processes for a case with <b>Start bench</b>. Documents and Codex session logs stay in the business VM.</p>
+<figure><img src="docs/screens/onboard.png" alt="HireXpert business onboarding and workspace provisioning"><figcaption>/onboard. Provision the business workspace, upload documents, then continue to post a job.</figcaption></figure>
 </section>
 
 <section id="poster"><h2>3. Poster flow</h2>
-<p>Cedar Street Clinic needs a denied lumbar MRI claim appealed. Three screens, all under the same header with a 1 Post, 2 In progress, 3 Review stepper.</p>
+<p>Cedar Street Clinic needs a denied lumbar MRI claim appealed. After onboarding, the poster posts a job, watches progress and reviews the result.</p>
 
 <h3><span class="n">1</span>Post the job</h3>
-<p>The poster picks a domain, describes the outcome, lists documents, and sets a hard deadline, pay ($45 here) and whether they review before anything goes to the payer. <b>Post job</b> calls <code>Board.post</code>, which creates the <code>Case:4471</code> actor and puts the job on the board. The bridge sees the new case and opens Relay channel <code>#case-4471</code> with the job title as topic, plus an inbound webhook so the actor can speak as <code>case-actor</code>. The decision log starts with <code>case_opened</code> by <code>poster</code>.</p>
+<p>The poster picks a domain, describes the outcome, lists documents, and sets a hard deadline, pay ($45 here) and whether they review before anything goes to the payer. <b>Post job</b> calls <code>Board.post</code>, which creates the <code>Case:4471</code> actor and puts the job on the board with the business workspace slug. The bridge sees the new case and opens Relay channel <code>#case-4471</code> with the job title as topic, plus an inbound webhook so the actor can speak as <code>case-actor</code>. The decision log starts with <code>case_opened</code> by <code>poster</code>.</p>
 <figure><img src="docs/screens/post.png" alt="Post a job form"><figcaption>/post. The right rail says what happens next: case actor created, job appears on the board, worker consults the bench, poster reviews.</figcaption></figure>
 
 <h3><span class="n">2</span>Watch progress</h3>
@@ -92,7 +102,7 @@ svg text{font-family:Inter,sans-serif}
 <section id="worker"><h2>4. Worker flow</h2>
 
 <h3><span class="n">1</span>Board and atomic claim</h3>
-<p>The board subscribes to the single <code>Board:main</code> actor. <code>Board.claim</code> is the only way to take a job, and because it runs inside one actor, calls are serialised: <b>the first caller wins</b> and everyone else gets a refusal. Live right now, <code>/api/board</code> shows 4471 and 4398 as <code>claimed</code> and 4466 as <code>open</code> at $80.</p>
+<p>The board subscribes to the single <code>Board:main</code> actor. <code>Board.claim</code> is the only way to take a job, and because it runs inside one actor, calls are serialised: <b>the first caller wins</b> and everyone else gets a refusal. After a successful claim, the bridge calls <code>grantWorkspace</code> to grant the worker access to the business VM. The worker moves from <code>/board</code> to <code>/case/&lt;id&gt;</code>.</p>
 <figure><img src="docs/screens/board.png" alt="Job board"><figcaption>/board. Open jobs, pay, deadline and an estimate in minutes. Claim hits <code>Board.claim</code>.</figcaption></figure>
 
 <h3><span class="n">2</span>Read the brief</h3>
@@ -101,10 +111,11 @@ svg text{font-family:Inter,sans-serif}
 
 <h3><span class="n">3</span>Ask the bench, step by step</h3>
 <ol class="steps">
+<li><b>Start bench.</b> On the Worker screen, click <b>Start bench</b> (<code>POST /api/case/4471/startBench</code>). The bridge launches policy, billing and appeals as three Codex processes inside the business VM. Wait about 40 seconds before asking. The workspace card shows VM access via <b>Open workstation</b>, live agents, files and Codex session logs stored in the VM.</li>
 <li><b>Ask.</b> Maya types a question. The web app calls the actor's <code>ask</code> method, which logs <code>asked_bench</code> and sets <code>pendingQuestion</code>.</li>
 <li><b>Actor broadcasts <code>asked</code>.</b> The bridge is listening on the actor socket.</li>
 <li><b>Bridge posts as <code>maya</code> into <code>#case-4471</code></b>, mentioning <code>@policy @billing @appeals</code> and appending the case brief (payer, amount, code, deadline, document list). That message is the root of the thread (id <code>242389763427598336</code>).</li>
-<li><b>Agents reply in the thread, citing documents.</b> Each reply cites file and page, for example <code>[Denial letter.pdf, p. 2]</code>. They read excerpts from <code>agents/docs/4471/</code>.</li>
+<li><b>Agents reply in the thread, citing documents.</b> Each reply cites file and page, for example <code>[Denial letter.pdf, p. 2]</code>. They read the documents inside the business VM, including <code>agents/docs/4471/</code> and uploaded files in <code>agents/docs/business/</code>.</li>
 <li><b>Appeals posts a <b>Recommendation</b>.</b> Relay actions did not register server side, so the fallback is a structured reply that starts with <code>**Recommendation**</code>. The bridge parses it and lifts it into the actor with <code>postRecommendation</code> (status becomes <code>recommended</code>, log gets <code>recommendation_posted</code>).</li>
 <li><b>Reactions are votes.</b> Policy and billing react :+1: on the recommendation, giving "agrees: policy, billing". The worker's approval is a :white_check_mark: reaction.</li>
 <li><b>Approve or Override.</b> Approve writes <code>recommendation_approved</code> to the decision log, reacts :white_check_mark: in Relay, and <code>case-actor</code> posts "Approval recorded". An override with a reason is the training signal the supervisor sees.</li>
@@ -125,14 +136,14 @@ svg text{font-family:Inter,sans-serif}
 <li><b>Terse calls <code>onAlarm()</code></b> when the time passes, even if no client is connected.</li>
 <li><b>The actor escalates:</b> it marks the alarm fired, appends to the decision log and broadcasts <code>alarm_fired</code>.</li>
 <li><b>The bridge posts via webhook as <code>case-actor</code></b> into <code>#case-4398</code>, so the humans and the agents see the same history.</li>
-<li><b>The Supervisor screen reacts:</b> the case row turns amber, the "Alarms fired today" tile fills, and the alarm card changes from "Case 4398 escalated when its Terse alarm fired at 13:55; the row turned amber and the alarm card appeared.</li>
+<li><b>The Supervisor screen reacts:</b> the case row turns amber, the "Alarms fired today" tile fills, and the alarm card records the escalation.</li>
 </ol>
 <p>Case 4398 is the demo case, seeded with <code>--alarm-seconds 60</code>. The screenshot below was taken with its alarm one second from firing, so the card still says "watching" with a countdown.</p>
 <figure><img src="docs/screens/supervisor.png" alt="Supervisor view"><figcaption>/supervisor. Table of cases sorted by next alarm, live event feed across all cases, and the alarm card (right).</figcaption></figure>
 </section>
 
 <section id="dur"><h2>6. Durability</h2>
-<p>All case state is <code>@Persisted</code> in the Terse actor and the actors are deployed (hosted), not held in the bridge or the web app. The bridge only holds a cache and listeners; the web app holds nothing.</p>
+<p>All case state is <code>@Persisted</code> in the Terse actor and the actors are deployed (hosted), not held in the bridge or the web app. The bridge holds a case cache and listeners plus a separate workspace registry; documents and session logs live in the business VM. The web app is not the store for case state.</p>
 <p>So the demo move works: kill the bridge and the web dev server, restart them, reload <code>/case/4471</code>, and the thread, recommendation, decision log and both pending alarms are all still there, because they were read back from the actor. Earlier, <code>actor/client/durability.ts</code> also verified this against local <code>terse actor dev</code>: kill the actor process, restart, and case state plus the pending alarm survive.</p>
 </section>
 
@@ -142,8 +153,12 @@ svg text{font-family:Inter,sans-serif}
 cd bridge &amp;&amp; bun install &amp;&amp; bun setup.ts &amp;&amp; bun index.ts   # Relay workspace, actions, webhooks, API on :8788
 bun seed/seed-cases.ts --alarm-seconds 60            # cases 4471 and 4398, 4398 escalates in 60 s
 cd web &amp;&amp; bun install &amp;&amp; bun run dev                 # http://localhost:5173/case/4471
-agents/launch.sh policy      # also: billing, appeals</code></pre>
+# On /case/4471, click Start bench to launch inside the business VM.
+# Laptop fallback only (one terminal each):
+agents/launch.sh policy 4471 30      # also: billing, appeals</code></pre>
 <p>To use the hosted actors: <code>terse deploy</code> from <code>actor/</code>, then export <code>TERSE_ACTOR_URL</code> and <code>TERSE_API_KEY</code> before <code>terse actor generate</code> in <code>actor/client</code>.</p>
-<p>Routes: <code>/post</code>, <code>/poster/4471</code>, <code>/poster/4471/review</code>, <code>/board</code>, <code>/case/4471/brief</code>, <code>/case/4471</code>, <code>/supervisor</code>. Live JSON: <code>localhost:8788/api/case/4471</code>, <code>/api/board</code>.</p>
+<p>Routes: <code>/onboard</code>, <code>/post</code>, <code>/poster/4471</code>, <code>/poster/4471/review</code>, <code>/board</code>, <code>/case/4471/brief</code>, <code>/case/4471</code>, <code>/supervisor</code>. Live JSON: <code>localhost:8788/api/case/4471</code>, <code>/api/board</code>.</p>
+<p>Live web: <a href="https://hirexpert-eta.vercel.app">hirexpert-eta.vercel.app</a>. Bridge + web: <a href="https://8788-5975fada-698b-4c43-8ec3-1e554ae9d97c.sandbox.superserve.ai">Superserve deployment</a>. Actors: <a href="https://api.useterse.ai/cmvwuohyf00zwjy2a2dm8cjel/actors">Terse hosted actors</a>. Run only one bridge at a time to avoid duplicate Relay posts.</p>
+<p>Deploy with <code>deploy/superserve.sh</code> (bridge + web) and <code>deploy/vercel.sh</code> (web).</p>
 </section>
 </main></body></html>
