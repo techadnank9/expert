@@ -1,0 +1,11 @@
+[
+ {"id":"01","shot":"landing","text":"This is HireXpert. Expert work, without the expert. A business gets a private digital workspace, hires a worker, and three specialist agents do the heavy reading."},
+ {"id":"02","shot":"onboard","text":"As a business, you onboard once. Name your business, add your documents, and click provision."},
+ {"id":"03","shot":"workspace","text":"In about four minutes you have your own machine in the cloud. Your files, your agents, and a full workstation, right in the browser."},
+ {"id":"04","shot":"post","text":"Post a job. Here, appealing a denied MRI claim. That creates a durable case record on Terse and a channel on Agent Relay."},
+ {"id":"05","shot":"board","text":"Now the worker side. A worker with good judgment, no credential, picks the job from the board. Claiming is atomic, first caller wins, and they are granted access to the business machine."},
+ {"id":"06","shot":"case","text":"The worker asks the bench. Policy, billing codes and appeals read the documents inside the VM, reply with citations, disagree, converge, and vote. Three of three."},
+ {"id":"07","shot":"approve","text":"The worker approves. The decision, the votes, and the exact agent sessions behind them are on the record forever."},
+ {"id":"08","shot":"supervisor","text":"If a payer goes quiet, the case wakes itself and escalates to the supervisor. Kill the server, restart, nothing is lost."},
+ {"id":"09","shot":"howitworks","text":"Terse Durable Actors for memory. Agent Relay for the debate. Superserve for the machine. HireXpert. Hire the judgment, rent the expertise."}
+]

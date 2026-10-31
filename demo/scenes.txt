@@ -1,0 +1,9 @@
+01 landing This is HireXpert. Expert work, without the expert. A business gets a private digital workspace, hires a worker, and three specialist agents do the heavy reading.
+02 onboard As a business, you onboard once. Name your business, add your documents, and click provision.
+03 workspace In about four minutes you have your own machine in the cloud. Your files, your agents, and a full workstation, right in the browser.
+04 post Post a job. Here, appealing a denied MRI claim. That creates a durable case record on Terse and a channel on Agent Relay.
+05 board Now the worker side. A worker with good judgment, no credential, picks the job from the board. Claiming is atomic, first caller wins, and they are granted access to the business machine.
+06 case The worker asks the bench. Policy, billing codes and appeals read the documents inside the VM, reply with citations, disagree, converge, and vote. Three of three.
+07 approve The worker approves. The decision, the votes, and the exact agent sessions behind them are on the record forever.
+08 supervisor If a payer goes quiet, the case wakes itself and escalates to the supervisor. Kill the server, restart, nothing is lost.
+09 howitworks Terse Durable Actors for memory. Agent Relay for the debate. Superserve for the machine. HireXpert. Hire the judgment, rent the expertise.
