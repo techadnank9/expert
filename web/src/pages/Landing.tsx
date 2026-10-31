@@ -1,89 +1,290 @@
+import { useEffect, useRef } from 'react'
+import type { CSSProperties, ReactNode } from 'react'
 import { Link } from 'react-router-dom'
-import { Header } from '../components/Header'
+import '../landing.css'
 
-const BASE = ''
+/** Delay helper for staggered reveals. */
+const d = (ms: number) => ({ '--d': `${ms}ms` }) as CSSProperties
+
+function useReveal() {
+  const root = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const el = root.current
+    if (!el) return
+    const items = Array.from(el.querySelectorAll<HTMLElement>('[data-reveal]'))
+    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+    if (reduce || typeof IntersectionObserver === 'undefined') {
+      items.forEach((i) => i.classList.add('is-in'))
+      return
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) {
+            e.target.classList.add('is-in')
+            io.unobserve(e.target)
+          }
+        }
+      },
+      { rootMargin: '0px 0px -8% 0px', threshold: 0.12 },
+    )
+    items.forEach((i) => io.observe(i))
+    return () => io.disconnect()
+  }, [])
+  return root
+}
+
+const MARQUEE = [
+  'payer policy lookup',
+  'CPT, modifiers, LCDs',
+  'appeal drafting',
+  'filing deadlines',
+  'session_ref provenance',
+  '@Persisted case state',
+  'alarms that wake the actor',
+  'reactions are votes',
+  'approve or override',
+]
+
+const STEPS: { t: string; b: ReactNode }[] = [
+  { t: 'Post', b: <>The poster describes the outcome and attaches documents. <code>Board.post</code> creates the Case actor and its Relay channel.</> },
+  { t: 'Claim', b: <>A worker claims it from the board. <code>claim()</code> is one method call, so the first caller wins.</> },
+  { t: 'Ask the bench', b: <>The question lands in <code>#case-NNNN</code>. Three agents on three machines reply, disagree once, converge.</> },
+  { t: 'Vote', b: <>Appeals posts the recommendation. A thumbs up from each agent is the vote. 3 of 3 agree.</> },
+  { t: 'Approve or override', b: <>The worker decides. The reason lands in the decision log as training signal.</> },
+  { t: 'Deliver', b: <>The poster reviews and approves, pay releases. If the payer goes quiet, the alarm escalates to the supervisor.</> },
+]
 
 export function Landing() {
+  const root = useReveal()
   return (
-    <div className="page landing">
-      <Header subtitle="Expert work, without the credential" right={<nav className="land-nav"><Link to="/board">Find work</Link><Link to="/post">Post a job</Link><Link to="/supervisor">Supervisor</Link></nav>} />
-
-      <section className="land-hero">
-        <div className="land-kicker">The $15 an hour expert</div>
-        <h1>An ordinary worker plus a bench of specialist agents does work that used to need a credential.</h1>
-        <p className="land-sub">
-          A clinic posts a denied claim. A worker with judgment claims it. Three specialist agents debate the case on Agent Relay and
-          vote on one recommendation. The worker approves. Every step is persisted in a Durable Actor and traceable to the exact agent
-          session and document that backed it.
-        </p>
-        <div className="land-cta">
-          <Link className="land-btn primary" to="/post">I need expert work done<span>Post a job as a business</span></Link>
-          <Link className="land-btn" to="/board">I want to do expert work<span>Find a job as a worker</span></Link>
+    <div className="lp" ref={root}>
+      {/* ---------- Hero ---------- */}
+      <section className="lp-hero">
+        <div className="lp-aurora" aria-hidden="true">
+          <span className="lp-blob b1" />
+          <span className="lp-blob b2" />
+          <span className="lp-blob b3" />
         </div>
-        <div className="land-meta">
-          Live demo case: <Link to="/case/4471">Claim 4471, denied lumbar MRI</Link> · <Link to="/supervisor">Supervisor desk</Link>
+
+        <nav className="lp-nav" aria-label="Main">
+          <Link to="/" className="lp-brand">
+            <span className="lp-logo">U</span>
+            Understudy
+          </Link>
+          <div className="lp-nav-links">
+            <Link to="/board">Find work</Link>
+            <Link to="/supervisor">Supervisor</Link>
+            <Link to="/case/4471">Live demo</Link>
+          </div>
+          <Link to="/post" className="lp-pill lp-pill-sm">Post a job</Link>
+        </nav>
+
+        <div className="lp-hero-inner">
+          <div className="lp-kicker lp-intro" style={d(120)}>
+            <span className="lp-dot" /> The $15 an hour expert
+          </div>
+          <h1 className="lp-title lp-intro" style={d(300)}>
+            Ordinary workers.
+            <br />
+            <span className="lp-accent">Specialist</span> results.
+          </h1>
+          <p className="lp-sub lp-intro" style={d(480)}>
+            One worker with good judgment, backed by a bench of specialist agents, does work that used to need a credential.
+            Every recommendation is voted on, every decision is traceable.
+          </p>
+          <div className="lp-ctas lp-intro" style={d(660)}>
+            <Link to="/post" className="lp-pill">
+              Post a job <span className="lp-arrow">→</span>
+            </Link>
+            <Link to="/board" className="lp-pill lp-pill-ghost">
+              Find work <span className="lp-arrow">→</span>
+            </Link>
+          </div>
+          <div className="lp-meta lp-intro" style={d(800)}>
+            Watch it live: <Link to="/case/4471">Claim 4471, denied lumbar MRI</Link>
+            <span aria-hidden="true"> · </span>
+            <Link to="/supervisor">Supervisor desk</Link>
+          </div>
+        </div>
+
+        {/* Product mock */}
+        <div className="lp-stage lp-intro-visual" style={d(900)}>
+          <div className="lp-mock">
+            <div className="lp-mock-bar">
+              <span /><span /><span />
+              <div className="lp-mock-url">#case-4471 · Agent Relay</div>
+            </div>
+            <div className="lp-mock-body">
+              <aside className="lp-mock-side">
+                <div className="lp-side-h">Claim 4471</div>
+                <div className="lp-side-row">Denied lumbar MRI</div>
+                <div className="lp-side-tag amber">Payer reply due in 10 days</div>
+                <div className="lp-side-h mt">Decision log</div>
+                <div className="lp-side-row sm">Worker asked the bench</div>
+                <div className="lp-side-row sm">Bench converged</div>
+                <div className="lp-side-row sm on">Awaiting approval</div>
+              </aside>
+              <div className="lp-thread">
+                <div className="lp-msg">
+                  <span className="lp-av av-w">W</span>
+                  <div>
+                    <div className="lp-msg-h">Worker</div>
+                    <div className="lp-msg-b">Why was this denied, and is it worth appealing?</div>
+                  </div>
+                </div>
+                <div className="lp-msg">
+                  <span className="lp-av av-p">P</span>
+                  <div>
+                    <div className="lp-msg-h">Policy agent <em>session_ref</em></div>
+                    <div className="lp-msg-b">Payer policy requires six weeks of conservative care. The chart documents eight.</div>
+                  </div>
+                </div>
+                <div className="lp-msg">
+                  <span className="lp-av av-b">B</span>
+                  <div>
+                    <div className="lp-msg-h">Billing codes agent <em>session_ref</em></div>
+                    <div className="lp-msg-b">Code and modifier check out against the LCD.</div>
+                  </div>
+                </div>
+                <div className="lp-msg rec">
+                  <span className="lp-av av-a">A</span>
+                  <div>
+                    <div className="lp-msg-h">Appeals agent · recommendation</div>
+                    <div className="lp-msg-b">Appeal. Draft attached, cites the policy section and chart notes.</div>
+                    <div className="lp-votes"><span>👍 3</span><span className="lp-agree">3 of 3 agree</span></div>
+                  </div>
+                </div>
+                <div className="lp-actions">
+                  <span className="lp-btn-approve">Approve</span>
+                  <span className="lp-btn-override">Override</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <span className="lp-tag t1"><i className="lp-cur" />Worker</span>
+          <span className="lp-tag t2"><i className="lp-cur" />Supervisor</span>
+          <span className="lp-tag t3"><i className="lp-cur" />Poster</span>
+          <span className="lp-tag t4"><i className="lp-cur" />Appeals agent</span>
         </div>
       </section>
 
-      <section className="land-flow">
-        <div className="land-col">
-          <div className="label">HUMANS</div>
-          <div className="card g10">
-            <div className="strong">Worker</div>
-            <div className="sm muted">No credential, good judgment. Asks the bench, approves or overrides.</div>
-          </div>
-          <div className="card g10">
-            <div className="strong">Supervisor</div>
-            <div className="sm muted">Watches every case live. Alarms escalate to them when a payer goes quiet.</div>
-          </div>
-          <div className="card g10">
-            <div className="strong">Poster</div>
-            <div className="sm muted">A clinic or firm. Reviews the deliverable before it goes out. Pay releases on approval.</div>
-          </div>
+      {/* ---------- Marquee ---------- */}
+      <div className="lp-marquee" aria-hidden="true">
+        <div className="lp-marquee-track">
+          {[...MARQUEE, ...MARQUEE].map((m, i) => (
+            <span key={i} className="lp-chip">{m}</span>
+          ))}
         </div>
-        <div className="land-col">
-          <div className="label">TERSE DURABLE ACTOR</div>
-          <div className="card g10 land-actor">
-            <div className="strong">One actor per case</div>
-            <div className="sm muted">@Persisted claim, documents, deadlines, decision log. @Emittable state to every screen over WebSocket.</div>
-            <div className="sm muted">Alarms: the actor wakes itself. No payer reply in 10 days, escalate.</div>
-            <div className="sm muted">Kill the server and the case comes back intact.</div>
+      </div>
+
+      {/* ---------- Stats ---------- */}
+      <section className="lp-stats">
+        {[
+          ['3 of 3', 'agents agree before a recommendation ships'],
+          ['Every', 'decision traceable to the agent session behind it'],
+          ['Kill -9', 'the server. The case comes back intact.'],
+          ['1 actor', 'per case, with alarms that wake it up'],
+        ].map(([n, l], i) => (
+          <div key={n} className="lp-stat" data-reveal style={d(i * 90)}>
+            <div className="lp-stat-n">{n}</div>
+            <div className="lp-stat-l">{l}</div>
           </div>
-          <div className="card g10">
-            <div className="strong">Board actor</div>
-            <div className="sm muted">Open jobs. claim() is one method call, so two workers can never hold the same job.</div>
-          </div>
+        ))}
+      </section>
+
+      {/* ---------- Three columns ---------- */}
+      <section className="lp-section">
+        <div className="lp-head" data-reveal>
+          <div className="lp-eyebrow">Under the hood</div>
+          <h2>Three layers, one case.</h2>
+          <p>People make the calls, a durable actor remembers everything, and a bench of agents does the specialist reading.</p>
         </div>
-        <div className="land-col">
-          <div className="label">AGENT RELAY BENCH</div>
-          <div className="card g10 land-bench">
-            <div className="strong">#case-4471</div>
-            <div className="sm muted">One thread per question. Reactions are votes. Every message carries a session_ref to the transcript that produced it.</div>
-          </div>
-          <div className="land-agents">
-            <div className="card g10"><span className="av av-p">P</span><div><div className="strong">Policy agent</div><div className="sm muted">payer policy lookup</div></div></div>
-            <div className="card g10"><span className="av av-b">B</span><div><div className="strong">Billing codes agent</div><div className="sm muted">CPT, modifiers, LCDs</div></div></div>
-            <div className="card g10"><span className="av av-a">A</span><div><div className="strong">Appeals agent</div><div className="sm muted">drafting, deadlines</div></div></div>
-          </div>
+
+        <div className="lp-cols">
+          <article className="lp-card" data-reveal style={d(0)}>
+            <div className="lp-card-k">Humans</div>
+            <h3>Judgment stays with people.</h3>
+            <ul className="lp-list">
+              <li><b>Worker.</b> No credential, good judgment. Asks the bench, approves or overrides.</li>
+              <li><b>Supervisor.</b> Watches every case live. Alarms escalate to them when a payer goes quiet.</li>
+              <li><b>Poster.</b> A clinic or firm. Reviews the deliverable; pay releases on approval.</li>
+            </ul>
+          </article>
+
+          <article className="lp-card lp-card-dark" data-reveal style={d(120)}>
+            <div className="lp-card-k">Terse Durable Actor</div>
+            <h3>One actor per case.</h3>
+            <ul className="lp-list">
+              <li><code>@Persisted</code> claim, documents, deadlines and decision log.</li>
+              <li><code>@Emittable</code> state streams to every screen over WebSocket.</li>
+              <li>Alarms: the actor wakes itself. No payer reply in 10 days, escalate.</li>
+              <li>Kill the server and the case comes back intact.</li>
+            </ul>
+          </article>
+
+          <article className="lp-card lp-card-blue" data-reveal style={d(240)}>
+            <div className="lp-card-k">Agent Relay bench</div>
+            <h3><code>#case-4471</code></h3>
+            <p className="lp-card-p">One thread per question. Reactions are votes. Every message carries a <code>session_ref</code> to the transcript that produced it.</p>
+            <div className="lp-agents">
+              <div className="lp-agent"><span className="lp-av av-p">P</span><div><b>Policy agent</b><small>payer policy lookup</small></div></div>
+              <div className="lp-agent"><span className="lp-av av-b">B</span><div><b>Billing codes agent</b><small>CPT, modifiers, LCDs</small></div></div>
+              <div className="lp-agent"><span className="lp-av av-a">A</span><div><b>Appeals agent</b><small>drafting, deadlines</small></div></div>
+            </div>
+          </article>
         </div>
       </section>
 
-      <section className="land-steps">
-        <div className="label">HOW ONE CASE FLOWS</div>
-        <ol>
-          <li><strong>Post.</strong> The poster describes the outcome and attaches documents. Board.post creates the Case actor and its Relay channel.</li>
-          <li><strong>Claim.</strong> A qualified worker claims it from the board. First caller wins.</li>
-          <li><strong>Ask the bench.</strong> The worker's question lands in #case-NNNN. Three agents on three machines reply, disagree once, converge.</li>
-          <li><strong>Vote.</strong> Appeals posts the recommendation. Thumbs up from each agent is the vote. 3 of 3 agree.</li>
-          <li><strong>Approve or override.</strong> The worker decides. The reason lands in the decision log as training signal.</li>
-          <li><strong>Deliver.</strong> The poster reviews, approves, pay releases. If the payer goes quiet, the alarm escalates to the supervisor.</li>
+      {/* ---------- Steps ---------- */}
+      <section className="lp-section lp-steps-sec">
+        <div className="lp-head" data-reveal>
+          <div className="lp-eyebrow">How one case flows</div>
+          <h2>From posted to paid in six moves.</h2>
+        </div>
+        <ol className="lp-steps">
+          {STEPS.map((s, i) => (
+            <li key={s.t} className="lp-step" data-reveal style={d((i % 3) * 110)}>
+              <span className="lp-step-n">{String(i + 1).padStart(2, '0')}</span>
+              <h3>{s.t}</h3>
+              <p>{s.b}</p>
+            </li>
+          ))}
         </ol>
       </section>
 
-      <footer className="land-foot">
-        Built at Haunted Hacks, San Francisco, October 31 2026 on Terse Durable Actors and Agent Relay. Bench agents run on Codex via OpenAI.
-        <span style={{ display: 'none' }}>{BASE}</span>
-      </footer>
+      {/* ---------- Closing CTA + footer ---------- */}
+      <section className="lp-final">
+        <div className="lp-aurora soft" aria-hidden="true">
+          <span className="lp-blob b1" />
+          <span className="lp-blob b2" />
+        </div>
+        <div className="lp-final-inner" data-reveal>
+          <h2>
+            Put the <span className="lp-accent">bench</span> to work.
+          </h2>
+          <p>Businesses post the outcome they need. Workers bring the judgment. The agents bring the specialist reading.</p>
+          <div className="lp-ctas">
+            <Link to="/post" className="lp-pill">Post a job <span className="lp-arrow">→</span></Link>
+            <Link to="/board" className="lp-pill lp-pill-ghost">Find work <span className="lp-arrow">→</span></Link>
+          </div>
+        </div>
+        <footer className="lp-foot">
+          <div className="lp-brand">
+            <span className="lp-logo">U</span>
+            Understudy
+          </div>
+          <p>
+            Built at Haunted Hacks, San Francisco, October 31 2026, on Terse Durable Actors and Agent Relay. Bench agents run on
+            Codex via OpenAI.
+          </p>
+          <div className="lp-foot-links">
+            <Link to="/case/4471">Demo case</Link>
+            <Link to="/supervisor">Supervisor</Link>
+            <Link to="/board">Board</Link>
+          </div>
+        </footer>
+      </section>
     </div>
   )
 }

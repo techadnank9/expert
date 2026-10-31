@@ -194,31 +194,4 @@ textarea.input { height: auto; padding: 10px 12px; resize: vertical; }
 }
 
 /* ---------- Landing ---------- */
-.landing { min-height: 100vh; }
-.land-nav { display: flex; gap: 20px; font-size: 14px; }
-.land-nav a { color: var(--ink-2); text-decoration: none; font-weight: 500; }
-.land-nav a:hover { color: var(--ink); }
-.land-hero { max-width: 880px; margin: 0 auto; padding: 72px 32px 40px; text-align: center; }
-.land-kicker { display: inline-block; font-size: 12px; line-height: 16px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--agent); background: var(--agent-tint); padding: 4px 10px; border-radius: 999px; }
-.land-hero h1 { font-size: 40px; line-height: 48px; font-weight: 600; letter-spacing: -0.01em; margin: 20px 0 16px; color: var(--ink); }
-.land-sub { font-size: 17px; line-height: 26px; color: var(--muted); margin: 0 auto 32px; max-width: 760px; }
-.land-cta { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; }
-.land-btn { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; min-width: 260px; padding: 16px 20px; border-radius: 12px; border: 1px solid var(--border-strong); background: var(--surface); color: var(--ink); text-decoration: none; font-weight: 600; font-size: 16px; text-align: left; }
-.land-btn span { font-weight: 400; font-size: 13px; color: var(--muted); }
-.land-btn.primary { background: var(--ink); color: #fff; border-color: var(--ink); }
-.land-btn.primary span { color: #D6D5D0; }
-.land-btn:hover { border-color: var(--ink); }
-.land-meta { margin-top: 24px; font-size: 13px; color: var(--muted); }
-.land-meta a { color: var(--agent); }
-.land-flow { max-width: 1200px; margin: 0 auto; padding: 24px 32px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
-.land-col { display: flex; flex-direction: column; gap: 12px; }
-.land-actor { border-color: var(--border-strong); }
-.land-bench { border-color: var(--agent); }
-.land-agents { display: flex; flex-direction: column; gap: 10px; }
-.land-agents .card { flex-direction: row; align-items: center; }
-.av { width: 32px; height: 32px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 14px; flex: none; }
-.av-p { background: var(--agent); } .av-b { background: #1E6B3A; } .av-a { background: #8A4B00; }
-.land-steps { max-width: 880px; margin: 0 auto; padding: 24px 32px 40px; }
-.land-steps ol { margin: 12px 0 0; padding-left: 20px; display: flex; flex-direction: column; gap: 10px; font-size: 15px; line-height: 22px; color: var(--ink-2); }
-.land-foot { max-width: 880px; margin: 0 auto; padding: 24px 32px 48px; font-size: 13px; color: var(--muted); border-top: 1px solid var(--border); }
-@media (max-width: 900px) { .land-flow { grid-template-columns: 1fr; } .land-hero h1 { font-size: 30px; line-height: 38px; } }
+/* Landing styles live in src/landing.css (imported by pages/Landing.tsx), scoped under .lp. */
