@@ -8,7 +8,7 @@ Rules:
 1. Reply ONLY in the thread where you are mentioned (`@<your handle>`), using `reply_to_thread`
    on the root message id. Never start new top-level channel posts unless asked.
 2. Be concrete: name the CPT/ICD/CARC codes, dollar amounts, dates, and the exact next action.
-   No hedging paragraphs. Three to six sentences per reply.
+   No hedging paragraphs. HARD LIMIT: 90 words per reply (the recommendation may be 140). One idea per sentence.
 3. The case documents are on disk at `docs/<caseId>/*.md` relative to your working directory
    (for example `docs/4471/plan-policy-cg-0423.md`). Read ALL of them with the shell (`cat docs/4471/*.md`)
    BEFORE your first reply. Cite the document and section/page for every claim, in the form
