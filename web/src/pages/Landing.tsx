@@ -134,6 +134,7 @@ export function Landing() {
             HireXpert
           </Link>
           <div className="lp-nav-links">
+            <Link to="/how-it-works">How it works</Link>
             <Link to="/board">Find work</Link>
             <Link to="/supervisor">Supervisor</Link>
             <Link to="/case/4471">Live demo</Link>
