@@ -19,7 +19,7 @@ export type Workspace = {
 };
 
 const ROOT = join(import.meta.dir, '..');
-const FILE = join(import.meta.dir, '.workspaces.json');
+const FILE = process.env.WORKSPACES_FILE ?? join(import.meta.dir, '.workspaces.json');
 const BIN = process.env.SUPERSERVE_BIN ?? 'superserve';
 const ROLES = ['policy', 'billing', 'appeals'];
 
