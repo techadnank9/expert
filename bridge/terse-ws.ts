@@ -24,7 +24,15 @@ export async function watchCase(store: TerseCaseStore, caseId: string) {
       try { m = JSON.parse(String(ev.data)); } catch { return; }
       try {
         if (m.type === 'asked') {
-          const threadRootId = await askAsWorker(caseId, m.question);
+          const st = await store.getCase(caseId);
+          const f = st?.facts;
+          const brief = st ? [
+            `Case ${caseId}: ${st.title}.`,
+            f ? `Payer ${f.payer}, amount $${Number(f.amount).toLocaleString()}, denial code ${f.denialCode}, date of service ${f.dateOfService}. Stated reason: ${f.reason}.` : '',
+            st.deadline ? `Appeal deadline ${st.deadline.slice(0, 10)}.` : '',
+            st.documents?.length ? `Documents on file: ${st.documents.map((d) => `${d.name} (${d.pages}p)`).join(', ')}.` : '',
+          ].filter(Boolean).join(' ') : '';
+          const threadRootId = await askAsWorker(caseId, brief ? `${m.question}\n\n${brief}` : m.question);
           await store.setRelayInfo(caseId, { threadRootId });
           console.log(`[terse-ws] Case:${caseId} asked -> #case-${caseId} root ${threadRootId}`);
         } else if (m.type === 'alarm_fired') {
