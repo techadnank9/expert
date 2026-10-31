@@ -34,3 +34,11 @@ Updated: 13:08
 - Works: web/ all 8 routes over fixtures, build clean, Worker screen verified against mockups/Worker.html in headless Chrome.
 - Decision (user OK): deploy bridge + web to Freestyle at 15:10 only if integration is solid. Actors already hosted on Terse. Demo default remains localhost.
 - Waiting: bridge/ + agents/ (Relay) from subagent.
+
+## 13:55 update
+- Works: full loop verified live. Worker ask (HTTP) -> actor `asked` broadcast -> bridge posts as maya in #case-4471 with case brief -> three Codex agents (Relay MCP) reply in thread -> appeals posts **Recommendation** -> bridge lifts it into actor -> status `recommended`. Hosted Terse actor is the store (TERSE_READY=1 + TERSE_ACTOR_URL).
+- Decision: Relay `registerAction` on the agent client registers nothing server-side today (GET /actions returns []), agents report tools unavailable. Fallback per HANDOFF rule 6: appeals posts a structured **Recommendation** thread reply; bridge/listeners.ts parses it into postRecommendation + recommendationId. Actions stay registered for when the platform catches up.
+- Decision: agents read case documents from agents/docs/<caseId>/*.md (text excerpts). Without them they only asked for documents.
+- Decision: single laptop runs all three agents (user: this laptop owns everything). Each has its own RELAY_ATTEST_SESSION_ID so session_ref provenance still differs per agent. Cut-list item 4 partially taken.
+- Decision: Freestyle over Superserve for the optional 15:10 deploy (key present, event sponsor).
+- Stubbed: votes (:+1:) -> agrees path coded, not yet seen live. Approve -> ✅ reaction coded, not yet seen live.
