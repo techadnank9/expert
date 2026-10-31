@@ -95,3 +95,9 @@ Updated: 13:08
 - Inner pages re-skinned to the landing palette (tokens in index.css, floating pill header).
 - Start bench auto-provisions the business VM when the poster never onboarded. Provision accepts {force:true} to upgrade an existing VM.
 - Not done: business console to chat with agents directly (agents still work per case thread); Relay share link expired (needs a fresh link); GitHub push still needs the user's two commands.
+
+## 15:50 (second session) — final
+- Landing: workspace-first copy ("Your business, with a <digital workspace>"), 5-category hover mega-menu, three easy steps (onboard, create your digital workspace, hire workers), business-language "under the hood". /how-it-works page with architecture SVG, job timeline, sponsor cards. README rewritten with badges, Mermaid architecture + sequence diagrams, fresh screenshots, API table, FAQ; MIT LICENSE added. FLOWS.html + DEMO.md refreshed by Codex.
+- Workstations: code-server per business VM under a supervisor loop; GET /api/workspace/:slug self-heals it; three VMs live (biz-taxing, biz-cedar-street-clinic, biz-accounting). Password shown on the case card only after access is granted.
+- Provisioning now also runs `agent-relay init --key` inside each VM so the VM's Codex is connected to the Relay workspace.
+- Pending: GitHub push (user runs: gh auth switch -u techadnank9 && git push -u origin main); Relay share upload (both links returned 404/expired on POST); Claude MCP agent-relay-sessions needs /mcp sign-in in an interactive claude session.
