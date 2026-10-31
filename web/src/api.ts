@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import type { Board, Case, Job } from './types'
+import type { Board, Case, Job, Workspace, WorkspaceDetail } from './types'
 import { fixtureCase, makeBoard } from './fixtures'
 
 // In `vite dev`, /api is proxied to the bridge on :8788 (no CORS needed). Elsewhere hit it directly.
@@ -71,6 +71,7 @@ function normalizeCase(raw: unknown, id: string): Case {
     recommendation: c.recommendation ?? null,
     decisionLog: c.decisionLog ?? [],
     pay: c.pay ?? { amount: 0, released: false },
+    workspace: c.workspace ?? null,
   }
 }
 
@@ -402,6 +403,20 @@ export function applyCase(c: Case, method: string, args: unknown[]): Case {
       for (const a of s.alarms) if (!a.fired && Date.parse(a.at) <= now) fire(s, a.id, log, say)
       break
     }
+    case 'startBench': {
+      const owner = s.poster.name
+      const ws = s.workspace ?? workspaceRecord(slugFor(owner), owner, true)
+      s.workspace = { ...ws, status: 'ready', agents: ws.agents.map((a) => ({ ...a, running: true, sessionRef: a.sessionRef ?? rid(`sess-${a.role}`) })) }
+      log('case-actor', `Bench started in workspace ${s.workspace.slug}`)
+      break
+    }
+    case 'grantWorkspace': {
+      const name = String(args[0] ?? workerName(s))
+      if (!s.workspace) throw new Error('No workspace on this case yet')
+      if (!s.workspace.grantedTo.includes(name)) s.workspace.grantedTo = [...s.workspace.grantedTo, name]
+      log(s.poster.name, `Workspace access granted to ${name}`)
+      break
+    }
     case 'escalate': {
       s.status = 'escalated'
       log('case-actor', 'Escalated to supervisor', String(args[0] ?? ''))
@@ -476,5 +491,118 @@ function caseFromJob(job: Job): Case {
     recommendation: null,
     decisionLog: [{ at: nowIso(), actor: poster.name, event: 'Job posted' }],
     pay: { amount: job.pay, released: false },
+    workspace: job.workspace ? workspaceRecord(job.workspace, poster.name, false) : null,
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Business workspace VM (Superserve sandbox). Bridge first, local simulation when it is down.
+// ---------------------------------------------------------------------------
+
+export const WORKSPACE_KEY = 'hirexpert.workspace'
+export const BENCH_ROLES = ['policy', 'billing', 'appeals'] as const
+const SIM_READY_MS = 6000
+
+export function slugFor(owner: string) {
+  return `biz-${owner.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'business'}`
+}
+
+export function savedWorkspace(): string | null {
+  try {
+    return localStorage.getItem(WORKSPACE_KEY)
+  } catch {
+    return null
+  }
+}
+
+export function saveWorkspace(slug: string) {
+  try {
+    localStorage.setItem(WORKSPACE_KEY, slug)
+  } catch {
+    // storage blocked; the slug still travels in the URL
+  }
+}
+
+function workspaceRecord(slug: string, owner: string, running: boolean): Workspace {
+  return {
+    provider: 'superserve',
+    slug,
+    vmId: `vm-${slug.replace(/^biz-/, '').slice(0, 12)}-${Math.abs(hash(slug)).toString(36).slice(0, 4)}`,
+    status: 'ready',
+    agents: BENCH_ROLES.map((role) => ({ role, running, ...(running ? { sessionRef: `sess-${role}-${slug.slice(-4)}` } : {}) })),
+    owner,
+    grantedTo: [],
+    createdAt: nowIso(),
+  }
+}
+
+function hash(s: string) {
+  let h = 0
+  for (const ch of s) h = (h * 31 + ch.charCodeAt(0)) | 0
+  return h
+}
+
+// Offline-provisioned workspaces: slug -> record + when the fake VM becomes ready.
+const simWorkspaces = new Map<string, { ws: Workspace; readyAt: number }>()
+
+function ownerFromSlug(slug: string) {
+  return slug.replace(/^biz-/, '').split('-').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
+}
+
+function simDetail(slug: string): WorkspaceDetail {
+  const sim = simWorkspaces.get(slug)
+  const ready = !sim || Date.now() >= sim.readyAt
+  const ws = sim?.ws ?? workspaceRecord(slug, ownerFromSlug(slug), true)
+  return {
+    slug,
+    vmId: ws.vmId,
+    status: ready ? 'ready' : 'provisioning',
+    owner: ws.owner,
+    agents: ws.agents.map((a) => ({ ...a, running: ready, sessionRef: ready ? a.sessionRef ?? `sess-${a.role}-${slug.slice(-4)}` : undefined })),
+    files: ready
+      ? [
+          { path: 'docs/Denial letter.pdf', size: 212_000 },
+          { path: 'docs/Clinical notes, PT visits.pdf', size: 1_400_000 },
+          { path: 'docs/EOB.pdf', size: 96_000 },
+          { path: 'sessions/', size: undefined },
+        ]
+      : [],
+    sessions: ready ? ws.agents.map((a) => ({ id: a.sessionRef ?? `sess-${a.role}-${slug.slice(-4)}`, role: a.role, updatedAt: nowIso() })) : [],
+    shell: `superserve shell ${slug}`,
+  }
+}
+
+export type WorkspaceView = WorkspaceDetail & { offline?: boolean }
+
+export async function getWorkspace(slug: string): Promise<WorkspaceView> {
+  try {
+    const res = await fetch(`${BRIDGE_URL}/api/workspace/${encodeURIComponent(slug)}`)
+    if (!res.ok) throw new Error(`GET workspace ${res.status}`)
+    const d = (await res.json()) as Partial<WorkspaceDetail>
+    return {
+      slug: d.slug ?? slug,
+      vmId: d.vmId ?? '',
+      status: d.status ?? 'provisioning',
+      owner: d.owner ?? '',
+      agents: d.agents ?? [],
+      files: d.files ?? [],
+      sessions: d.sessions ?? [],
+      shell: d.shell ?? `superserve shell ${slug}`,
+    }
+  } catch {
+    return { ...simDetail(slug), offline: true }
+  }
+}
+
+export async function provisionWorkspace(owner: string): Promise<Workspace & { offline?: boolean }> {
+  try {
+    const ws = (await post(`${BRIDGE_URL}/api/workspace/provision`, [{ owner }])) as Workspace | null
+    if (!ws || !ws.slug) throw new Error('bad provision response')
+    return ws
+  } catch {
+    const slug = slugFor(owner)
+    const ws: Workspace = { ...workspaceRecord(slug, owner, false), status: 'provisioning' }
+    simWorkspaces.set(slug, { ws: { ...ws, agents: BENCH_ROLES.map((role) => ({ role, running: false, sessionRef: `sess-${role}-${slug.slice(-4)}` })) }, readyAt: Date.now() + SIM_READY_MS })
+    return { ...ws, offline: true }
   }
 }

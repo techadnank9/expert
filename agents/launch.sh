@@ -40,10 +40,10 @@ exec "$CODEX" exec \
   --skip-git-repo-check \
   -C "$HERE" \
   -c approval_policy='"never"' \
-  -c sandbox_mode='"workspace-write"' \
+  -c sandbox_mode="\"${CODEX_SANDBOX_MODE:-workspace-write}\"" \
   -c "mcp_servers.relay.command=\"bash\"" \
   -c "mcp_servers.relay.args=[\"$HERE/relay-mcp.sh\",\"$ROLE\",\"$RELAY_ATTEST_SESSION_ID\"]" \
-  -c 'mcp_servers.relay.startup_timeout_sec=120' \
+  -c 'mcp_servers.relay.startup_timeout_sec=240' \
   -c 'mcp_servers.relay.default_tools_approval_mode="approve"' \
   -c 'mcp_servers.relay.tool_timeout_sec=120' \
   "$PROMPT"

@@ -195,3 +195,11 @@ textarea.input { height: auto; padding: 10px 12px; resize: vertical; }
 
 /* ---------- Landing ---------- */
 /* Landing styles live in src/landing.css (imported by pages/Landing.tsx), scoped under .lp. */
+
+/* Workspace VM */
+.code { display: flex; align-items: center; gap: 8px; background: var(--ink); color: #fff; border-radius: 8px; padding: 8px 8px 8px 12px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; line-height: 16px; }
+.code > code { flex: 1 1 auto; min-width: 0; overflow-x: auto; white-space: nowrap; }
+.code .btn { border-color: #5F5E5A; background: transparent; color: #fff; }
+.run-dot { display: inline-block; width: 8px; height: 8px; border-radius: 999px; margin-right: 6px; background: var(--border-strong); vertical-align: 0; }
+.run-dot.on { background: var(--approve); box-shadow: 0 0 0 3px var(--approve-tint); }
+.mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; }

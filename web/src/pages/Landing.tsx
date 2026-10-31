@@ -70,7 +70,7 @@ export function Landing() {
         <nav className="lp-nav" aria-label="Main">
           <Link to="/" className="lp-brand">
             <span className="lp-logo">U</span>
-            Understudy
+            HireXpert
           </Link>
           <div className="lp-nav-links">
             <Link to="/board">Find work</Link>
@@ -272,7 +272,7 @@ export function Landing() {
         <footer className="lp-foot">
           <div className="lp-brand">
             <span className="lp-logo">U</span>
-            Understudy
+            HireXpert
           </div>
           <p>
             Built at Haunted Hacks, San Francisco, October 31 2026, on Terse Durable Actors and Agent Relay. Bench agents run on

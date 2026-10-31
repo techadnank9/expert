@@ -55,6 +55,7 @@ export function JobCard({ job, featured, onClaim }: Props) {
         <div className="row wrap center">
           <span className="strong" style={{ fontSize: 15 }}>{job.title}</span>
           <span className={`pill tight ${dom.pill}`}>{dom.label}</span>
+          {job.workspace && <span className="pill tight pill-grey mono" title="Work happens inside this business VM">workspace: {job.workspace}</span>}
         </div>
         <div className="muted">
           {taken

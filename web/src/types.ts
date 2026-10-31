@@ -81,6 +81,39 @@ export interface Case {
   recommendation: Recommendation | null
   decisionLog: DecisionLogEntry[]
   pay: { amount: number; released: boolean }
+  workspace: Workspace | null
+}
+
+export type WorkspaceStatus = 'provisioning' | 'ready' | 'paused' | 'error'
+
+export interface WorkspaceAgent {
+  role: string
+  running: boolean
+  sessionRef?: string
+}
+
+/** Business workspace VM (a Superserve sandbox). Bench agents run inside it. */
+export interface Workspace {
+  provider: 'superserve'
+  slug: string
+  vmId: string
+  status: WorkspaceStatus
+  agents: WorkspaceAgent[]
+  owner: string
+  grantedTo: string[]
+  createdAt: string
+}
+
+/** GET /api/workspace/:slug */
+export interface WorkspaceDetail {
+  slug: string
+  vmId: string
+  status: WorkspaceStatus
+  owner: string
+  agents: WorkspaceAgent[]
+  files: { path: string; size?: number }[]
+  sessions: { id: string; role?: string; updatedAt?: string }[]
+  shell: string
 }
 
 export interface Job {
@@ -97,6 +130,7 @@ export interface Job {
   summary?: string
   bench?: string[]
   similar?: number
+  workspace?: string
 }
 
 export interface Board {

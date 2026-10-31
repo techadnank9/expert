@@ -1,5 +1,6 @@
 // HTTP + WS bridge for the browser (CONTRACT.md "WebSocket to browser").
 import type { ServerWebSocket } from 'bun';
+import { getWorkspaceRecord, inspectWorkspace, listWorkspaces, provisionWorkspace, slugFor, startBench } from './workspace';
 import type { CaseState, CaseStore, TerseCaseStore } from './casestore';
 import { approveAsWorker, askAsWorker, openCaseChannel, postAsActor, rememberWebhook } from './relay';
 
@@ -73,6 +74,34 @@ export function startServer(store: CaseStore, port = Number(process.env.BRIDGE_P
           return new Response(f, { headers: { 'cache-control': rel.startsWith('/assets/') ? 'public, max-age=31536000, immutable' : 'no-cache' } });
         }
 
+        // ---- business workspaces (Superserve VM per business) ----
+        if (p[1] === 'workspace') {
+          if (req.method === 'GET' && !p[2]) return json(listWorkspaces());
+          if (req.method === 'POST' && p[2] === 'provision') {
+            const args = await readArgs(req);
+            const owner = String(args[0]?.owner ?? args[0] ?? '').trim();
+            if (!owner) return json({ error: 'owner required' }, 400);
+            const ws = await provisionWorkspace(owner, store, async (ready) => {
+              // attach the ready workspace to every case this business owns
+              for (const id of await caseIdsFor(store, owner)) await store.callCase(id, 'setWorkspace', [ready]).catch(() => {});
+            });
+            return json(ws);
+          }
+          if (req.method === 'GET' && p[2]) {
+            const ws = await inspectWorkspace(p[2]);
+            return ws ? json(ws) : json({ error: `no workspace ${p[2]}` }, 404);
+          }
+        }
+        if (p[1] === 'case' && p[2] && p[3] === 'startBench' && req.method === 'POST') {
+          const id = p[2];
+          const s0 = await store.getCase(id);
+          if (!s0) return json({ error: `no case ${id}` }, 404);
+          let ws = s0.workspace ?? getWorkspaceRecord(slugFor(s0.poster?.name ?? ''));
+          if (!ws) return json({ error: 'this business has no workspace yet; onboard first' }, 400);
+          ws = getWorkspaceRecord(ws.slug) ?? ws;
+          const next = await startBench(id, ws);
+          return json(await store.callCase(id, 'setWorkspace', [next]));
+        }
         if (p[1] === 'board') {
           if (req.method === 'GET' && !p[2]) return json(await store.getBoard());
           if (req.method === 'GET' && p[2] === 'ws-url') return json({ websocketUrl: await wsUrl(store, 'Board', 'main', url) });
@@ -93,12 +122,15 @@ export function startServer(store: CaseStore, port = Number(process.env.BRIDGE_P
                   }]);
                 }
                 if (s) await afterCaseCall(store, id, 'create', [], null, s).catch((e) => console.warn('[bridge] open channel failed:', e.message));
+                const ws = getWorkspaceRecord(String(job?.workspace ?? slugFor(job?.poster ?? '')));
+                if (ws && s && !s.workspace) await store.callCase(id, 'setWorkspace', [ws]).catch(() => {});
               }
               return json(await store.getBoard());
             }
             if (p[2] === 'claim') {
               const job: any = board && !('jobs' in (board as any)) ? board : null;
               if (job?.id) await store.callCase(String(job.id), 'claim', [args[1]]).catch((e) => console.warn('[bridge] case claim:', e.message));
+              if (job?.id && args[1]?.name) await store.callCase(String(job.id), 'grantWorkspace', [args[1].name]).catch(() => {});
               return json(await store.getBoard());
             }
             return json(board);
@@ -172,3 +204,9 @@ async function wsUrl(store: CaseStore, kind: 'Case' | 'Board', id: string, url: 
 }
 
 export { rememberWebhook };
+
+
+async function caseIdsFor(store: CaseStore, owner: string): Promise<string[]> {
+  const b = await store.getBoard();
+  return b.jobs.filter((j) => j.poster === owner).map((j) => j.id);
+}

@@ -1,2 +1,3 @@
 .webhooks.json
 node_modules/
+.workspaces.json

@@ -1,4 +1,4 @@
-# Understudy
+# HireXpert (codename Understudy)
 
 **The $15 an hour expert.** A worker with judgment but no credential takes a job that used to need one, asks a bench of specialist agents, and approves what they agree on. Every decision is traceable to the agent session and the document that backed it.
 

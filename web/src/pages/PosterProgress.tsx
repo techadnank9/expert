@@ -3,6 +3,7 @@ import { callCase, useCase } from '../api'
 import { Header } from '../components/Header'
 import { PosterSteps } from '../components/PosterSteps'
 import { Thread } from '../components/Thread'
+import { WorkspaceCard } from '../components/WorkspaceCard'
 import { fmtShort, fmtWhen, initials, shortName, useNow } from '../format'
 import type { CaseStatus } from '../types'
 import { NotFound } from './NotFound'
@@ -101,6 +102,7 @@ export function PosterProgress() {
                 <div className="muted">Not claimed yet. It is on the worker board now.</div>
               )}
             </div>
+            <WorkspaceCard id={id} c={c} readOnly />
             <div className="card g10">
               <div className="label">DEADLINES</div>
               <div className="kv"><span style={{ color: '#1C1C1E' }}>Appeal due</span><span>{fmtShort(c.deadline)}</span></div>

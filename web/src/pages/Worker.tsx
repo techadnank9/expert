@@ -5,6 +5,7 @@ import { Header, LiveDot } from '../components/Header'
 import { Thread } from '../components/Thread'
 import { RecommendationCard } from '../components/RecommendationCard'
 import { DeadlinesCard, DurableStatePanel } from '../components/DurableStatePanel'
+import { WorkspaceCard } from '../components/WorkspaceCard'
 import { AGENTS } from '../people'
 import { ago, fmtDate, initials, money, useNow } from '../format'
 import { statusOf } from '../people'
@@ -162,6 +163,7 @@ export function Worker() {
           live={live}
           onFire={(alarmId) => callCase(id, 'fireAlarm', alarmId)}
           onFireDue={() => callCase(id, 'fireDueAlarms')}
+          top={<WorkspaceCard id={id} c={c} />}
         />
       </div>
     </div>

@@ -130,6 +130,7 @@ export function makeCase4471(): Case {
       { at: t('12:42'), actor: 'bench', event: 'Bench recommendation posted' },
     ],
     pay: { amount: 45, released: false },
+    workspace: null,
   }
 }
 
@@ -192,6 +193,7 @@ export function makeCase4398(): Case {
       { at: '2026-10-20T15:30:00', actor: 'Jon T.', event: 'Appeal filed Oct 20' },
     ],
     pay: { amount: 30, released: false },
+    workspace: null,
   }
 }
 

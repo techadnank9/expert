@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 import type { Alarm, Case } from '../types'
 import type { Live } from '../api'
 import { ago, countdown, daysUntil, fmtDate, fmtShort, fmtTime12, fmtWhen, useNow } from '../format'
@@ -53,10 +53,12 @@ interface PanelProps {
   live: Live<Case>
   onFire: (alarmId: string) => Promise<unknown>
   onFireDue: () => Promise<unknown>
+  /** Optional card rendered at the top of the column (e.g. the workspace VM). */
+  top?: ReactNode
 }
 
 /** Right column of the Worker view: decision log, durable state, dev alarm controls. */
-export function DurableStatePanel({ id, c, live, onFire, onFireDue }: PanelProps) {
+export function DurableStatePanel({ id, c, live, onFire, onFireDue, top }: PanelProps) {
   const now = useNow()
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState<string | null>(null)
@@ -78,6 +80,7 @@ export function DurableStatePanel({ id, c, live, onFire, onFireDue }: PanelProps
 
   return (
     <div className="col col-right">
+      {top}
       <div className="card">
         <div className="label">DECISION LOG</div>
         {log.length === 0 && <div className="muted">Nothing yet.</div>}

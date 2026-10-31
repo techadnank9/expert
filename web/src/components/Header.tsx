@@ -15,7 +15,7 @@ export function Header({ subtitle, center, meta, me, right }: Props) {
       <Link to="/" className="brand">
         <div className="logo">U</div>
         <div className="brand-text">
-          <div className="brand-name">Understudy</div>
+          <div className="brand-name">HireXpert</div>
           <div className="sm muted">{subtitle}</div>
         </div>
       </Link>

@@ -8,6 +8,7 @@ import { PosterProgress } from './pages/PosterProgress'
 import { PosterReview } from './pages/PosterReview'
 import { NotFound } from './pages/NotFound'
 import { Landing } from './pages/Landing'
+import { Onboard } from './pages/Onboard'
 
 export default function App() {
   return (
@@ -17,6 +18,7 @@ export default function App() {
       <Route path="/case/:id/brief" element={<Brief />} />
       <Route path="/supervisor" element={<Supervisor />} />
       <Route path="/board" element={<BoardPage />} />
+      <Route path="/onboard" element={<Onboard />} />
       <Route path="/post" element={<PostJob />} />
       <Route path="/poster/:id" element={<PosterProgress />} />
       <Route path="/poster/:id/review" element={<PosterReview />} />

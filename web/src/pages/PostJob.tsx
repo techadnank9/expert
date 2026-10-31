@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { callBoard } from '../api'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { callBoard, saveWorkspace, savedWorkspace } from '../api'
 import { Header } from '../components/Header'
 import { PosterSteps } from '../components/PosterSteps'
 import type { Job } from '../types'
@@ -22,6 +22,12 @@ function parseDeadline(s: string) {
 
 export function PostJob() {
   const nav = useNavigate()
+  const [params] = useSearchParams()
+  const [workspace] = useState<string | null>(() => {
+    const fromUrl = params.get('workspace')
+    if (fromUrl) saveWorkspace(fromUrl)
+    return fromUrl || savedWorkspace()
+  })
   const [domain, setDomain] = useState<string>('medical-billing')
   const [outcome, setOutcome] = useState('Appeal a denied lumbar MRI claim, CPT 72148, denial code CO-50')
   const [details, setDetails] = useState('Patient had 8 weeks of PT before the MRI was ordered. Payer is Harborline Health. We have the denial letter, clinical notes and EOB.')
@@ -44,6 +50,7 @@ export function PostJob() {
       estMinutes: 40,
       status: 'open',
       summary: details.trim(),
+      ...(workspace ? { workspace } : {}),
     }
     try {
       await callBoard('post', job)
@@ -70,6 +77,11 @@ export function PostJob() {
           <div className="fact" style={{ gap: 4 }}>
             <div className="h1">Post a job</div>
             <div className="muted">Describe the outcome you need. A worker backed by a specialist bench will take it from here.</div>
+            {workspace ? (
+              <div className="sm muted">Runs in workspace <span className="mono" style={{ color: 'var(--ink)' }}>{workspace}</span>. <Link to="/onboard">Change</Link></div>
+            ) : (
+              <div className="sm muted">No business workspace yet. <Link to="/onboard">Onboard first</Link></div>
+            )}
           </div>
           <div className="field">
             <span className="field-label">Domain</span>
