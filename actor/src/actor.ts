@@ -247,13 +247,17 @@ export class Case extends Actor<Meta, Incoming, Outgoing> {
     }
 
     /** Dev only: clear the consultation so the demo can run again. Keeps identity, facts, docs, alarms, relay channel. */
-    async devReset(): Promise<CaseState> {
+    async devReset(opts?: { escalateInSeconds?: number; nudgeInSeconds?: number }): Promise<CaseState> {
         this.thread = []
         this.recommendation = null
         this.pendingQuestion = null
         this.deliverable = null
         this.relay = { channel: this.relay.channel, webhookUrl: this.relay.webhookUrl, webhookToken: this.relay.webhookToken }
-        this.alarms = this.alarms.map(a => ({ ...a, fired: false }))
+        // drop alarms that already fired; keep future ones; optionally arm fresh demo alarms
+        this.alarms = this.alarms.filter(a => !a.fired && Date.parse(a.at) > Date.now())
+        if (opts?.escalateInSeconds) this.alarms = [...this.alarms, { id: rid(), at: new Date(Date.now() + opts.escalateInSeconds * 1000).toISOString(), kind: "escalate", fired: false }]
+        if (opts?.nudgeInSeconds) this.alarms = [...this.alarms, { id: rid(), at: new Date(Date.now() + opts.nudgeInSeconds * 1000).toISOString(), kind: "nudge", fired: false }]
+        this.alarms = [...this.alarms].sort((a, b) => a.at.localeCompare(b.at))
         this.status = this.worker ? "claimed" : "open"
         this.decisionLog = this.decisionLog.filter(e => e.event === "case_opened" || e.event === "claimed" || e.event === "alarm_scheduled")
         await this.log("system", "dev_reset")
