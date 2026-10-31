@@ -125,7 +125,7 @@ svg text{font-family:Inter,sans-serif}
 <li><b>Terse calls <code>onAlarm()</code></b> when the time passes, even if no client is connected.</li>
 <li><b>The actor escalates:</b> it marks the alarm fired, appends to the decision log and broadcasts <code>alarm_fired</code>.</li>
 <li><b>The bridge posts via webhook as <code>case-actor</code></b> into <code>#case-4398</code>, so the humans and the agents see the same history.</li>
-<li><b>The Supervisor screen reacts:</b> the case row turns amber, the "Alarms fired today" tile fills, and the alarm card changes from "No alarms fired, watching" to the escalation.</li>
+<li><b>The Supervisor screen reacts:</b> the case row turns amber, the "Alarms fired today" tile fills, and the alarm card changes from "Case 4398 escalated when its Terse alarm fired at 13:55; the row turned amber and the alarm card appeared.</li>
 </ol>
 <p>Case 4398 is the demo case, seeded with <code>--alarm-seconds 60</code>. The screenshot below was taken with its alarm one second from firing, so the card still says "watching" with a countdown.</p>
 <figure><img src="docs/screens/supervisor.png" alt="Supervisor view"><figcaption>/supervisor. Table of cases sorted by next alarm, live event feed across all cases, and the alarm card (right).</figcaption></figure>
