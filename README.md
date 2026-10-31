@@ -39,7 +39,7 @@ mockups/   the HTML designs the screens were ported from
 
 ## Live
 
-Deployed bridge + web (Superserve): https://8788-37c50edb-9314-4d3c-af56-e0df8916b0af.sandbox.superserve.ai
+Deployed bridge + web (Superserve): https://8788-5975fada-698b-4c43-8ec3-1e554ae9d97c.sandbox.superserve.ai
 Poster: `/post` · Worker: `/board`, `/case/4471` · Supervisor: `/supervisor`. Actors run on Terse hosted; bench agents run on laptops via Agent Relay.
 
 ## Run it

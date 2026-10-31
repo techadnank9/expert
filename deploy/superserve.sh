@@ -5,6 +5,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 set -a; . ./.env; set +a
+export SUPERSERVE_API_KEY="${SUPERSERVE_DEPLOY_KEY:-${SUPERSERVE_API_KEY_2:-$SUPERSERVE_API_KEY}}"
 export PATH="$HOME/.bun/bin:$PATH"
 SB="${SANDBOX:-understudy}"
 STAGE="$(mktemp -d)"

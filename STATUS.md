@@ -53,10 +53,10 @@ Updated: 13:08
 ## 14:05 update — deployed
 - Freestyle refused (account flagged FORBIDDEN signup_risk). Per user rule, deployed to Superserve instead.
 - Superserve sandbox "understudy" (2 vCPU, 4 GiB, 7 d timeout) runs the bridge + built web on :8788, published publicly:
-  https://8788-37c50edb-9314-4d3c-af56-e0df8916b0af.sandbox.superserve.ai
-  Poster side: https://8788-37c50edb-9314-4d3c-af56-e0df8916b0af.sandbox.superserve.ai/post , https://8788-37c50edb-9314-4d3c-af56-e0df8916b0af.sandbox.superserve.ai/poster/4471 , https://8788-37c50edb-9314-4d3c-af56-e0df8916b0af.sandbox.superserve.ai/poster/4471/review
-  Worker side: https://8788-37c50edb-9314-4d3c-af56-e0df8916b0af.sandbox.superserve.ai/board , https://8788-37c50edb-9314-4d3c-af56-e0df8916b0af.sandbox.superserve.ai/case/4471/brief , https://8788-37c50edb-9314-4d3c-af56-e0df8916b0af.sandbox.superserve.ai/case/4471
-  Supervisor:  https://8788-37c50edb-9314-4d3c-af56-e0df8916b0af.sandbox.superserve.ai/supervisor
+  https://8788-5975fada-698b-4c43-8ec3-1e554ae9d97c.sandbox.superserve.ai
+  Poster side: https://8788-5975fada-698b-4c43-8ec3-1e554ae9d97c.sandbox.superserve.ai/post , https://8788-5975fada-698b-4c43-8ec3-1e554ae9d97c.sandbox.superserve.ai/poster/4471 , https://8788-5975fada-698b-4c43-8ec3-1e554ae9d97c.sandbox.superserve.ai/poster/4471/review
+  Worker side: https://8788-5975fada-698b-4c43-8ec3-1e554ae9d97c.sandbox.superserve.ai/board , https://8788-5975fada-698b-4c43-8ec3-1e554ae9d97c.sandbox.superserve.ai/case/4471/brief , https://8788-5975fada-698b-4c43-8ec3-1e554ae9d97c.sandbox.superserve.ai/case/4471
+  Supervisor:  https://8788-5975fada-698b-4c43-8ec3-1e554ae9d97c.sandbox.superserve.ai/supervisor
 - Only ONE bridge may run at a time (two would double-post into Relay). Local bridge stopped; local Vite proxies to the cloud bridge via BRIDGE_URL.
 - Bench agents still run on this laptop (agents/launch.sh), talking to Relay directly; the cloud bridge mirrors them.
 - Redeploy: rebuild tarball (bridge, actor/client/generated, web/dist, trimmed .env), `superserve cp`, `superserve exec understudy -- bash -c 'pkill bun; cd /home/user/app/bridge && set -a && . ../.env && set +a && nohup /opt/bun/bin/bun index.ts > /home/user/bridge.log 2>&1 &'`.
@@ -66,3 +66,7 @@ Updated: 13:08
 - Works (cloud): poster flow live. Board.post -> bridge creates Case actor + #case-<id> channel + webhook; Board.claim -> Case.claim; second claim rejected ("already claimed"). Tested with job 4490.
 - Deploy script: deploy/superserve.sh (rebuild web, tarball, cp, restart bridge).
 - Rehearsal 1 started 14:12 on the deployed stack.
+
+## 14:22 update
+- Moved deployment to the credited Superserve account (SUPERSERVE_API_KEY_2). New sandbox 5975fada; old sandbox 37c50edb bridge stopped (paused). deploy/superserve.sh now uses SUPERSERVE_API_KEY_2 by default.
+- Rehearsal 1 on the deployed stack: ask -> 3 agent replies with citations -> Recommendation lifted -> 3 of 3 agree -> Approve -> drafted. PASS.
