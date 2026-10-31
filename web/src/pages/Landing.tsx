@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { CSSProperties, ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import '../landing.css'
@@ -77,7 +77,7 @@ export function Landing() {
             <Link to="/supervisor">Supervisor</Link>
             <Link to="/case/4471">Live demo</Link>
           </div>
-          <Link to="/post" className="lp-pill lp-pill-sm">Post a job</Link>
+          <Link to="/onboard" className="lp-pill lp-pill-sm">Post a job</Link>
         </nav>
 
         <div className="lp-hero-inner">
@@ -85,17 +85,15 @@ export function Landing() {
             <span className="lp-dot" /> The $15 an hour expert, live on Terse + Agent Relay
           </div>
           <h1 className="lp-title lp-intro" style={d(300)}>
-            Expert work.
-            <br />
-            <span className="lp-accent">Without</span> the expert.
+            Any worker can now <Rotating words={['appeal', 'dispute', 'reconcile', 'win']} />
           </h1>
           <p className="lp-sub lp-intro" style={d(480)}>
             Post the job. A worker with good judgment claims it. Three specialist agents read the documents, argue it out,
             and vote on one recommendation. The worker decides, and every step is on the record.
           </p>
           <div className="lp-ctas lp-intro" style={d(660)}>
-            <Link to="/post" className="lp-pill">
-              Post a job <span className="lp-arrow">→</span>
+            <Link to="/onboard" className="lp-pill">
+              Onboard your business <span className="lp-arrow">→</span>
             </Link>
             <Link to="/board" className="lp-pill lp-pill-ghost">
               Find work <span className="lp-arrow">→</span>
@@ -109,64 +107,6 @@ export function Landing() {
         </div>
 
         {/* Product mock */}
-        <div className="lp-stage lp-intro-visual" style={d(900)}>
-          <div className="lp-mock">
-            <div className="lp-mock-bar">
-              <span /><span /><span />
-              <div className="lp-mock-url">#case-4471 · Agent Relay</div>
-            </div>
-            <div className="lp-mock-body">
-              <aside className="lp-mock-side">
-                <div className="lp-side-h">Claim 4471</div>
-                <div className="lp-side-row">Denied lumbar MRI</div>
-                <div className="lp-side-tag amber">Payer reply due in 10 days</div>
-                <div className="lp-side-h mt">Decision log</div>
-                <div className="lp-side-row sm">Worker asked the bench</div>
-                <div className="lp-side-row sm">Bench converged</div>
-                <div className="lp-side-row sm on">Awaiting approval</div>
-              </aside>
-              <div className="lp-thread">
-                <div className="lp-msg">
-                  <span className="lp-av av-w">W</span>
-                  <div>
-                    <div className="lp-msg-h">Worker</div>
-                    <div className="lp-msg-b">Why was this denied, and is it worth appealing?</div>
-                  </div>
-                </div>
-                <div className="lp-msg">
-                  <span className="lp-av av-p">P</span>
-                  <div>
-                    <div className="lp-msg-h">Policy agent <em>session_ref</em></div>
-                    <div className="lp-msg-b">Payer policy requires six weeks of conservative care. The chart documents eight.</div>
-                  </div>
-                </div>
-                <div className="lp-msg">
-                  <span className="lp-av av-b">B</span>
-                  <div>
-                    <div className="lp-msg-h">Billing codes agent <em>session_ref</em></div>
-                    <div className="lp-msg-b">Code and modifier check out against the LCD.</div>
-                  </div>
-                </div>
-                <div className="lp-msg rec">
-                  <span className="lp-av av-a">A</span>
-                  <div>
-                    <div className="lp-msg-h">Appeals agent · recommendation</div>
-                    <div className="lp-msg-b">Appeal. Draft attached, cites the policy section and chart notes.</div>
-                    <div className="lp-votes"><span>👍 3</span><span className="lp-agree">3 of 3 agree</span></div>
-                  </div>
-                </div>
-                <div className="lp-actions">
-                  <span className="lp-btn-approve">Approve</span>
-                  <span className="lp-btn-override">Override</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          <span className="lp-tag t1"><i className="lp-cur" />Worker</span>
-          <span className="lp-tag t2"><i className="lp-cur" />Supervisor</span>
-          <span className="lp-tag t3"><i className="lp-cur" />Poster</span>
-          <span className="lp-tag t4"><i className="lp-cur" />Appeals agent</span>
-        </div>
       </section>
 
       {/* ---------- Marquee ---------- */}
@@ -286,5 +226,23 @@ export function Landing() {
         </footer>
       </section>
     </div>
+  )
+}
+
+
+function Rotating({ words }: { words: string[] }) {
+  const [i, setI] = useState(0)
+  const [out, setOut] = useState(false)
+  useEffect(() => {
+    const t = setInterval(() => {
+      setOut(true)
+      setTimeout(() => { setI((n) => (n + 1) % words.length); setOut(false) }, 420)
+    }, 2600)
+    return () => clearInterval(t)
+  }, [words.length])
+  return (
+    <span className="lp-rotate" aria-live="polite">
+      <span key={i} className={`lp-script lp-accent ${out ? 'is-out' : 'is-in'}`}>{words[i]}</span>
+    </span>
   )
 }
