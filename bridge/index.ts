@@ -24,7 +24,12 @@ startServer(store);
 
 const SEEDED = (process.env.BRIDGE_CASES ?? '4471,4398').split(',').filter(Boolean);
 if (store.kind === 'terse') {
-  for (const id of SEEDED) watchCase(store as TerseCaseStore, id).catch((e) => console.warn(`[bridge] watch ${id}:`, e.message));
+  const watched = new Set<string>();
+  const watch = (id: string) => { if (watched.has(id)) return; watched.add(id); watchCase(store as TerseCaseStore, id).catch((e) => console.warn(`[bridge] watch ${id}:`, e.message)); };
+  (globalThis as any).__watchCase = watch;
+  for (const id of SEEDED) watch(id);
+  // also watch every job on the board so posted cases get their Relay side effects
+  store.getBoard().then((b) => b.jobs.forEach((j) => watch(String(j.id)))).catch(() => {});
 } else if (process.env.BRIDGE_OPEN_SEEDED !== '0') {
   // Open channels for seeded cases so the demo starts with live webhooks.
   for (const id of SEEDED) {

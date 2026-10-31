@@ -139,6 +139,7 @@ export function startServer(store: CaseStore, port = Number(process.env.BRIDGE_P
                   }]);
                 }
                 if (s) await afterCaseCall(store, id, 'create', [], null, s).catch((e) => console.warn('[bridge] open channel failed:', e.message));
+                (globalThis as any).__watchCase?.(id);
                 if (job?.poster) await bizAddJob(slugFor(String(job.poster)), id);
                 const ws = getWorkspaceRecord(String(job?.workspace ?? slugFor(job?.poster ?? '')));
                 if (ws && s && !s.workspace) await store.callCase(id, 'setWorkspace', [ws]).catch(() => {});
@@ -163,6 +164,7 @@ export function startServer(store: CaseStore, port = Number(process.env.BRIDGE_P
           }
           if (req.method === 'GET' && p[3] === 'ws-url') return json({ websocketUrl: await wsUrl(store, 'Case', id, url) });
           if (req.method === 'POST' && p[3]) {
+            (globalThis as any).__watchCase?.(id);
             const args = await readArgs(req);
             const before = await store.getCase(id);
             let state = await store.callCase(id, p[3], args);
