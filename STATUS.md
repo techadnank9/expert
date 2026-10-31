@@ -76,3 +76,10 @@ Updated: 13:08
 - Landing page at / redesigned (fastwork-style hero, product mock, reveals; web/src/pages/Landing.tsx + web/src/landing.css). Deployed.
 - Pending: nicer URL via Vercel (needs user to approve `vercel login`); GitHub push (not done, awaiting user).
 - Known: 390px landing layout unverified visually (no horizontal overflow measured).
+
+## 15:15 update — HireXpert, business workspace VMs
+- Product renamed HireXpert. Web on Vercel: https://hirexpert-eta.vercel.app (API = Superserve bridge, CORS allows that origin). hirexpert.vercel.app / understudy.vercel.app are NOT ours.
+- New (real, verified live): business onboarding provisions a Superserve VM per business (bridge/workspace.ts drives the superserve CLI: sandbox create, copy agents/ + env, install Codex, API-key login, warm Relay MCP). `POST /api/workspace/provision`, `GET /api/workspace/:slug` (live agents, files, Codex session logs), `POST /api/case/:id/startBench` launches the 3 bench agents INSIDE the business VM for that case; `Board.claim` grants the worker access (`grantWorkspace`). Case actor has `workspace` persisted field.
+- Verified: biz-cedar-street-clinic VM provisioned by the bridge; startBench launched 3 Codex agents inside it; they picked up the 4471 question from Relay.
+- Web: /onboard page, WorkspaceCard on Worker + Poster screens, workspace badge on board jobs (offline simulation when bridge down).
+- Known: workspace registry is a JSON file on the bridge VM (/home/user/workspaces.json), not in the actor; Vercel direct deployment URLs are SSO-protected (use the alias).
