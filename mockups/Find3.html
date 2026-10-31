@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Worker step 3, submit and get paid</title>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#2F4BD6}a:hover{color:#1F35A6}
+</style>
+</helmet>
+<div style="min-height: 820px; background: #F6F5F1; font-family: Inter, system-ui, sans-serif; color: #1C1C1E; font-size: 14px; line-height: 20px; display: flex; flex-direction: column">
+
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px; padding: 14px 32px; background: #FFFFFF; border-bottom: 1px solid #E2DFD6">
+  <div style="display: flex; align-items: center; gap: 12px">
+    <div style="width: 32px; height: 32px; border-radius: 8px; background: #1C1C1E; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px">U</div>
+    <div style="display: flex; flex-direction: column">
+      <div style="font-weight: 600; font-size: 15px; line-height: 18px">Understudy</div>
+      <div style="font-size: 12px; line-height: 16px; color: #5F5E5A">Job 4471, ready to submit</div>
+    </div>
+  </div>
+  <div style="flex: 1 1 200px"></div>
+  <div style="display: flex; align-items: center; gap: 8px; font-size: 12px; line-height: 16px">
+    <span style="padding: 3px 10px; border-radius: 999px; background: #D9E4D3; color: #1E4D2B; font-weight: 600">Claimed</span>
+    <span style="padding: 3px 10px; border-radius: 999px; background: #D9E4D3; color: #1E4D2B; font-weight: 600">Brief</span>
+    <span style="padding: 3px 10px; border-radius: 999px; background: #D9E4D3; color: #1E4D2B; font-weight: 600">Work</span>
+    <span style="padding: 3px 10px; border-radius: 999px; background: #1C1C1E; color: #FFFFFF; font-weight: 600">Submit</span>
+  </div>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; gap: 24px; padding: 24px 32px; align-items: flex-start">
+
+  <div style="flex: 999 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+    <div style="display: flex; flex-direction: column; gap: 4px">
+      <div style="font-weight: 600; font-size: 20px; line-height: 26px">Submit to Cedar Street Clinic</div>
+      <div style="color: #5F5E5A">You approved the bench recommendation at 12:46. The Appeals agent drafted the letter, you made 2 edits.</div>
+    </div>
+
+    <div style="background: #FFFFFF; border: 1px solid #E2DFD6; border-radius: 12px; display: flex; flex-direction: column">
+      <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; padding: 14px 20px; border-bottom: 1px solid #E2DFD6">
+        <div style="font-weight: 600; font-size: 15px">Deliverable: appeal packet</div>
+        <a href="#" style="font-size: 13px">Edit letter</a>
+      </div>
+      <div style="padding: 16px 20px; display: flex; flex-direction: column; gap: 10px">
+        <div style="display: flex; justify-content: space-between; gap: 8px; align-items: center"><span>Appeal letter, Harborline Health.pdf</span><span style="padding: 2px 8px; border-radius: 999px; background: #D9E4D3; color: #1E4D2B; font-weight: 600; font-size: 12px">bench reviewed</span></div>
+        <div style="display: flex; justify-content: space-between; gap: 8px; align-items: center"><span>Enclosure 1: denial letter</span><span style="font-size: 12px; color: #5F5E5A">from poster</span></div>
+        <div style="display: flex; justify-content: space-between; gap: 8px; align-items: center"><span>Enclosure 2: PT visit log, Aug 4 to Sep 29</span><span style="font-size: 12px; color: #5F5E5A">extracted from clinical notes</span></div>
+        <div style="display: flex; justify-content: space-between; gap: 8px; align-items: center"><span>Enclosure 3: ordering physician note, Sep 30</span><span style="font-size: 12px; color: #5F5E5A">from poster</span></div>
+        <div style="display: flex; justify-content: space-between; gap: 8px; align-items: center"><span>Enclosure 4: policy CG-0423 excerpt, s4.2</span><span style="font-size: 12px; color: #5F5E5A">pulled by Policy agent</span></div>
+      </div>
+    </div>
+
+    <div style="background: #FFFFFF; border: 1px solid #E2DFD6; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 12px">
+      <div style="font-size: 12px; line-height: 16px; font-weight: 600; letter-spacing: 0.06em; color: #5F5E5A">BEFORE YOU SUBMIT</div>
+      <div style="display: flex; gap: 10px; align-items: flex-start"><span style="width: 20px; height: 20px; flex: 0 0 20px; border-radius: 999px; background: #D9E4D3; color: #1E4D2B; font-size: 12px; display: flex; align-items: center; justify-content: center; font-weight: 700">✓</span><span>Bench recommendation approved, 3 of 3 agents agreed</span></div>
+      <div style="display: flex; gap: 10px; align-items: flex-start"><span style="width: 20px; height: 20px; flex: 0 0 20px; border-radius: 999px; background: #D9E4D3; color: #1E4D2B; font-size: 12px; display: flex; align-items: center; justify-content: center; font-weight: 700">✓</span><span>Every claim in the letter has a citation</span></div>
+      <div style="display: flex; gap: 10px; align-items: flex-start"><span style="width: 20px; height: 20px; flex: 0 0 20px; border-radius: 999px; background: #D9E4D3; color: #1E4D2B; font-size: 12px; display: flex; align-items: center; justify-content: center; font-weight: 700">✓</span><span>Deadline Nov 14 is 14 days out, alarms set for Nov 10 and Nov 12</span></div>
+      <div style="display: flex; gap: 10px; align-items: flex-start"><span style="width: 20px; height: 20px; flex: 0 0 20px; border-radius: 999px; background: #FBEFD5; color: #8A4B00; font-size: 12px; display: flex; align-items: center; justify-content: center; font-weight: 700">!</span><span>Appeals agent notes: the poster's EOB shows a patient responsibility line. Consider mentioning that the patient has not been billed pending appeal. <a href="#">Add one sentence</a> or <a href="#">dismiss</a>.</span></div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 6px">
+      <label for="note" style="font-size: 12px; line-height: 16px; font-weight: 600; color: #3D3C39">Note to the poster</label>
+      <textarea id="note" rows="2" style="padding: 10px 12px; border-radius: 8px; border: 1px solid #C9C5BA; font: inherit; color: #1C1C1E; background: #FFFFFF; resize: vertical">Letter is ready. The 8 weeks of PT is the strongest point, so it leads. Happy to adjust tone if you prefer.</textarea>
+    </div>
+
+    <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center">
+      <button style="height: 44px; padding: 0 18px; border-radius: 8px; border: 1px solid #1C1C1E; background: #1C1C1E; color: #FFFFFF; font: inherit; font-weight: 600; cursor: pointer">Submit for poster review</button>
+      <button style="height: 44px; padding: 0 18px; border-radius: 8px; border: 1px solid #C9C5BA; background: #FFFFFF; color: #1C1C1E; font: inherit; font-weight: 500; cursor: pointer">Back to the bench</button>
+      <span style="font-size: 12px; line-height: 16px; color: #5F5E5A">Submitting posts the packet to #case-4471 and moves the actor to awaiting_poster. Pay releases when the poster approves.</span>
+    </div>
+  </div>
+
+  <div style="flex: 1 1 280px; max-width: 340px; display: flex; flex-direction: column; gap: 16px">
+    <div style="background: #FFFFFF; border: 2px solid #1C1C1E; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 10px">
+      <div style="font-size: 12px; line-height: 16px; font-weight: 600; letter-spacing: 0.06em; color: #5F5E5A">EARNINGS</div>
+      <div style="display: flex; justify-content: space-between; gap: 8px; align-items: baseline"><span style="color: #5F5E5A">This job</span><span style="font-weight: 600; font-size: 20px">$45.00</span></div>
+      <div style="display: flex; justify-content: space-between; gap: 8px"><span style="color: #5F5E5A">Time on it</span><span style="font-weight: 500">34 min</span></div>
+      <div style="display: flex; justify-content: space-between; gap: 8px"><span style="color: #5F5E5A">Effective rate</span><span style="font-weight: 500">$79 / hour</span></div>
+      <div style="height: 1px; background: #E2DFD6"></div>
+      <div style="display: flex; justify-content: space-between; gap: 8px"><span style="color: #5F5E5A">This week</span><span style="font-weight: 500">$457 pending</span></div>
+      <div style="display: flex; justify-content: space-between; gap: 8px"><span style="color: #5F5E5A">Paid out Friday</span><span style="font-weight: 500">$1,212</span></div>
+    </div>
+
+    <div style="background: #FFFFFF; border: 1px solid #E2DFD6; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 10px">
+      <div style="font-size: 12px; line-height: 16px; font-weight: 600; letter-spacing: 0.06em; color: #5F5E5A">WHAT YOU LEARNED, SAVED TO YOUR PROFILE</div>
+      <div>Harborline Health, policy CG-0423, conservative therapy threshold for lumbar MRI</div>
+      <div style="font-size: 12px; line-height: 16px; color: #5F5E5A">Next time a Harborline necessity denial shows up on the board, it is marked as a match for you.</div>
+    </div>
+
+    <div style="background: #EDEBE4; border-radius: 12px; padding: 14px 16px; font-size: 13px; line-height: 18px; color: #3D3C39">After submit you are free to claim the next job. This case keeps running on its own: the actor will wake you only if the poster asks for changes or the Nov 10 alarm finds silence from the payer.</div>
+  </div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":820}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

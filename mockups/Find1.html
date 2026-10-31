@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Worker step 1, job board</title>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#2F4BD6}a:hover{color:#1F35A6}
+</style>
+</helmet>
+<div style="min-height: 820px; background: #F6F5F1; font-family: Inter, system-ui, sans-serif; color: #1C1C1E; font-size: 14px; line-height: 20px; display: flex; flex-direction: column">
+
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px; padding: 14px 32px; background: #FFFFFF; border-bottom: 1px solid #E2DFD6">
+  <div style="display: flex; align-items: center; gap: 12px">
+    <div style="width: 32px; height: 32px; border-radius: 8px; background: #1C1C1E; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px">U</div>
+    <div style="display: flex; flex-direction: column">
+      <div style="font-weight: 600; font-size: 15px; line-height: 18px">Understudy</div>
+      <div style="font-size: 12px; line-height: 16px; color: #5F5E5A">Worker board</div>
+    </div>
+  </div>
+  <div style="flex: 1 1 240px; min-width: 0; display: flex; gap: 8px; flex-wrap: wrap">
+    <button style="height: 36px; padding: 0 14px; border-radius: 8px; border: 1px solid #1C1C1E; background: #1C1C1E; color: #FFFFFF; font: inherit; font-weight: 500; cursor: pointer">Open jobs</button>
+    <button style="height: 36px; padding: 0 14px; border-radius: 8px; border: 1px solid #C9C5BA; background: #FFFFFF; color: #1C1C1E; font: inherit; font-weight: 500; cursor: pointer">My jobs (2)</button>
+    <button style="height: 36px; padding: 0 14px; border-radius: 8px; border: 1px solid #C9C5BA; background: #FFFFFF; color: #1C1C1E; font: inherit; font-weight: 500; cursor: pointer">Earnings</button>
+  </div>
+  <div style="display: flex; align-items: center; gap: 12px">
+    <div style="font-size: 12px; line-height: 16px; color: #5F5E5A; text-align: right">Maya R.<br>$412 this week</div>
+    <div style="width: 36px; height: 36px; border-radius: 999px; background: #D9E4D3; color: #1E4D2B; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 13px">MR</div>
+  </div>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; gap: 24px; padding: 24px 32px; align-items: flex-start">
+
+  <div style="flex: 1 1 240px; max-width: 280px; display: flex; flex-direction: column; gap: 16px">
+    <div style="background: #FFFFFF; border: 1px solid #E2DFD6; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+      <div style="font-size: 12px; line-height: 16px; font-weight: 600; letter-spacing: 0.06em; color: #5F5E5A">FILTERS</div>
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <label for="q" style="font-size: 12px; line-height: 16px; color: #5F5E5A">Search</label>
+        <input id="q" type="text" placeholder="payer, code, keyword" style="height: 40px; padding: 0 12px; border-radius: 8px; border: 1px solid #C9C5BA; font: inherit; color: #1C1C1E; background: #FFFFFF">
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 8px">
+        <div style="font-size: 12px; line-height: 16px; color: #5F5E5A">Domain</div>
+        <label style="display: flex; gap: 8px; align-items: center"><input type="checkbox" checked><span>Medical billing</span></label>
+        <label style="display: flex; gap: 8px; align-items: center"><input type="checkbox" checked><span>Insurance claims</span></label>
+        <label style="display: flex; gap: 8px; align-items: center"><input type="checkbox"><span>Benefits</span></label>
+        <label style="display: flex; gap: 8px; align-items: center"><input type="checkbox"><span>Immigration paperwork</span></label>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 8px">
+        <div style="font-size: 12px; line-height: 16px; color: #5F5E5A">Show</div>
+        <label style="display: flex; gap: 8px; align-items: center"><input type="checkbox" checked><span>Jobs I qualify for</span></label>
+        <label style="display: flex; gap: 8px; align-items: center"><input type="checkbox"><span>Stretch jobs, bench carries more</span></label>
+      </div>
+    </div>
+
+    <div style="background: #FFFFFF; border: 1px solid #E2DFD6; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 10px">
+      <div style="font-size: 12px; line-height: 16px; font-weight: 600; letter-spacing: 0.06em; color: #5F5E5A">YOUR STANDING</div>
+      <div style="display: flex; justify-content: space-between; gap: 8px"><span style="color: #5F5E5A">Approval first pass</span><span style="font-weight: 500">94%</span></div>
+      <div style="display: flex; justify-content: space-between; gap: 8px"><span style="color: #5F5E5A">Unlocked domains</span><span style="font-weight: 500">2 of 5</span></div>
+      <div style="display: flex; justify-content: space-between; gap: 8px"><span style="color: #5F5E5A">Next unlock</span><span style="font-weight: 500">Benefits, 6 jobs</span></div>
+    </div>
+  </div>
+
+  <div style="flex: 999 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 12px">
+    <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px">
+      <div style="font-weight: 600; font-size: 18px; line-height: 24px">14 open jobs</div>
+      <div style="font-size: 12px; line-height: 16px; color: #5F5E5A">sorted by deadline, then pay</div>
+    </div>
+
+    <div style="background: #FFFFFF; border: 2px solid #1C1C1E; border-radius: 12px; padding: 16px; display: flex; flex-wrap: wrap; gap: 16px; align-items: center">
+      <div style="flex: 1 1 300px; min-width: 0; display: flex; flex-direction: column; gap: 6px">
+        <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap"><span style="font-weight: 600; font-size: 15px">Appeal a denied lumbar MRI, CPT 72148</span><span style="padding: 2px 8px; border-radius: 999px; background: #E6E9F8; color: #2F4BD6; font-weight: 600; font-size: 12px">Medical billing</span></div>
+        <div style="color: #5F5E5A">Cedar Street Clinic. Denial CO-50, 3 documents attached, poster reviews before sending.</div>
+        <div style="display: flex; gap: 16px; flex-wrap: wrap; font-size: 12px; line-height: 16px; color: #5F5E5A"><span>Due Nov 14</span><span>Est. 40 min</span><span>Bench: Policy, Billing codes, Appeals</span><span>Similar jobs you did: 23</span></div>
+      </div>
+      <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px">
+        <div style="font-weight: 600; font-size: 20px; line-height: 24px">$45</div>
+        <button style="height: 40px; padding: 0 16px; border-radius: 8px; border: 1px solid #1C1C1E; background: #1C1C1E; color: #FFFFFF; font: inherit; font-weight: 600; cursor: pointer">Claim</button>
+      </div>
+    </div>
+
+    <div style="background: #FFFFFF; border: 1px solid #E2DFD6; border-radius: 12px; padding: 16px; display: flex; flex-wrap: wrap; gap: 16px; align-items: center">
+      <div style="flex: 1 1 300px; min-width: 0; display: flex; flex-direction: column; gap: 6px">
+        <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap"><span style="font-weight: 600; font-size: 15px">Coordination of benefits dispute, two payers</span><span style="padding: 2px 8px; border-radius: 999px; background: #E6E9F8; color: #2F4BD6; font-weight: 600; font-size: 12px">Medical billing</span></div>
+        <div style="color: #5F5E5A">Northgate Family Practice. Bluepine Mutual says secondary, Harborline says secondary too.</div>
+        <div style="display: flex; gap: 16px; flex-wrap: wrap; font-size: 12px; line-height: 16px; color: #5F5E5A"><span>Due Nov 8</span><span>Est. 1 h 15 min</span><span>Bench: Policy, Billing codes, Appeals</span><span>Similar jobs you did: 4</span></div>
+      </div>
+      <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px">
+        <div style="font-weight: 600; font-size: 20px; line-height: 24px">$80</div>
+        <button style="height: 40px; padding: 0 16px; border-radius: 8px; border: 1px solid #C9C5BA; background: #FFFFFF; color: #1C1C1E; font: inherit; font-weight: 600; cursor: pointer">Claim</button>
+      </div>
+    </div>
+
+    <div style="background: #FFFFFF; border: 1px solid #E2DFD6; border-radius: 12px; padding: 16px; display: flex; flex-wrap: wrap; gap: 16px; align-items: center">
+      <div style="flex: 1 1 300px; min-width: 0; display: flex; flex-direction: column; gap: 6px">
+        <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap"><span style="font-weight: 600; font-size: 15px">Water damage claim, contractor estimate disputed</span><span style="padding: 2px 8px; border-radius: 999px; background: #EDEBE4; color: #3D3C39; font-weight: 600; font-size: 12px">Insurance claims</span></div>
+        <div style="color: #5F5E5A">Homeowner. Adjuster offered $6,200 against a $9,800 estimate. Photos and two estimates attached.</div>
+        <div style="display: flex; gap: 16px; flex-wrap: wrap; font-size: 12px; line-height: 16px; color: #5F5E5A"><span>Due Nov 20</span><span>Est. 1 h</span><span>Bench: Policy, Adjusting, Negotiation</span><span>Similar jobs you did: 11</span></div>
+      </div>
+      <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px">
+        <div style="font-weight: 600; font-size: 20px; line-height: 24px">$65</div>
+        <button style="height: 40px; padding: 0 16px; border-radius: 8px; border: 1px solid #C9C5BA; background: #FFFFFF; color: #1C1C1E; font: inherit; font-weight: 600; cursor: pointer">Claim</button>
+      </div>
+    </div>
+
+    <div style="background: #FFFFFF; border: 1px solid #E2DFD6; border-radius: 12px; padding: 16px; display: flex; flex-wrap: wrap; gap: 16px; align-items: center; opacity: 0.7">
+      <div style="flex: 1 1 300px; min-width: 0; display: flex; flex-direction: column; gap: 6px">
+        <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap"><span style="font-weight: 600; font-size: 15px">Prior authorization, retro request for infusion</span><span style="padding: 2px 8px; border-radius: 999px; background: #E6E9F8; color: #2F4BD6; font-weight: 600; font-size: 12px">Medical billing</span></div>
+        <div style="color: #5F5E5A">Claimed 4 minutes ago by Ana L. Shown so you can see what moves fast.</div>
+        <div style="display: flex; gap: 16px; flex-wrap: wrap; font-size: 12px; line-height: 16px; color: #5F5E5A"><span>Due Nov 18</span><span>Est. 50 min</span></div>
+      </div>
+      <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px">
+        <div style="font-weight: 600; font-size: 20px; line-height: 24px">$55</div>
+        <span style="padding: 2px 10px; border-radius: 999px; background: #EDEBE4; color: #3D3C39; font-weight: 600; font-size: 12px">Claimed</span>
+      </div>
+    </div>
+
+    <div style="font-size: 12px; line-height: 16px; color: #5F5E5A">Claiming is one actor method, so two workers can never hold the same job. The board itself is a Durable Actor that every worker's browser subscribes to, which is why a claim disappears from everyone's list instantly.</div>
+  </div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":820}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

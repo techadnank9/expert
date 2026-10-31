@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Understudy supervisor view</title>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#2F4BD6}a:hover{color:#1F35A6}
+</style>
+</helmet>
+<div style="min-height: 820px; background: #F6F5F1; font-family: Inter, system-ui, sans-serif; color: #1C1C1E; font-size: 14px; line-height: 20px; display: flex; flex-direction: column">
+
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px; padding: 14px 32px; background: #FFFFFF; border-bottom: 1px solid #E2DFD6">
+  <div style="display: flex; align-items: center; gap: 12px">
+    <div style="width: 32px; height: 32px; border-radius: 8px; background: #1C1C1E; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px">U</div>
+    <div style="display: flex; flex-direction: column">
+      <div style="font-weight: 600; font-size: 15px; line-height: 18px">Understudy</div>
+      <div style="font-size: 12px; line-height: 16px; color: #5F5E5A">Supervisor desk, medical billing</div>
+    </div>
+  </div>
+  <div style="flex: 1 1 240px; min-width: 0; display: flex; gap: 8px; flex-wrap: wrap">
+    <button style="height: 36px; padding: 0 14px; border-radius: 8px; border: 1px solid #1C1C1E; background: #1C1C1E; color: #FFFFFF; font: inherit; font-weight: 500; cursor: pointer">All cases</button>
+    <button style="height: 36px; padding: 0 14px; border-radius: 8px; border: 1px solid #C9C5BA; background: #FFFFFF; color: #1C1C1E; font: inherit; font-weight: 500; cursor: pointer">Needs me</button>
+    <button style="height: 36px; padding: 0 14px; border-radius: 8px; border: 1px solid #C9C5BA; background: #FFFFFF; color: #1C1C1E; font: inherit; font-weight: 500; cursor: pointer">Alarms</button>
+  </div>
+  <div style="display: flex; align-items: center; gap: 12px">
+    <div style="font-size: 12px; line-height: 16px; color: #5F5E5A; text-align: right">live, 42 actors connected</div>
+    <div style="width: 36px; height: 36px; border-radius: 999px; background: #E6E9F8; color: #2F4BD6; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 13px">DK</div>
+  </div>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 24px; padding: 24px 32px">
+
+  <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px">
+    <div style="background: #FFFFFF; border: 1px solid #E2DFD6; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 4px"><div style="font-size: 12px; line-height: 16px; color: #5F5E5A">Open cases</div><div style="font-size: 28px; line-height: 32px; font-weight: 600">42</div><div style="font-size: 12px; line-height: 16px; color: #5F5E5A">across 6 workers</div></div>
+    <div style="background: #FFFFFF; border: 1px solid #E2DFD6; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 4px"><div style="font-size: 12px; line-height: 16px; color: #5F5E5A">Waiting on a human</div><div style="font-size: 28px; line-height: 32px; font-weight: 600">6</div><div style="font-size: 12px; line-height: 16px; color: #5F5E5A">bench done, needs approve or override</div></div>
+    <div style="background: #FBEFD5; border: 1px solid #E8C98A; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 4px"><div style="font-size: 12px; line-height: 16px; color: #8A4B00">Alarms fired today</div><div style="font-size: 28px; line-height: 32px; font-weight: 600; color: #5C3300">3</div><div style="font-size: 12px; line-height: 16px; color: #8A4B00">1 escalated to you</div></div>
+    <div style="background: #FFFFFF; border: 1px solid #E2DFD6; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 4px"><div style="font-size: 12px; line-height: 16px; color: #5F5E5A">Overrides this week</div><div style="font-size: 28px; line-height: 32px; font-weight: 600">4</div><div style="font-size: 12px; line-height: 16px; color: #5F5E5A">of 61 bench recommendations</div></div>
+  </div>
+
+  <div style="display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start">
+
+    <div style="flex: 999 1 560px; min-width: 0; background: #FFFFFF; border: 1px solid #E2DFD6; border-radius: 12px; display: flex; flex-direction: column">
+      <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; padding: 14px 20px; border-bottom: 1px solid #E2DFD6">
+        <div style="font-weight: 600; font-size: 15px">Cases</div>
+        <div style="font-size: 12px; line-height: 16px; color: #5F5E5A">sorted by next alarm</div>
+      </div>
+      <div style="overflow-x: auto">
+        <table style="width: 100%; min-width: 720px; border-collapse: collapse; font-size: 13px; line-height: 18px">
+          <thead>
+            <tr style="text-align: left; color: #5F5E5A; font-size: 12px">
+              <th style="padding: 10px 20px; font-weight: 600; border-bottom: 1px solid #E2DFD6">Case</th>
+              <th style="padding: 10px 12px; font-weight: 600; border-bottom: 1px solid #E2DFD6">Worker</th>
+              <th style="padding: 10px 12px; font-weight: 600; border-bottom: 1px solid #E2DFD6">Status</th>
+              <th style="padding: 10px 12px; font-weight: 600; border-bottom: 1px solid #E2DFD6">Bench</th>
+              <th style="padding: 10px 12px; font-weight: 600; border-bottom: 1px solid #E2DFD6">Next alarm</th>
+              <th style="padding: 10px 20px; font-weight: 600; border-bottom: 1px solid #E2DFD6"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="background: #FBEFD5">
+              <td style="padding: 12px 20px; border-bottom: 1px solid #E2DFD6"><div style="font-weight: 500">4398: denied PT units</div><div style="font-size: 12px; color: #5F5E5A">Harborline Health, $620</div></td>
+              <td style="padding: 12px 12px; border-bottom: 1px solid #E2DFD6">Jon T.</td>
+              <td style="padding: 12px 12px; border-bottom: 1px solid #E2DFD6"><span style="padding: 2px 8px; border-radius: 999px; background: #F3D7A5; color: #5C3300; font-weight: 600; font-size: 12px">Escalated, no payer reply 10d</span></td>
+              <td style="padding: 12px 12px; border-bottom: 1px solid #E2DFD6">Appeal filed Oct 20</td>
+              <td style="padding: 12px 12px; border-bottom: 1px solid #E2DFD6"><span style="font-weight: 500; color: #8A4B00">Fired 9:00 today</span></td>
+              <td style="padding: 12px 20px; border-bottom: 1px solid #E2DFD6; text-align: right"><a href="#" style="font-weight: 500">Open</a></td>
+            </tr>
+            <tr>
+              <td style="padding: 12px 20px; border-bottom: 1px solid #E2DFD6"><div style="font-weight: 500">4471: denied lumbar MRI</div><div style="font-size: 12px; color: #5F5E5A">Harborline Health, $1,840</div></td>
+              <td style="padding: 12px 12px; border-bottom: 1px solid #E2DFD6">Maya R.</td>
+              <td style="padding: 12px 12px; border-bottom: 1px solid #E2DFD6"><span style="padding: 2px 8px; border-radius: 999px; background: #E6E9F8; color: #2F4BD6; font-weight: 600; font-size: 12px">Awaiting approval</span></td>
+              <td style="padding: 12px 12px; border-bottom: 1px solid #E2DFD6">3 of 3 agree, appeal</td>
+              <td style="padding: 12px 12px; border-bottom: 1px solid #E2DFD6">Nov 10, nudge</td>
+              <td style="padding: 12px 20px; border-bottom: 1px solid #E2DFD6; text-align: right"><a href="#" style="font-weight: 500">Open</a></td>
+            </tr>
+            <tr>
+              <td style="padding: 12px 20px; border-bottom: 1px solid #E2DFD6"><div style="font-weight: 500">4466: coordination of benefits</div><div style="font-size: 12px; color: #5F5E5A">Bluepine Mutual, $2,310</div></td>
+              <td style="padding: 12px 12px; border-bottom: 1px solid #E2DFD6">Maya R.</td>
+              <td style="padding: 12px 12px; border-bottom: 1px solid #E2DFD6"><span style="padding: 2px 8px; border-radius: 999px; background: #E6E9F8; color: #2F4BD6; font-weight: 600; font-size: 12px">Bench consulting</span></td>
+              <td style="padding: 12px 12px; border-bottom: 1px solid #E2DFD6">2 of 3, Appeals dissents</td>
+              <td style="padding: 12px 12px; border-bottom: 1px solid #E2DFD6">Nov 8, nudge</td>
+              <td style="padding: 12px 20px; border-bottom: 1px solid #E2DFD6; text-align: right"><a href="#" style="font-weight: 500">Open</a></td>
+            </tr>
+            <tr>
+              <td style="padding: 12px 20px; border-bottom: 1px solid #E2DFD6"><div style="font-weight: 500">4452: timely filing</div><div style="font-size: 12px; color: #5F5E5A">Bluepine Mutual, $410</div></td>
+              <td style="padding: 12px 12px; border-bottom: 1px solid #E2DFD6">Jon T.</td>
+              <td style="padding: 12px 12px; border-bottom: 1px solid #E2DFD6"><span style="padding: 2px 8px; border-radius: 999px; background: #EDEBE4; color: #3D3C39; font-weight: 600; font-size: 12px">Overridden by worker</span></td>
+              <td style="padding: 12px 12px; border-bottom: 1px solid #E2DFD6">Recommended write-off</td>
+              <td style="padding: 12px 12px; border-bottom: 1px solid #E2DFD6">Nov 6, nudge</td>
+              <td style="padding: 12px 20px; border-bottom: 1px solid #E2DFD6; text-align: right"><a href="#" style="font-weight: 500">Open</a></td>
+            </tr>
+            <tr>
+              <td style="padding: 12px 20px; border-bottom: 1px solid #E2DFD6"><div style="font-weight: 500">4439: duplicate claim</div><div style="font-size: 12px; color: #5F5E5A">Harborline Health, $95</div></td>
+              <td style="padding: 12px 12px; border-bottom: 1px solid #E2DFD6">Ana L.</td>
+              <td style="padding: 12px 12px; border-bottom: 1px solid #E2DFD6"><span style="padding: 2px 8px; border-radius: 999px; background: #D9E4D3; color: #1E4D2B; font-weight: 600; font-size: 12px">Resubmitted</span></td>
+              <td style="padding: 12px 12px; border-bottom: 1px solid #E2DFD6">3 of 3 agree</td>
+              <td style="padding: 12px 12px; border-bottom: 1px solid #E2DFD6">Nov 14, close check</td>
+              <td style="padding: 12px 20px; border-bottom: 1px solid #E2DFD6; text-align: right"><a href="#" style="font-weight: 500">Open</a></td>
+            </tr>
+            <tr>
+              <td style="padding: 12px 20px"><div style="font-weight: 500">4421: prior auth missing</div><div style="font-size: 12px; color: #5F5E5A">Cedarpoint Plan, $3,900</div></td>
+              <td style="padding: 12px 12px">Ana L.</td>
+              <td style="padding: 12px 12px"><span style="padding: 2px 8px; border-radius: 999px; background: #EDEBE4; color: #3D3C39; font-weight: 600; font-size: 12px">Idle, actor hibernating</span></td>
+              <td style="padding: 12px 12px">Retro auth requested</td>
+              <td style="padding: 12px 12px">Nov 18, follow up</td>
+              <td style="padding: 12px 20px; text-align: right"><a href="#" style="font-weight: 500">Open</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div style="flex: 1 1 300px; max-width: 360px; display: flex; flex-direction: column; gap: 16px">
+      <div style="background: #FFFFFF; border: 2px solid #C98A1A; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px">
+          <div style="font-weight: 600; font-size: 15px">Alarm fired: case 4398</div>
+          <span style="padding: 2px 8px; border-radius: 999px; background: #FBEFD5; color: #8A4B00; font-weight: 600; font-size: 12px">9:00 today</span>
+        </div>
+        <div>No payer response 10 days after the appeal was filed. The actor woke itself, re-checked the portal through the Billing agent, found nothing, and escalated.</div>
+        <div style="font-size: 12px; line-height: 16px; color: #5F5E5A">Posted to #case-4398 by case-actor through the inbound webhook, so the full history is in one thread. <a href="#">Open in Relay</a></div>
+        <div style="font-size: 12px; line-height: 16px; color: #5F5E5A">Bench suggests: call the payer appeals line, reference number HL-2210-4398.</div>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px">
+          <button style="height: 40px; padding: 0 14px; border-radius: 8px; border: 1px solid #1C1C1E; background: #1C1C1E; color: #FFFFFF; font: inherit; font-weight: 600; cursor: pointer">Take the case</button>
+          <button style="height: 40px; padding: 0 14px; border-radius: 8px; border: 1px solid #C9C5BA; background: #FFFFFF; color: #1C1C1E; font: inherit; font-weight: 500; cursor: pointer">Snooze 2 days</button>
+        </div>
+      </div>
+
+      <div style="background: #FFFFFF; border: 1px solid #E2DFD6; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 10px">
+        <div style="font-size: 12px; line-height: 16px; font-weight: 600; letter-spacing: 0.06em; color: #5F5E5A">LIVE ACROSS CASES</div>
+        <div style="display: flex; gap: 10px"><span style="font-size: 12px; color: #5F5E5A; flex: 0 0 44px">12:42</span><span>Bench posted recommendation on 4471</span></div>
+        <div style="display: flex; gap: 10px"><span style="font-size: 12px; color: #5F5E5A; flex: 0 0 44px">12:41</span><span>Appeals agent dissented on 4466, asked Policy for the COB clause</span></div>
+        <div style="display: flex; gap: 10px"><span style="font-size: 12px; color: #5F5E5A; flex: 0 0 44px">12:38</span><span>Jon T. overrode bench on 4452, reason: payer accepted late filing before</span></div>
+        <div style="display: flex; gap: 10px"><span style="font-size: 12px; color: #5F5E5A; flex: 0 0 44px">12:30</span><span>Ana L. resubmitted 4439</span></div>
+        <div style="display: flex; gap: 10px"><span style="font-size: 12px; color: #5F5E5A; flex: 0 0 44px">09:00</span><span>Alarm fired on 4398, escalated to Dana K.</span></div>
+      </div>
+
+      <div style="background: #EDEBE4; border-radius: 12px; padding: 14px 16px; font-size: 13px; line-height: 18px; color: #3D3C39">Overrides with a reason are the training signal. 4 this week, all with reasons, 2 from the same payer.</div>
+    </div>
+
+  </div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":820}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

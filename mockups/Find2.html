@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Worker step 2, claim and brief</title>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#2F4BD6}a:hover{color:#1F35A6}
+</style>
+</helmet>
+<div style="min-height: 820px; background: #F6F5F1; font-family: Inter, system-ui, sans-serif; color: #1C1C1E; font-size: 14px; line-height: 20px; display: flex; flex-direction: column">
+
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px; padding: 14px 32px; background: #FFFFFF; border-bottom: 1px solid #E2DFD6">
+  <div style="display: flex; align-items: center; gap: 12px">
+    <div style="width: 32px; height: 32px; border-radius: 8px; background: #1C1C1E; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px">U</div>
+    <div style="display: flex; flex-direction: column">
+      <div style="font-weight: 600; font-size: 15px; line-height: 18px">Understudy</div>
+      <div style="font-size: 12px; line-height: 16px; color: #5F5E5A">Job 4471, claimed by you just now</div>
+    </div>
+  </div>
+  <div style="flex: 1 1 200px"></div>
+  <div style="display: flex; align-items: center; gap: 8px; font-size: 12px; line-height: 16px">
+    <span style="padding: 3px 10px; border-radius: 999px; background: #D9E4D3; color: #1E4D2B; font-weight: 600">Claimed</span>
+    <span style="padding: 3px 10px; border-radius: 999px; background: #1C1C1E; color: #FFFFFF; font-weight: 600">Brief</span>
+    <span style="padding: 3px 10px; border-radius: 999px; background: #EDEBE4; color: #3D3C39; font-weight: 600">Work</span>
+    <span style="padding: 3px 10px; border-radius: 999px; background: #EDEBE4; color: #3D3C39; font-weight: 600">Submit</span>
+  </div>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; gap: 24px; padding: 24px 32px; align-items: flex-start">
+
+  <div style="flex: 999 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+    <div style="display: flex; flex-direction: column; gap: 4px">
+      <div style="font-weight: 600; font-size: 20px; line-height: 26px">You have this one. Here is your brief.</div>
+      <div style="color: #5F5E5A">The bench read the documents while you were claiming. Nothing below has been sent anywhere yet.</div>
+    </div>
+
+    <div style="background: #FFFFFF; border: 1px solid #E2DFD6; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 14px">
+      <div style="font-size: 12px; line-height: 16px; font-weight: 600; letter-spacing: 0.06em; color: #5F5E5A">WHAT THE POSTER NEEDS</div>
+      <div style="font-size: 15px; line-height: 22px">Appeal a denied lumbar MRI claim (CPT 72148, denial CO-50) for Cedar Street Clinic. Payer is Harborline Health. Appeal is due Nov 14. The poster wants to review the letter before it is sent.</div>
+    </div>
+
+    <div style="background: #FFFFFF; border: 1px solid #E2DFD6; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 14px">
+      <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap">
+        <div style="font-size: 12px; line-height: 16px; font-weight: 600; letter-spacing: 0.06em; color: #5F5E5A">WHAT THE BENCH ALREADY KNOWS</div>
+        <span style="font-size: 12px; line-height: 16px; color: #5F5E5A">pre-read in #case-4471, 3 sessions linked</span>
+      </div>
+      <div style="display: flex; gap: 12px">
+        <div style="width: 28px; height: 28px; flex: 0 0 28px; border-radius: 6px; background: #2F4BD6; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 12px">P</div>
+        <div><span style="font-weight: 600">Policy:</span> Harborline covers lumbar MRI after 6 weeks of conservative therapy (policy CG-0423 s4.2). The PT log shows 8 weeks. <a href="#" style="font-size: 12px">view session</a></div>
+      </div>
+      <div style="display: flex; gap: 12px">
+        <div style="width: 28px; height: 28px; flex: 0 0 28px; border-radius: 6px; background: #1E6B3A; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 12px">B</div>
+        <div><span style="font-weight: 600">Billing codes:</span> 72148 is billed correctly. CO-50 means necessity, not coding, so there is no quick resubmit. <a href="#" style="font-size: 12px">view session</a></div>
+      </div>
+      <div style="display: flex; gap: 12px">
+        <div style="width: 28px; height: 28px; flex: 0 0 28px; border-radius: 6px; background: #8A4B00; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 12px">A</div>
+        <div><span style="font-weight: 600">Appeals:</span> Level 1 appeal is the right path. Harborline usually answers in 10 business days. <a href="#" style="font-size: 12px">view session</a></div>
+      </div>
+    </div>
+
+    <div style="background: #FFFFFF; border: 1px solid #E2DFD6; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 12px">
+      <div style="font-size: 12px; line-height: 16px; font-weight: 600; letter-spacing: 0.06em; color: #5F5E5A">YOUR CHECKLIST</div>
+      <label style="display: flex; gap: 10px; align-items: flex-start"><input type="checkbox" checked style="margin-top: 3px"><span>Read the denial letter (2 pages)</span></label>
+      <label style="display: flex; gap: 10px; align-items: flex-start"><input type="checkbox" style="margin-top: 3px"><span>Confirm the PT dates in the clinical notes match what Policy agent found</span></label>
+      <label style="display: flex; gap: 10px; align-items: flex-start"><input type="checkbox" style="margin-top: 3px"><span>Ask the bench anything that is unclear, then approve or override its recommendation</span></label>
+      <label style="display: flex; gap: 10px; align-items: flex-start"><input type="checkbox" style="margin-top: 3px"><span>Review the drafted appeal letter and submit to the poster</span></label>
+    </div>
+
+    <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center">
+      <a href="Worker.dc.html" style="display: inline-flex; align-items: center; height: 44px; padding: 0 18px; border-radius: 8px; border: 1px solid #1C1C1E; background: #1C1C1E; color: #FFFFFF; font-weight: 600; text-decoration: none">Start working</a>
+      <button style="height: 44px; padding: 0 18px; border-radius: 8px; border: 1px solid #C9C5BA; background: #FFFFFF; color: #1C1C1E; font: inherit; font-weight: 500; cursor: pointer">Release the job</button>
+      <span style="font-size: 12px; line-height: 16px; color: #5F5E5A">Release within 15 minutes with no penalty. After that the poster is notified.</span>
+    </div>
+  </div>
+
+  <div style="flex: 1 1 280px; max-width: 340px; display: flex; flex-direction: column; gap: 16px">
+    <div style="background: #FFFFFF; border: 1px solid #E2DFD6; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 10px">
+      <div style="font-size: 12px; line-height: 16px; font-weight: 600; letter-spacing: 0.06em; color: #5F5E5A">THIS JOB</div>
+      <div style="display: flex; justify-content: space-between; gap: 8px"><span style="color: #5F5E5A">Pay on approval</span><span style="font-weight: 600">$45</span></div>
+      <div style="display: flex; justify-content: space-between; gap: 8px"><span style="color: #5F5E5A">Estimated time</span><span style="font-weight: 500">40 min</span></div>
+      <div style="display: flex; justify-content: space-between; gap: 8px"><span style="color: #5F5E5A">Appeal due</span><span style="font-weight: 500">Nov 14</span></div>
+      <div style="display: flex; justify-content: space-between; gap: 8px"><span style="color: #5F5E5A">Poster review</span><span style="font-weight: 500">Yes</span></div>
+      <div style="display: flex; justify-content: space-between; gap: 8px"><span style="color: #5F5E5A">Case actor</span><span style="font-weight: 500">Case:4471</span></div>
+    </div>
+
+    <div style="background: #FFFFFF; border: 1px solid #E2DFD6; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 10px">
+      <div style="font-size: 12px; line-height: 16px; font-weight: 600; letter-spacing: 0.06em; color: #5F5E5A">DOCUMENTS</div>
+      <a href="#" style="display: flex; justify-content: space-between; gap: 8px; text-decoration: none; color: #1C1C1E; padding: 4px 0"><span>Denial letter.pdf</span><span style="color: #5F5E5A; font-size: 12px">2 pages</span></a>
+      <a href="#" style="display: flex; justify-content: space-between; gap: 8px; text-decoration: none; color: #1C1C1E; padding: 4px 0"><span>Clinical notes, PT visits.pdf</span><span style="color: #5F5E5A; font-size: 12px">6 pages</span></a>
+      <a href="#" style="display: flex; justify-content: space-between; gap: 8px; text-decoration: none; color: #1C1C1E; padding: 4px 0"><span>EOB.pdf</span><span style="color: #5F5E5A; font-size: 12px">1 page</span></a>
+      <a href="#" style="display: flex; justify-content: space-between; gap: 8px; text-decoration: none; color: #1C1C1E; padding: 4px 0"><span>Plan policy CG-0423.pdf</span><span style="color: #5F5E5A; font-size: 12px">pulled by bench</span></a>
+    </div>
+
+    <div style="background: #EDEBE4; border-radius: 12px; padding: 14px 16px; font-size: 13px; line-height: 18px; color: #3D3C39">You have done 23 appeals like this one. 17 were approved by the payer. The bench will flag anything that looks different from those.</div>
+  </div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":820}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>
