@@ -15,6 +15,8 @@ type WsData = { kind: 'case' | 'board'; id: string; off?: () => void };
 
 /** Relay side effects of actor methods (bridge acts for the actor and the worker). */
 async function afterCaseCall(store: CaseStore, id: string, method: string, args: any[], before: CaseState | null, state: CaseState): Promise<CaseState> {
+  // With the Terse actor, ask/alarm/approval side effects come from its socket broadcasts (terse-ws.ts).
+  if (store.kind === 'terse' && method !== 'create') return state;
   const bg = (p: Promise<unknown>) => p.catch((e) => console.warn(`[bridge] relay side effect for ${method} failed:`, e.message));
   switch (method) {
     case 'create': {

@@ -292,63 +292,66 @@ export class MemoryCaseStore implements CaseStore {
 }
 
 /**
- * Stub over the Terse generated client (actor/client/generated). Loaded lazily
- * so this file compiles before machine A publishes the client. Method names
- * mirror CONTRACT.md; the exact client call shape (`actors.Case.get(id)` etc.)
- * must be confirmed against the generated code and adjusted in `caseHandle`.
- * NOTE: addReaction / setRelayInfo / setAgrees / requestDocument are not in
- * the CONTRACT actor method list; the actor needs them (or equivalents).
+ * Terse-backed store over actor/client/generated (actors.Case.get(id),
+ * actors.Board.get('main'), prepareWebsocket). Transport reads TERSE_ACTOR_URL
+ * and TERSE_API_KEY from process.env (loadEnv() runs first in index.ts).
+ * Imported lazily so this file still compiles if the client is missing.
  */
 export class TerseCaseStore implements CaseStore {
   readonly kind = 'terse' as const;
-  private client: any;
+  private mod: any;
   private msgIndex = new Map<string, string>();
 
   private async load() {
-    if (this.client) return this.client;
+    if (this.mod) return this.mod;
+    const path = '../actor/client/generated/index.js';
     try {
-      const path = '../actor/client/generated';
-      this.client = await import(path);
+      this.mod = await import(path);
     } catch (e) {
       throw new Error(`Terse generated client not available: ${(e as Error).message}`);
     }
-    return this.client;
+    return this.mod;
   }
-  private async caseHandle(id: string): Promise<any> {
-    const c = await this.load();
-    const actors = c.actors ?? c.default?.actors ?? c;
-    // TODO(actor): confirm accessor against generated client.
-    return actors.Case?.get?.(id) ?? actors.Case?.(id);
+  private async caseStub(id: string): Promise<any> { return (await this.load()).actors.Case.get(id); }
+  private async boardStub(): Promise<any> { return (await this.load()).actors.Board.get('main'); }
+  private index(id: string, s: CaseState | null) {
+    if (!s) return s;
+    for (const m of s.thread ?? []) this.msgIndex.set(m.id, id);
+    if (s.relay?.recommendationId) this.msgIndex.set(s.relay.recommendationId, id);
+    if (s.relay?.threadRootId) this.msgIndex.set(s.relay.threadRootId, id);
+    return s;
   }
-  private async boardHandle(): Promise<any> {
-    const c = await this.load();
-    const actors = c.actors ?? c.default?.actors ?? c;
-    return actors.Board?.get?.('main') ?? actors.Board?.('main');
+  async getCase(id: string) {
+    const stub = await this.caseStub(id);
+    if (stub.exists && !(await stub.exists())) return null;
+    return this.index(id, await stub.getState());
   }
-  async getCase(id: string) { return (await this.caseHandle(id)).getState(); }
-  async callCase(id: string, method: string, args: unknown[]) { return (await this.caseHandle(id))[method](...args); }
+  async callCase(id: string, method: string, args: unknown[]) {
+    const stub = await this.caseStub(id);
+    if (typeof stub[method] !== 'function') throw new Error(`unknown case method ${method}`);
+    return this.index(id, await stub[method](...args)) as CaseState;
+  }
   async appendThreadMessage(id: string, msg: ThreadMessage) { this.msgIndex.set(msg.id, id); return this.callCase(id, 'appendThreadMessage', [msg]); }
   async addReaction(id: string, messageId: string, emoji: string, handle: string) { return this.callCase(id, 'addReaction', [messageId, normEmoji(emoji), handle]); }
-  async postRecommendation(id: string, rec: any) { return this.callCase(id, 'postRecommendation', [{ agrees: [], ...rec }]); }
-  async setAgrees(id: string, agrees: string[]) { return this.callCase(id, 'setAgrees', [agrees]); }
+  async postRecommendation(id: string, rec: any) { return this.callCase(id, 'postRecommendation', [rec]); }
+  // The actor updates recommendation.agrees inside addReaction.
+  async setAgrees(id: string, _agrees: string[]) { return this.callCase(id, 'getState', []); }
   async scheduleAlarm(id: string, at: string, kind: Alarm['kind']) { return this.callCase(id, 'scheduleAlarm', [at, kind]); }
-  async requestDocument(id: string, doc: any) { return this.callCase(id, 'requestDocument', [doc]); }
-  async setRelayInfo(id: string, info: Partial<RelayInfo>) {
-    if (info.recommendationId) this.msgIndex.set(info.recommendationId, id);
-    if (info.threadRootId) this.msgIndex.set(info.threadRootId, id);
-    return this.callCase(id, 'setRelayInfo', [info]);
-  }
+  async requestDocument(id: string, doc: { name: string; reason: string; by: string }) { return this.callCase(id, 'requestDocument', [doc.name, doc.reason, doc.by]); }
+  async setRelayInfo(id: string, info: Partial<RelayInfo>) { return this.callCase(id, 'setRelayInfo', [info]); }
   caseForMessage(messageId: string) { return this.msgIndex.get(messageId); }
-  async getBoard() { return (await this.boardHandle()).getState(); }
-  async callBoard(method: string, args: unknown[]) { return (await this.boardHandle())[method](...args); }
-  // Browser subscribes to Terse directly via prepareWebsocket; no in-process fan-out.
+  async getBoard() { return (await this.boardStub()).getState(); }
+  async callBoard(method: string, args: unknown[]) {
+    const stub = await this.boardStub();
+    if (typeof stub[method] !== 'function') throw new Error(`unknown board method ${method}`);
+    return stub[method](...args);
+  }
+  // Browser subscribes to Terse directly via prepareWebsocket.
   subscribeCase() { return () => {}; }
   subscribeBoard() { return () => {}; }
-  async wsUrl(kind: 'Case' | 'Board', id: string): Promise<string> {
-    const c = await this.load();
-    const actors = c.actors ?? c.default?.actors ?? c;
-    const r = await actors[kind].prepareWebsocket(id); // TODO(actor): confirm signature
-    return typeof r === 'string' ? r : r.websocketUrl ?? r.url;
+  async wsUrl(kind: 'Case' | 'Board', id: string, userId = 'web'): Promise<string> {
+    const r = await (await this.load()).actors[kind].prepareWebsocket({ actorId: id, metadata: { userId } });
+    return typeof r === 'string' ? r : r.websocketUrl;
   }
 }
 

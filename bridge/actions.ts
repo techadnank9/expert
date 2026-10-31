@@ -23,13 +23,14 @@ export async function registerActions(store: CaseStore) {
       input: z.object({ caseId: z.string(), summary: z.string(), steps: z.array(z.string()), sources: z.array(z.string()) }),
       availableTo,
       handler: async ({ input, agent }: { input: any; agent: { name: string } }) => {
-        const state = await store.postRecommendation(input.caseId, { summary: input.summary, steps: input.steps, sources: input.sources });
+        const before = await store.getCase(input.caseId);
         let recommendationId: string | undefined;
-        const root = state.relay.threadRootId;
+        const root = before?.relay.threadRootId;
         const text = `**Recommendation** (from @${agent?.name ?? 'appeals'})\n${input.summary}\n${input.steps.map((s, i) => `${i + 1}. ${s}`).join('\n')}\nSources: ${input.sources.join('; ')}\nReact :+1: if you agree.`;
         if (root) recommendationId = await replyAsActor(root, text);
         else await postAsActor(input.caseId, text);
         if (recommendationId) await store.setRelayInfo(input.caseId, { recommendationId });
+        await store.postRecommendation(input.caseId, { summary: input.summary, steps: input.steps, sources: input.sources, ...(recommendationId ? { messageId: recommendationId } : {}), by: agent?.name ?? 'appeals' } as any);
         return { ok: true, caseId: input.caseId, recommendationId };
       },
     }),

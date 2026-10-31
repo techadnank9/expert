@@ -12,4 +12,5 @@ export RELAY_AGENT_NAME="$ROLE"
 export RELAY_AGENT_TOKEN="$(get "RELAY_TOKEN_$UPPER")"
 export RELAY_AGENT_TYPE=agent
 [ -n "$SESSION" ] && export RELAY_ATTEST_SESSION_ID="$SESSION"
-exec "${BUNX:-$HOME/.bun/bin/bunx}" agent-relay@15.0.1 mcp
+BUN="${BUN:-$(command -v bun || echo /opt/homebrew/bin/bun)}"
+exec "$BUN" x agent-relay@15.0.1 mcp

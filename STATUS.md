@@ -29,3 +29,8 @@ Updated: 13:08
 ## 13:32 update
 - Works: `terse deploy` succeeded. Hosted actors at https://api.useterse.ai/cmvwuohyf00zwjy2a2dm8cjel/actors (TERSE_ACTOR_URL in .env). Local dev remains default; bridge switches to hosted by exporting TERSE_ACTOR_URL + TERSE_API_KEY before `terse actor generate`.
 - Decision: `terse init` and `terse deploy` only authenticate when TERSE_API_KEY is exported (the browser login is not picked up). Copied terse.config.json from a scratch init into actor/.
+
+## 13:37 update
+- Works: web/ all 8 routes over fixtures, build clean, Worker screen verified against mockups/Worker.html in headless Chrome.
+- Decision (user OK): deploy bridge + web to Freestyle at 15:10 only if integration is solid. Actors already hosted on Terse. Demo default remains localhost.
+- Waiting: bridge/ + agents/ (Relay) from subagent.
