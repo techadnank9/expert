@@ -37,6 +37,11 @@ seed/      seed-cases.ts loads the two demo cases
 mockups/   the HTML designs the screens were ported from
 ```
 
+## Live
+
+Deployed bridge + web (Superserve): https://8788-37c50edb-9314-4d3c-af56-e0df8916b0af.sandbox.superserve.ai
+Poster: `/post` · Worker: `/board`, `/case/4471` · Supervisor: `/supervisor`. Actors run on Terse hosted; bench agents run on laptops via Agent Relay.
+
 ## Run it
 
 Prerequisites: Bun 1.4.2+, Node 22+, the Terse CLI (`bunx terse-cli@latest install`), a `.env` at the repo root (see `bridge/.env.example`).

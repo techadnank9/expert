@@ -49,3 +49,15 @@ Updated: 13:08
 - Moment 4 (durability): state lives in the hosted Terse actor; kill bridge + web, restart, reload: intact. Also actor hibernates after 10 s idle between every step and wakes with state. Local `terse actor dev` kill/restart verified earlier too.
 - Relay observer link for judges minted (12 h), scoped to case-4471 + case-4398. Command in DEMO.md.
 - Next: Freestyle deploy of bridge + built web on one VM (style.dev name), then FLOWS.html walkthrough (subagent running).
+
+## 14:05 update — deployed
+- Freestyle refused (account flagged FORBIDDEN signup_risk). Per user rule, deployed to Superserve instead.
+- Superserve sandbox "understudy" (2 vCPU, 4 GiB, 7 d timeout) runs the bridge + built web on :8788, published publicly:
+  https://8788-37c50edb-9314-4d3c-af56-e0df8916b0af.sandbox.superserve.ai
+  Poster side: https://8788-37c50edb-9314-4d3c-af56-e0df8916b0af.sandbox.superserve.ai/post , https://8788-37c50edb-9314-4d3c-af56-e0df8916b0af.sandbox.superserve.ai/poster/4471 , https://8788-37c50edb-9314-4d3c-af56-e0df8916b0af.sandbox.superserve.ai/poster/4471/review
+  Worker side: https://8788-37c50edb-9314-4d3c-af56-e0df8916b0af.sandbox.superserve.ai/board , https://8788-37c50edb-9314-4d3c-af56-e0df8916b0af.sandbox.superserve.ai/case/4471/brief , https://8788-37c50edb-9314-4d3c-af56-e0df8916b0af.sandbox.superserve.ai/case/4471
+  Supervisor:  https://8788-37c50edb-9314-4d3c-af56-e0df8916b0af.sandbox.superserve.ai/supervisor
+- Only ONE bridge may run at a time (two would double-post into Relay). Local bridge stopped; local Vite proxies to the cloud bridge via BRIDGE_URL.
+- Bench agents still run on this laptop (agents/launch.sh), talking to Relay directly; the cloud bridge mirrors them.
+- Redeploy: rebuild tarball (bridge, actor/client/generated, web/dist, trimmed .env), `superserve cp`, `superserve exec understudy -- bash -c 'pkill bun; cd /home/user/app/bridge && set -a && . ../.env && set +a && nohup /opt/bun/bin/bun index.ts > /home/user/bridge.log 2>&1 &'`.
+- FLOWS.html + docs/screens/: walkthrough of both flows with live screenshots.
