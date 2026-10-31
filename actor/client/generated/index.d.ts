@@ -41,6 +41,21 @@ export declare namespace actors {
             }
         }
     }
+    namespace Business {
+        type Metadata = $ActorTypes["Business"]["Metadata"]
+        type Incoming = $ActorTypes["Business"]["Incoming"]
+        type Outgoing = $ActorTypes["Business"]["Outgoing"]
+        type State = $ActorTypes["Business"]["State"]
+        interface Authorization {
+            actorName: "Business"
+            actorId: string
+            metadata: Metadata
+            clientLocation?: {
+                latitude: number
+                longitude: number
+            }
+        }
+    }
     namespace Case {
         type Metadata = $ActorTypes["Case"]["Metadata"]
         type Incoming = $ActorTypes["Case"]["Incoming"]
@@ -106,6 +121,76 @@ export declare namespace actors {
             namespace remove {
                 type Args = $MethodTypes["remove"]["Args"]
                 type Result = $MethodTypes["remove"]["Result"]
+            }
+        }
+    }
+    namespace Business {
+        type Stub = $ActorTypes["Business"]["Methods"]
+        interface $MethodTypes {
+            ["addDocuments"]: {
+                Args: Parameters<Stub["addDocuments"]>
+                Result: Awaited<ReturnType<Stub["addDocuments"]>>
+            }
+            ["addJob"]: {
+                Args: Parameters<Stub["addJob"]>
+                Result: Awaited<ReturnType<Stub["addJob"]>>
+            }
+            ["exists"]: {
+                Args: Parameters<Stub["exists"]>
+                Result: Awaited<ReturnType<Stub["exists"]>>
+            }
+            ["getState"]: {
+                Args: Parameters<Stub["getState"]>
+                Result: Awaited<ReturnType<Stub["getState"]>>
+            }
+            ["grantAccess"]: {
+                Args: Parameters<Stub["grantAccess"]>
+                Result: Awaited<ReturnType<Stub["grantAccess"]>>
+            }
+            ["onboard"]: {
+                Args: Parameters<Stub["onboard"]>
+                Result: Awaited<ReturnType<Stub["onboard"]>>
+            }
+            ["setWorkspace"]: {
+                Args: Parameters<Stub["setWorkspace"]>
+                Result: Awaited<ReturnType<Stub["setWorkspace"]>>
+            }
+        }
+        interface Methods extends $MethodTypes {}
+        /**
+         * Types for a method's arguments and return value.
+         * @example
+         * type Args = actors.Business.Methods["addDocuments"]["Args"]
+         * type Result = actors.Business.Methods["addDocuments"]["Result"]
+         */
+        namespace Methods {
+            namespace addDocuments {
+                type Args = $MethodTypes["addDocuments"]["Args"]
+                type Result = $MethodTypes["addDocuments"]["Result"]
+            }
+            namespace addJob {
+                type Args = $MethodTypes["addJob"]["Args"]
+                type Result = $MethodTypes["addJob"]["Result"]
+            }
+            namespace exists {
+                type Args = $MethodTypes["exists"]["Args"]
+                type Result = $MethodTypes["exists"]["Result"]
+            }
+            namespace getState {
+                type Args = $MethodTypes["getState"]["Args"]
+                type Result = $MethodTypes["getState"]["Result"]
+            }
+            namespace grantAccess {
+                type Args = $MethodTypes["grantAccess"]["Args"]
+                type Result = $MethodTypes["grantAccess"]["Result"]
+            }
+            namespace onboard {
+                type Args = $MethodTypes["onboard"]["Args"]
+                type Result = $MethodTypes["onboard"]["Result"]
+            }
+            namespace setWorkspace {
+                type Args = $MethodTypes["setWorkspace"]["Args"]
+                type Result = $MethodTypes["setWorkspace"]["Result"]
             }
         }
     }
@@ -311,6 +396,19 @@ export declare const actors: {
             dependencies?: import("./terse-transport.js").SocketProxyDependencies
         ): Promise<import("./terse-transport.js").SocketGrant>
     }
+    Business: {
+        get(actorId: string, transport?: import("./terse-transport.js").ActorRpcTransport): actors.Business.Stub
+        /**
+         * Allow a frontend connection after your backend checks the user's access.
+         * @example
+         * const grant = await actors.Business.prepareWebsocket({ actorId: "actor-id", metadata })
+         */
+        prepareWebsocket(
+            authorization: Omit<actors.Business.Authorization, "actorName">,
+            options?: import("./terse-transport.js").SocketProxyOptions,
+            dependencies?: import("./terse-transport.js").SocketProxyDependencies
+        ): Promise<import("./terse-transport.js").SocketGrant>
+    }
     Case: {
         get(actorId: string, transport?: import("./terse-transport.js").ActorRpcTransport): actors.Case.Stub
         /**
@@ -330,7 +428,7 @@ export declare const actors: {
  * @example
  * const authorization: ActorAuthorization = { actorName: "Board", actorId: "actor-id", metadata }
  */
-export type ActorAuthorization = actors.Board.Authorization | actors.Case.Authorization
+export type ActorAuthorization = actors.Board.Authorization | actors.Business.Authorization | actors.Case.Authorization
 /**
  * Allow a frontend connection after your backend checks the user's access.
  * @example
@@ -338,6 +436,7 @@ export type ActorAuthorization = actors.Board.Authorization | actors.Case.Author
  */
 export declare class ActorProxy extends $SocketProxy<{
     ["Board"]: import("./terse-transport.js").ProxyActor<actors.Board.Metadata>
+    ["Business"]: import("./terse-transport.js").ProxyActor<actors.Business.Metadata>
     ["Case"]: import("./terse-transport.js").ProxyActor<actors.Case.Metadata>
 }> {
     constructor(

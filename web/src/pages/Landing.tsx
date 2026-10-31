@@ -41,6 +41,63 @@ const STEPS: { t: string; b: ReactNode }[] = [
   { t: 'Hire workers', b: <>Post a job. The worker you hire comes on board into that same workspace and does the work.</> },
 ]
 
+type Source = { n: number; name: string; detail: string; year: string; url: string }
+const SOURCES: Source[] = [
+  { n: 1, name: 'SHRM', detail: 'Recruiting Executives Benchmarking: median time-to-fill, nonexecutive roles, 39 days', year: '2026', url: 'https://www.shrm.org/topics-tools/research/2025-recruiting-benchmarking' },
+  { n: 2, name: 'U.S. Bureau of Labor Statistics', detail: 'Occupational Outlook Handbook, medical records specialists: median pay $24.59 per hour (May 2025)', year: '2025', url: 'https://www.bls.gov/ooh/healthcare/medical-records-and-health-information-technicians.htm' },
+  { n: 3, name: 'Fiverr Help Center', detail: 'Paying for orders: buyer service fee of 5.5% of the purchase amount', year: '2026', url: 'https://help.fiverr.com/hc/en-us/articles/360050216133-Paying-for-orders-extras-or-custom-offers' },
+  { n: 4, name: 'Upwork Help Center', detail: 'Client marketplace fee: up to 7.99% of payments to freelancers on the Basic plan', year: '2025', url: 'https://support.upwork.com/hc/en-us/articles/4660220468499' },
+  { n: 5, name: 'KFF', detail: 'Claims Denials and Appeals in ACA Marketplace Plans in 2024: 19% of in-network claims denied, fewer than 1% of denials appealed', year: '2026', url: 'https://www.kff.org/private-insurance/claims-denials-and-appeals-in-aca-marketplace-plans-in-2024/' },
+]
+
+function Fn({ n }: { n: number }) {
+  return (
+    <sup className="lp-fn">
+      <a href={`#lp-src-${n}`} aria-label={`Source ${n}`}>{n}</a>
+    </sup>
+  )
+}
+
+type Vs = { k: string; old: string; oldL: string; neu: string; neuL: string; claim: string; ctx: ReactNode }
+const VS: Vs[] = [
+  {
+    k: 'Time to a working expert',
+    old: '39 days', oldL: 'to fill a role',
+    neu: '~4 min', neuL: 'to a ready workspace',
+    claim: 'Start work the same hour.',
+    ctx: <>Median time-to-fill for a nonexecutive role is 39 days<Fn n={1} />. Our workspace was provisioned in 3 to 5 minutes, measured in our live demo.</>,
+  },
+  {
+    k: 'Cost per hour',
+    old: '$24.59', oldL: 'median, medical records specialist',
+    neu: '$15', neuL: 'worker, agents included',
+    claim: 'Specialist reading at entry-level pay.',
+    ctx: <>BLS median pay<Fn n={2} />. Marketplaces also add a 5.5% to 7.99% fee on each payment<Fn n={3} /><Fn n={4} />. $15 is our listed rate.</>,
+  },
+  {
+    k: 'Denials left on the table',
+    old: '<1%', oldL: 'of denied claims appealed',
+    neu: '2–4 min', neuL: 'to a cited recommendation',
+    claim: 'Every denial gets a reviewed answer.',
+    ctx: <>Marketplace insurers denied 19% of in-network claims in 2024; fewer than 1% were appealed<Fn n={5} />. Agent reply time measured in our live demo.</>,
+  },
+]
+
+function AnnounceBar() {
+  const [open, setOpen] = useState(true)
+  if (!open) return null
+  return (
+    <div className="lp-announce" role="region" aria-label="Announcement">
+      <span>
+        Built live at Haunted Hacks SF on Terse Durable Actors, Agent Relay and Superserve
+        <span className="lp-announce-sep" aria-hidden="true"> · </span>
+        <Link to="/how-it-works">See how it works <span className="lp-arrow">→</span></Link>
+      </span>
+      <button type="button" className="lp-announce-x" aria-label="Dismiss announcement" onClick={() => setOpen(false)}>×</button>
+    </div>
+  )
+}
+
 type Cat = { label: string; slug: string; items: string[] }
 const CATS: Cat[] = [
   { label: 'Medical billing', slug: 'medical-billing', items: ['Denied claim appeals', 'Prior authorization', 'Coding and modifiers', 'Timely filing', 'Coordination of benefits', 'Credentialing'] },
@@ -128,6 +185,8 @@ export function Landing() {
           <span className="lp-blob b3" />
         </div>
 
+        <AnnounceBar />
+
         <nav className="lp-nav" aria-label="Main">
           <Link to="/" className="lp-brand">
             <span className="lp-logo">U</span>
@@ -163,6 +222,9 @@ export function Landing() {
               Find work <span className="lp-arrow">→</span>
             </Link>
           </div>
+          <p className="lp-proof lp-intro" style={d(740)}>
+            Filling a role takes a median of 39 days<Fn n={1} />. Your workspace is ready in about 4 minutes, measured in our live demo.
+          </p>
           <div className="lp-meta lp-intro" style={d(800)}>
             <Link to="/case/4471">See a live case</Link>
           </div>
@@ -173,19 +235,34 @@ export function Landing() {
 
       {/* ---------- Marquee ---------- */}
 
-      {/* ---------- Stats ---------- */}
-      <section className="lp-stats">
-        {[
-          ['1', 'private workspace per business, open in the browser'],
-          ['3', 'specialists read your documents on every job'],
-          ['Every', 'decision on the record, with who made it and why'],
-          ['0', 'files leave your workspace'],
-        ].map(([n, l], i) => (
-          <div key={n} className="lp-stat" data-reveal style={d(i * 90)}>
-            <div className="lp-stat-n">{n}</div>
-            <div className="lp-stat-l">{l}</div>
-          </div>
-        ))}
+      {/* ---------- Old way vs HireXpert ---------- */}
+      <section className="lp-section lp-vs-sec" aria-labelledby="lp-vs-h">
+        <div className="lp-head" data-reveal>
+          <div className="lp-eyebrow">Why it is faster</div>
+          <h2 id="lp-vs-h">The usual way, next to ours.</h2>
+          <p>Outside numbers are cited. Ours are labelled: measured in our live demo.</p>
+        </div>
+        <div className="lp-vs">
+          {VS.map((v, i) => (
+            <article key={v.k} className="lp-vs-card" data-reveal style={d(i * 110)}>
+              <div className="lp-card-k">{v.k}</div>
+              <div className="lp-vs-nums">
+                <div className="lp-vs-old">
+                  <small>Old way</small>
+                  <span className="lp-vs-n">{v.old}</span>
+                  <span className="lp-vs-l">{v.oldL}</span>
+                </div>
+                <div className="lp-vs-new">
+                  <small>HireXpert</small>
+                  <span className="lp-vs-n">{v.neu}</span>
+                  <span className="lp-vs-l">{v.neuL}</span>
+                </div>
+              </div>
+              <b className="lp-vs-claim">{v.claim}</b>
+              <p className="lp-vs-ctx">{v.ctx}</p>
+            </article>
+          ))}
+        </div>
       </section>
 
       {/* ---------- Under the hood ---------- */}
@@ -268,6 +345,17 @@ export function Landing() {
             <Link to="/post" className="lp-pill">Post a job <span className="lp-arrow">→</span></Link>
             <Link to="/board" className="lp-pill lp-pill-ghost">Find work <span className="lp-arrow">→</span></Link>
           </div>
+        </div>
+        <div className="lp-sources" id="lp-sources">
+          <div className="lp-sources-h">Sources</div>
+          <ol>
+            {SOURCES.map((src) => (
+              <li key={src.n} id={`lp-src-${src.n}`}>
+                <span className="lp-sources-n">{src.n}.</span>{' '}
+                <a href={src.url} target="_blank" rel="noreferrer">{src.name}</a>, {src.year}. {src.detail}.
+              </li>
+            ))}
+          </ol>
         </div>
         <footer className="lp-foot">
           <div className="lp-brand">

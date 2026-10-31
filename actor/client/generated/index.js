@@ -40,6 +40,32 @@ export const actors = {
             return new ActorProxy(options, dependencies).handle({ ...authorization, actorName: "Board" })
         }
     },
+    ["Business"]: {
+        get(actorId, transport) {
+            return $createActorStub(
+                "Business",
+                actorId,
+                [
+                    { name: "addDocuments", result: "value" },
+                    { name: "addJob", result: "value" },
+                    { name: "exists", result: "value" },
+                    { name: "getState", result: "value" },
+                    { name: "grantAccess", result: "value" },
+                    { name: "onboard", result: "value" },
+                    { name: "setWorkspace", result: "value" }
+                ],
+                transport
+            )
+        },
+        /**
+         * Allow a frontend connection after your backend checks the user's access.
+         * @example
+         * const grant = await actors.Business.prepareWebsocket({ actorId: "actor-id", metadata })
+         */
+        prepareWebsocket(authorization, options = {}, dependencies = {}) {
+            return new ActorProxy(options, dependencies).handle({ ...authorization, actorName: "Business" })
+        }
+    },
     ["Case"]: {
         get(actorId, transport) {
             return $createActorStub(
@@ -88,7 +114,7 @@ export const actors = {
  */
 export class ActorProxy extends $SocketProxy {
     constructor(options = {}, dependencies = {}) {
-        super({ ["Board"]: {}, ["Case"]: {} }, options, dependencies)
+        super({ ["Board"]: {}, ["Business"]: {}, ["Case"]: {} }, options, dependencies)
     }
     handle(authorization) {
         return super.handle(authorization)

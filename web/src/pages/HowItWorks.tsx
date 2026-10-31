@@ -92,7 +92,7 @@ const SPONSORS: Sponsor[] = [
     role: 'State and time',
     tone: 'blue',
     items: [
-      'Board actor and one Case actor per job',
+      'One Business actor per onboarded business (workspace, uploads, access), the Board actor, and one Case actor per job',
       '@Persisted / @Emittable state streamed over WebSocket',
       'Alarms that nudge, then escalate on deadlines',
       'Hosted deploy; state survives kill and restart',
@@ -138,7 +138,7 @@ const SAFE: { t: string; b: string; tone: string }[] = [
   { t: 'Provenance', tone: 'blue', b: 'Every agent reply cites the business documents and carries a session_ref you can trace back to the session log on the VM.' },
   { t: 'Votes', tone: 'purple', b: 'Three agents with different jobs must agree. Their thumbs-up reactions are counted; anything short of 3 of 3 is visible.' },
   { t: 'Human approval', tone: 'green', b: 'Nothing is final until the worker approves or overrides, and the business reviews before paying.' },
-  { t: 'Durable decision log', tone: 'amber', b: 'Decisions, alarms and approvals live in the Case actor on Terse, so the record survives restarts and is mirrored into the channel.' },
+  { t: 'Durable decision log', tone: 'amber', b: 'Business records, decisions, alarms and approvals live in Terse actors (Business, Board, Case), so the record survives restarts and is mirrored into the channel.' },
 ]
 
 function Diagram() {
@@ -147,7 +147,7 @@ function Diagram() {
       <title id="hw-diag-t">HireXpert architecture</title>
       <desc id="hw-diag-d">
         Browsers for business, worker and supervisor talk to the web app on Vercel, which talks to the Bun bridge on
-        Superserve. The bridge drives Terse Case and Board actors, and exchanges messages with the Agent Relay case
+        Superserve. The bridge drives Terse Business, Board and Case actors, and exchanges messages with the Agent Relay case
         channel, which connects to Codex agents in the business VM on Superserve.
       </desc>
       <defs>

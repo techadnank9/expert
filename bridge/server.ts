@@ -1,6 +1,6 @@
 // HTTP + WS bridge for the browser (CONTRACT.md "WebSocket to browser").
 import type { ServerWebSocket } from 'bun';
-import { getWorkspaceRecord, inspectWorkspace, listWorkspaces, provisionWorkspace, slugFor, startBench, uploadFiles } from './workspace';
+import { getBusiness, getWorkspaceRecord, inspectWorkspace, listWorkspaces, provisionWorkspace, slugFor, startBench, uploadFiles } from './workspace';
 import type { CaseState, CaseStore, TerseCaseStore } from './casestore';
 import { approveAsWorker, askAsWorker, openCaseChannel, postAsActor, rememberWebhook } from './relay';
 
@@ -75,6 +75,10 @@ export function startServer(store: CaseStore, port = Number(process.env.BRIDGE_P
         }
 
         // ---- business workspaces (Superserve VM per business) ----
+        if (p[1] === 'business' && p[2] && req.method === 'GET') {
+          const b = await getBusiness(p[2]);
+          return b ? json(b) : json({ error: `no business ${p[2]}` }, 404);
+        }
         if (p[1] === 'workspace') {
           if (req.method === 'GET' && !p[2]) return json(listWorkspaces());
           if (req.method === 'POST' && p[2] === 'provision') {
@@ -135,6 +139,7 @@ export function startServer(store: CaseStore, port = Number(process.env.BRIDGE_P
                   }]);
                 }
                 if (s) await afterCaseCall(store, id, 'create', [], null, s).catch((e) => console.warn('[bridge] open channel failed:', e.message));
+                if (job?.poster) await bizAddJob(slugFor(String(job.poster)), id);
                 const ws = getWorkspaceRecord(String(job?.workspace ?? slugFor(job?.poster ?? '')));
                 if (ws && s && !s.workspace) await store.callCase(id, 'setWorkspace', [ws]).catch(() => {});
               }
@@ -144,6 +149,7 @@ export function startServer(store: CaseStore, port = Number(process.env.BRIDGE_P
               const job: any = board && !('jobs' in (board as any)) ? board : null;
               if (job?.id) await store.callCase(String(job.id), 'claim', [args[1]]).catch((e) => console.warn('[bridge] case claim:', e.message));
               if (job?.id && args[1]?.name) await store.callCase(String(job.id), 'grantWorkspace', [args[1].name]).catch(() => {});
+              if (job?.poster && args[1]?.name) await bizGrant(slugFor(String(job.poster)), String(args[1].name));
               return json(await store.getBoard());
             }
             return json(board);
@@ -222,4 +228,12 @@ export { rememberWebhook };
 async function caseIdsFor(store: CaseStore, owner: string): Promise<string[]> {
   const b = await store.getBoard();
   return b.jobs.filter((j) => j.poster === owner).map((j) => j.id);
+}
+
+
+async function bizGrant(slug: string, worker: string) {
+  try { const { actors } = await import('../actor/client/generated/index.js'); await (actors as any).Business.get(slug).grantAccess(worker); } catch {}
+}
+async function bizAddJob(slug: string, caseId: string) {
+  try { const { actors } = await import('../actor/client/generated/index.js'); const b = (actors as any).Business.get(slug); if (await b.exists()) await b.addJob(caseId); } catch {}
 }

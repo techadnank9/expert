@@ -6,6 +6,25 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { CaseStore } from './casestore';
 
+// Durable business record on Terse (Business actor, id = slug). The JSON file stays as a fast local cache.
+let _biz: any = null;
+async function biz(slug: string): Promise<any | null> {
+  try {
+    if (!_biz) _biz = (await import('../actor/client/generated/index.js')).actors.Business;
+    return _biz.get(slug);
+  } catch { return null; }
+}
+async function bizCall(slug: string, method: string, ...args: unknown[]) {
+  const b = await biz(slug);
+  if (!b) return;
+  try { await b[method](...args); } catch (e) { console.warn(`[business] ${slug}.${method}:`, (e as Error).message); }
+}
+export async function getBusiness(slug: string) {
+  const b = await biz(slug);
+  if (!b) return null;
+  try { return (await b.exists()) ? await b.getState() : null; } catch { return null; }
+}
+
 export type Workspace = {
   provider: 'superserve';
   slug: string;
@@ -49,7 +68,7 @@ const exec = (vm: string, script: string, timeoutMs = 180_000) => ss(['exec', vm
 
 export function listWorkspaces(): Workspace[] { return Object.values(load()); }
 export function getWorkspaceRecord(slug: string): Workspace | undefined { return load()[slug]; }
-function put(ws: Workspace) { const all = load(); all[ws.slug] = ws; save(all); return ws; }
+function put(ws: Workspace) { const all = load(); all[ws.slug] = ws; save(all); void bizCall(ws.slug, 'setWorkspace', ws); return ws; }
 
 /** Create (or reuse) the business VM and install the bench inside it. Returns immediately with 'provisioning'. */
 export async function provisionWorkspace(owner: string, store: CaseStore, onReady?: (ws: Workspace) => void, opts: { force?: boolean } = {}): Promise<Workspace> {
@@ -57,6 +76,7 @@ export async function provisionWorkspace(owner: string, store: CaseStore, onRead
   const existing = load()[slug];
   if (existing && existing.status !== 'error' && !opts.force) return existing;
   const ws: Workspace = { provider: 'superserve', slug, vmId: existing?.vmId ?? '', status: 'provisioning', agents: ROLES.map((role) => ({ role, running: false })), owner, grantedTo: existing?.grantedTo ?? [], createdAt: existing?.createdAt ?? new Date().toISOString(), ideUrl: existing?.ideUrl, idePassword: existing?.idePassword };
+  await bizCall(slug, 'onboard', owner);
   put(ws);
   (async () => {
     try {
@@ -133,7 +153,8 @@ export async function startBench(caseId: string, ws: Workspace, rounds = 30): Pr
 
 /** Live view of the VM: status, agent processes, files, Codex session logs. */
 export async function inspectWorkspace(slug: string) {
-  const ws = load()[slug];
+  let ws = load()[slug];
+  if (!ws) { const b = await getBusiness(slug); if (b?.workspace) { ws = b.workspace as Workspace; put(ws); } }
   if (!ws) return null;
   const [st, info] = await Promise.all([
     ss(['sandbox', 'get', ws.vmId || slug, '--json'], { timeoutMs: 30_000 }),
@@ -170,6 +191,7 @@ export async function uploadFiles(slug: string, files: { name: string; bytes: Ui
     stored.push(safe);
   }
   // PDFs: extract text next to them when pdftotext exists so the agents can read them.
+  void bizCall(slug, 'addDocuments', stored.map((name, i) => ({ name, size: files[i]?.bytes.length })));
   await exec(target, 'cd /home/user/agents/docs/business && (command -v pdftotext >/dev/null || (apt-get install -y -qq poppler-utils >/dev/null 2>&1 || true)); for f in *.pdf *.PDF; do [ -f "$f" ] && command -v pdftotext >/dev/null && pdftotext -layout "$f" "${f%.*}.txt" 2>/dev/null; done; chown -R root:root /home/user/agents/docs; true', 180_000);
   return stored;
 }

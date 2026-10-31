@@ -359,6 +359,77 @@ export class Case extends Actor<Meta, Incoming, Outgoing> {
     }
 }
 
+
+// ---------- Business actor: one per onboarded business (durable workspace record) ----------
+
+export type BusinessState = {
+    slug: string
+    name: string
+    workspace: Workspace | null
+    documents: { name: string; size?: number; at: string }[]
+    jobs: string[]
+    members: string[]
+    createdAt: string
+    log: LogEntry[]
+}
+
+export class Business extends Actor<Meta, Incoming, { type: "event"; event: string }> {
+    @Persisted @Emittable name = ""
+    @Persisted @Emittable workspace: Workspace | null = null
+    @Persisted @Emittable documents: { name: string; size?: number; at: string }[] = []
+    @Persisted @Emittable jobs: string[] = []
+    @Persisted @Emittable members: string[] = []
+    @Persisted @Emittable createdAt = ""
+    @Persisted @Emittable log: LogEntry[] = []
+
+    async getState(): Promise<BusinessState> {
+        return { slug: this.id, name: this.name, workspace: this.workspace, documents: this.documents, jobs: this.jobs, members: this.members, createdAt: this.createdAt, log: this.log }
+    }
+
+    async exists(): Promise<boolean> {
+        return this.name !== ""
+    }
+
+    async onboard(name: string): Promise<BusinessState> {
+        if (this.name === "") {
+            this.name = name
+            this.createdAt = now()
+            this.log = [...this.log, { at: now(), actor: name, event: "business_onboarded" }]
+        }
+        return this.getState()
+    }
+
+    async setWorkspace(ws: Workspace | null): Promise<BusinessState> {
+        this.workspace = ws
+        this.log = [...this.log, { at: now(), actor: "system", event: "workspace_" + (ws?.status ?? "cleared"), reason: ws ? `${ws.provider} ${ws.vmId}` : undefined }]
+        this.broadcast({ type: "event", event: "workspace_" + (ws?.status ?? "cleared") })
+        return this.getState()
+    }
+
+    async addDocuments(names: { name: string; size?: number }[]): Promise<BusinessState> {
+        const at = now()
+        this.documents = [...this.documents, ...names.map(n => ({ ...n, at }))]
+        this.log = [...this.log, { at, actor: this.name, event: "documents_uploaded", reason: names.map(n => n.name).join(", ") }]
+        return this.getState()
+    }
+
+    async addJob(caseId: string): Promise<BusinessState> {
+        if (!this.jobs.includes(caseId)) this.jobs = [...this.jobs, caseId]
+        return this.getState()
+    }
+
+    async grantAccess(worker: string): Promise<BusinessState> {
+        if (!this.members.includes(worker)) {
+            this.members = [...this.members, worker]
+            if (this.workspace && !this.workspace.grantedTo.includes(worker)) this.workspace = { ...this.workspace, grantedTo: [...this.workspace.grantedTo, worker] }
+            this.log = [...this.log, { at: now(), actor: "system", event: "workspace_access_granted", reason: worker }]
+        }
+        return this.getState()
+    }
+
+    async onMessage(): Promise<void> {}
+}
+
 // ---------- Board actor: global list of open jobs, claim is atomic ----------
 
 export type Job = {
