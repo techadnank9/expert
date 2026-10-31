@@ -70,3 +70,9 @@ Updated: 13:08
 ## 14:22 update
 - Moved deployment to the credited Superserve account (SUPERSERVE_API_KEY_2). New sandbox 5975fada; old sandbox 37c50edb bridge stopped (paused). deploy/superserve.sh now uses SUPERSERVE_API_KEY_2 by default.
 - Rehearsal 1 on the deployed stack: ask -> 3 agent replies with citations -> Recommendation lifted -> 3 of 3 agree -> Approve -> drafted. PASS.
+
+## 14:35 update
+- Rehearsal 2 on the deployed stack: PASS (ask -> 3 replies -> Recommendation -> 3 of 3 -> Approve -> drafted). Two consecutive passes, per HANDOFF rule 7.
+- Landing page at / redesigned (fastwork-style hero, product mock, reveals; web/src/pages/Landing.tsx + web/src/landing.css). Deployed.
+- Pending: nicer URL via Vercel (needs user to approve `vercel login`); GitHub push (not done, awaiting user).
+- Known: 390px landing layout unverified visually (no horizontal overflow measured).
