@@ -1,28 +1,28 @@
-# HireXpert demo narration (~90 s, read aloud)
+# HireXpert demo narration (video is 1:56, read aloud; times match the cut)
 
-**Opener (0:00-0:05)**
+**Opener (0:00-0:04)**
 "This is HireXpert: expert work, without the hiring wait."
 
-## 01 Landing (0:05-0:13)
+## 01 Landing (0:04-0:16)
 "The median role takes 39 days to fill, says SHRM. A business starts here, once."
 
-## 02 Onboard (0:13-0:22)
+## 02 Onboard (0:16-0:24)
 "Harbor Dental types its name and drops in a denial letter. One click, and we start building its private digital workspace."
 
-## 03 Workspace ready and post a job (0:22-0:38)
+## 03 Workspace ready and post a job (0:24-0:47)
 "Ready in about four minutes, measured live. This is its own Superserve machine: VS Code in the browser, its documents, and three specialist AI agents installed. Now it posts a job: appeal a denied MRI claim."
 
-## 04 Worker claims (0:38-0:50)
+## 04 Worker claims (0:47-1:04)
 "Maya has good judgment but no credential. She claims the job from the board, requests access, and is let into that same workspace."
 
-## 05 Submit work (0:50-1:00)
+## 05 Submit work (1:04-1:19)
 "She drafts the appeal letter right beside the documents, then submits it for verification."
 
-## 06 Verdict (1:00-1:15)
-"Three agents, running on OpenAI Codex, talk over Agent Relay. Policy, billing codes, appeals. They check every line, cite sources, and reply verified or fix needed. Three of three verified, so Maya accepts."
+## 06 Verdict (1:19-1:34)
+"Three agents, running on OpenAI Codex, talk over Agent Relay. Policy, billing codes, appeals. They check every line against the documents, cite sources, and reply verified or fix needed. Here they caught two fixes, all three voted, and Maya accepts the fixes before anything goes out."
 
-## 07 Review, supervisor, how it works (1:15-1:28)
+## 07 Review, supervisor, how it works (1:34-1:52)
 "The business reviews and pays. Terse holds the whole case: documents, deadlines, votes. It wakes itself on deadlines and escalates to a supervisor. Nothing is lost on restart. A certified biller is about $25 an hour, says BLS. Here, it's $15."
 
-**Closer (1:28-1:30)**
+**Closer (1:52-1:56)**
 "HireXpert. Hire the judgment, not the credential."

@@ -106,3 +106,7 @@ Updated: 13:08
 - Demo video: demo/demo.mp4 (also docs/demo.mp4), 69 s, 1080p, ElevenLabs narration; scenes are live screenshots; rebuild with demo/build.sh (script in demo/script.json).
 - Terse Business actor added (one per business: workspace, documents, access, jobs); bridge writes through; GET /api/business/:slug. Three businesses backfilled.
 - Landing: sourced comparison strip (SHRM, BLS, Fiverr, Upwork, KFF), proof line, sources block, announcement bar.
+
+## 17:15 (second session) — live demo video
+- demo/demo-live.mp4 (also docs/demo-live.mp4): 1:56, silent, no captions, real Playwright-driven walkthrough of the live app (onboard Harbor Dental Group -> VM ready -> post job 4736 -> worker claims 4471 -> submits work -> bench verifies with fixes, 3 votes -> accept -> business review -> supervisor -> how it works). Recorder: demo/recorder/record.mjs; assembly: demo/assemble.sh. Read-aloud script: demo/NARRATION.md.
+- Product: humans do the work, agents verify (submitDeliverable -> verification round; verifier prompts; verdict card; My jobs history; sponsor labels in product).
