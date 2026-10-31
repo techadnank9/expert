@@ -84,7 +84,7 @@ export function startServer(store: CaseStore, port = Number(process.env.BRIDGE_P
             const ws = await provisionWorkspace(owner, store, async (ready) => {
               // attach the ready workspace to every case this business owns
               for (const id of await caseIdsFor(store, owner)) await store.callCase(id, 'setWorkspace', [ready]).catch(() => {});
-            });
+            }, { force: !!args[0]?.force });
             return json(ws);
           }
           if (req.method === 'POST' && p[2] && p[3] === 'files') {

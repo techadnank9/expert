@@ -46,11 +46,11 @@ export function getWorkspaceRecord(slug: string): Workspace | undefined { return
 function put(ws: Workspace) { const all = load(); all[ws.slug] = ws; save(all); return ws; }
 
 /** Create (or reuse) the business VM and install the bench inside it. Returns immediately with 'provisioning'. */
-export async function provisionWorkspace(owner: string, store: CaseStore, onReady?: (ws: Workspace) => void): Promise<Workspace> {
+export async function provisionWorkspace(owner: string, store: CaseStore, onReady?: (ws: Workspace) => void, opts: { force?: boolean } = {}): Promise<Workspace> {
   const slug = slugFor(owner);
   const existing = load()[slug];
-  if (existing && existing.status !== 'error') return existing;
-  const ws: Workspace = { provider: 'superserve', slug, vmId: '', status: 'provisioning', agents: ROLES.map((role) => ({ role, running: false })), owner, grantedTo: [], createdAt: new Date().toISOString() };
+  if (existing && existing.status !== 'error' && !opts.force) return existing;
+  const ws: Workspace = { provider: 'superserve', slug, vmId: existing?.vmId ?? '', status: 'provisioning', agents: ROLES.map((role) => ({ role, running: false })), owner, grantedTo: existing?.grantedTo ?? [], createdAt: existing?.createdAt ?? new Date().toISOString(), ideUrl: existing?.ideUrl, idePassword: existing?.idePassword };
   put(ws);
   (async () => {
     try {
