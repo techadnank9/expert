@@ -9,6 +9,7 @@ import { PosterReview } from './pages/PosterReview'
 import { NotFound } from './pages/NotFound'
 import { Landing } from './pages/Landing'
 import { Onboard } from './pages/Onboard'
+import { HowItWorks } from './pages/HowItWorks'
 
 export default function App() {
   return (
@@ -19,6 +20,7 @@ export default function App() {
       <Route path="/supervisor" element={<Supervisor />} />
       <Route path="/board" element={<BoardPage />} />
       <Route path="/onboard" element={<Onboard />} />
+      <Route path="/how-it-works" element={<HowItWorks />} />
       <Route path="/post" element={<PostJob />} />
       <Route path="/poster/:id" element={<PosterProgress />} />
       <Route path="/poster/:id/review" element={<PosterReview />} />

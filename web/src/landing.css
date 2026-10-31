@@ -369,6 +369,107 @@
   .lp-blob { filter: blur(70px); width: 320px !important; height: 320px !important; }
 }
 
+/* ---------- Category row + mega-menu (reference: fastwork top bar) ---------- */
+.lp-cats {
+  position: relative;
+  z-index: 5;
+  max-width: 1040px;
+  margin: 14px auto 0;
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  animation: lp-fade 900ms var(--lp-ease) 80ms both;
+}
+.lp-cat { position: static; }
+.lp-cat-trigger {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 36px; padding: 0 14px;
+  border-radius: 999px;
+  font-size: 14px; font-weight: 500; color: #525252;
+  white-space: nowrap;
+  transition: color 0.2s, background 0.2s;
+}
+.lp-cat-trigger:hover, .lp-cat.is-open .lp-cat-trigger { color: #0a0a0a; background: rgba(255, 255, 255, 0.75); }
+.lp-cat-trigger:focus-visible { outline: 2px solid #0569ff; outline-offset: 2px; }
+.lp-cat-caret {
+  width: 6px; height: 6px;
+  border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor;
+  transform: translateY(-2px) rotate(45deg);
+  transition: transform 180ms var(--lp-ease);
+  opacity: 0.6;
+}
+.lp-cat.is-open .lp-cat-caret { transform: translateY(1px) rotate(225deg); }
+
+.lp-mega {
+  position: absolute;
+  left: 50%; top: 100%;
+  width: min(760px, calc(100vw - 48px));
+  padding-top: 10px; /* hover bridge between row and panel */
+  transform: translate3d(-50%, 8px, 0);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 180ms var(--lp-ease), transform 180ms var(--lp-ease), visibility 0s linear 180ms;
+}
+.lp-cat.is-open .lp-mega {
+  opacity: 1; visibility: visible; pointer-events: auto;
+  transform: translate3d(-50%, 0, 0);
+  transition: opacity 180ms var(--lp-ease), transform 180ms var(--lp-ease), visibility 0s;
+}
+.lp-mega-panel {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.1fr;
+  gap: 28px;
+  text-align: left;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 16px;
+  padding: 26px 28px;
+  box-shadow: 0 24px 60px -24px rgba(10, 14, 40, 0.28), 0 4px 14px -6px rgba(10, 14, 40, 0.08);
+}
+.lp-mega-h { font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #737373; margin-bottom: 12px; }
+.lp-mega-col ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.lp-mega-col a {
+  display: block; padding: 7px 10px; margin: 0 -10px;
+  border-radius: 10px;
+  font-size: 15px; color: #333333;
+  transition: background 0.15s, color 0.15s;
+}
+.lp-mega-col a:hover, .lp-mega-col a:focus-visible { background: #eef2ff; color: #0569ff; outline: none; }
+.lp-mega-aside { background: #fcfcfc; border: 1px solid rgba(0, 0, 0, 0.06); border-radius: 12px; padding: 18px; }
+.lp-mega-aside p { margin: 0 0 14px; font-size: 14px; line-height: 1.5; color: #525252; }
+.lp-mega-cta { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: #0569ff; }
+.lp-mega-cta:hover .lp-arrow { transform: translateX(4px); }
+
+@media (max-width: 899px) {
+  .lp-cats {
+    justify-content: flex-start;
+    overflow-x: auto;
+    gap: 8px;
+    margin: 12px -24px 0;
+    padding: 2px 24px 4px;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .lp-cats::-webkit-scrollbar { display: none; }
+  .lp-cat-trigger { background: rgba(255, 255, 255, 0.75); border: 1px solid rgba(0, 0, 0, 0.08); height: 34px; font-size: 13px; }
+  .lp-cat-caret, .lp-mega { display: none; }
+}
+@media (max-width: 680px) {
+  .lp-cats { margin: 12px -16px 0; padding: 2px 16px 4px; }
+}
+
+/* ---------- Under the hood footnote + steps close ---------- */
+.lp-cols .lp-card { display: flex; flex-direction: column; }
+.lp-cols .lp-card-k { align-self: flex-start; }
+.lp-powered {
+  margin-top: auto; padding-top: 22px;
+  font-size: 12px; font-weight: 500; letter-spacing: 0.02em; color: #737373;
+}
+.lp-card .lp-list + .lp-powered, .lp-card .lp-agents + .lp-powered { margin-top: auto; }
+.lp-card-dark .lp-powered { color: rgba(255, 255, 255, 0.5); }
+.lp-steps-close { text-align: center; max-width: 640px; margin: 36px auto 0; font-size: 17px; line-height: 1.6; color: #333333; }
+
 /* ---------- Reduced motion ---------- */
 @media (prefers-reduced-motion: reduce) {
   .lp *, .lp *::before, .lp *::after { animation: none !important; transition: none !important; }
@@ -383,3 +484,6 @@
 .lp-script.is-out { opacity: 0; transform: translateY(-10px); filter: blur(6px); }
 @keyframes lp-word-in { from { opacity: 0; transform: translateY(12px); filter: blur(6px); } to { opacity: 1; transform: none; filter: blur(0); } }
 @media (prefers-reduced-motion: reduce) { .lp-script, .lp-script.is-in, .lp-script.is-out { animation: none; transition: none; opacity: 1; transform: none; filter: none; } }
+
+/* Rotating phrase sits on its own centred line so multi-word phrases never reflow the headline */
+.lp-rotate-line { display: block; min-width: 0; text-align: center; min-height: 1.3em; margin-top: 0.04em; }

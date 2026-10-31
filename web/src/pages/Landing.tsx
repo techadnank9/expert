@@ -36,13 +36,85 @@ function useReveal() {
 
 
 const STEPS: { t: string; b: ReactNode }[] = [
-  { t: 'Onboard', b: <>A business gets its own VM. Its documents and three Codex bench agents live there, with their session logs.</> },
-  { t: 'Post', b: <>The business describes the outcome. <code>Board.post</code> creates the Case actor and its Relay channel <code>#case-NNNN</code>.</> },
-  { t: 'Claim', b: <>A worker claims it from the board. <code>claim()</code> is one method call, so the first caller wins, and the worker is granted access to the VM.</> },
-  { t: 'Ask the bench', b: <>The worker starts the bench in the VM and asks. Policy, billing and appeals read the documents, reply with citations, disagree once, converge.</> },
-  { t: 'Vote and decide', b: <>Appeals posts the recommendation. A thumbs up from each agent is the vote. The worker approves or overrides, and the reason is persisted.</> },
-  { t: 'Deliver', b: <>The business reviews and approves, pay releases. If the payer goes quiet, a Terse alarm wakes the case and escalates to the supervisor.</> },
+  { t: 'Onboard', b: <>Create your account and upload your files.</> },
+  { t: 'Create your digital workspace', b: <>Your own private machine in the cloud, open in the browser, with your documents and specialist help ready.</> },
+  { t: 'Hire workers', b: <>Post a job. The worker you hire comes on board into that same workspace and does the work.</> },
 ]
+
+type Cat = { label: string; slug: string; items: string[] }
+const CATS: Cat[] = [
+  { label: 'Medical billing', slug: 'medical-billing', items: ['Denied claim appeals', 'Prior authorization', 'Coding and modifiers', 'Timely filing', 'Coordination of benefits', 'Credentialing'] },
+  { label: 'Insurance claims', slug: 'insurance-claims', items: ['Property damage disputes', 'Auto claims', 'Adjuster estimate review', 'Total loss valuation'] },
+  { label: 'Benefits', slug: 'benefits', items: ['FMLA and disability', 'COBRA elections', 'Open enrollment', 'Dependent eligibility'] },
+  { label: 'Immigration paperwork', slug: 'immigration', items: ['H-1B extensions', 'Green card RFEs', 'Work permit renewals', 'Visa interview prep'] },
+  { label: 'Tax', slug: 'tax', items: ['Notice responses', 'Amended returns', 'Payment plans', '1099 reconciliation'] },
+]
+
+function CategoryBar() {
+  const [open, setOpen] = useState<string | null>(null)
+  const triggers = useRef<Record<string, HTMLAnchorElement | null>>({})
+  return (
+    <div className="lp-cats" aria-label="Browse by category" role="navigation" onMouseLeave={() => setOpen(null)}>
+      {CATS.map((c) => {
+        const isOpen = open === c.slug
+        const half = Math.ceil(c.items.length / 2)
+        const cols = [c.items.slice(0, half), c.items.slice(half)]
+        const href = `/post?domain=${c.slug}`
+        return (
+          <div
+            key={c.slug}
+            className={`lp-cat${isOpen ? ' is-open' : ''}`}
+            onMouseEnter={() => setOpen(c.slug)}
+            onFocus={() => setOpen(c.slug)}
+            onBlur={(e) => {
+              if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setOpen((o) => (o === c.slug ? null : o))
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Escape' && isOpen) {
+                setOpen(null)
+                triggers.current[c.slug]?.focus()
+                // keep closed after refocusing the trigger
+                setTimeout(() => setOpen(null), 0)
+              }
+            }}
+          >
+            <Link
+              to={href}
+              ref={(el) => { triggers.current[c.slug] = el }}
+              className="lp-cat-trigger"
+              aria-expanded={isOpen}
+              aria-controls={`lp-mega-${c.slug}`}
+            >
+              {c.label}
+              <span className="lp-cat-caret" aria-hidden="true" />
+            </Link>
+            <div className="lp-mega" id={`lp-mega-${c.slug}`} aria-hidden={!isOpen}>
+              <div className="lp-mega-panel">
+                {cols.map((col, ci) => (
+                  <div key={ci} className="lp-mega-col">
+                    <div className="lp-mega-h">{ci === 0 ? c.label : 'More in ' + c.label.toLowerCase()}</div>
+                    <ul>
+                      {col.map((it) => (
+                        <li key={it}>
+                          <Link to={href} tabIndex={isOpen ? 0 : -1}>{it}</Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+                <div className="lp-mega-aside">
+                  <div className="lp-mega-h">Post a {c.label.toLowerCase()} job</div>
+                  <p>Three specialist agents read your documents. A worker with judgment makes the call.</p>
+                  <Link to={href} className="lp-mega-cta" tabIndex={isOpen ? 0 : -1}>Post a job <span className="lp-arrow">→</span></Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
 
 export function Landing() {
   const root = useReveal()
@@ -69,16 +141,18 @@ export function Landing() {
           <Link to="/onboard" className="lp-pill lp-pill-sm">Post a job</Link>
         </nav>
 
+        <CategoryBar />
+
         <div className="lp-hero-inner">
           <div className="lp-kicker lp-intro" style={d(120)}>
-            <span className="lp-dot" /> The $15 an hour expert, live on Terse + Agent Relay
+            <span className="lp-dot" /> The $15 an hour expert
           </div>
           <h1 className="lp-title lp-intro" style={d(300)}>
-            Any worker can now <Rotating words={['appeal', 'dispute', 'reconcile', 'win']} />
+            Your business, with a <Rotating words={['digital workspace', 'team', 'memory', 'head start']} />
           </h1>
           <p className="lp-sub lp-intro" style={d(480)}>
-            Post the job. A worker with good judgment claims it. Three specialist agents read the documents, argue it out,
-            and vote on one recommendation. The worker decides, and every step is on the record.
+            Onboard once. You get a private digital workspace with your documents in it. Hire workers, and they walk into
+            that workspace and start, with specialist help already set up.
           </p>
           <div className="lp-ctas lp-intro" style={d(660)}>
             <Link to="/onboard" className="lp-pill">
@@ -89,9 +163,7 @@ export function Landing() {
             </Link>
           </div>
           <div className="lp-meta lp-intro" style={d(800)}>
-            Watch it live: <Link to="/case/4471">Claim 4471, denied lumbar MRI</Link>
-            <span aria-hidden="true"> · </span>
-            <Link to="/supervisor">Supervisor desk</Link>
+            <Link to="/case/4471">See a live case</Link>
           </div>
         </div>
 
@@ -103,10 +175,10 @@ export function Landing() {
       {/* ---------- Stats ---------- */}
       <section className="lp-stats">
         {[
-          ['3 of 3', 'agents agree before a recommendation ships'],
-          ['Every', 'decision traceable to the agent session behind it'],
-          ['Kill -9', 'the server. The case comes back intact.'],
-          ['1 actor', 'per case, with alarms that wake it up'],
+          ['1', 'private workspace per business, open in the browser'],
+          ['3', 'specialists read your documents on every job'],
+          ['Every', 'decision on the record, with who made it and why'],
+          ['0', 'files leave your workspace'],
         ].map(([n, l], i) => (
           <div key={n} className="lp-stat" data-reveal style={d(i * 90)}>
             <div className="lp-stat-n">{n}</div>
@@ -115,45 +187,47 @@ export function Landing() {
         ))}
       </section>
 
-      {/* ---------- Three columns ---------- */}
+      {/* ---------- Under the hood ---------- */}
       <section className="lp-section">
         <div className="lp-head" data-reveal>
           <div className="lp-eyebrow">Under the hood</div>
-          <h2>Three layers, one case.</h2>
-          <p>People make the calls, a durable actor remembers everything, and a bench of agents does the specialist reading.</p>
+          <h2>What's working for you under the hood.</h2>
+          <p>Every job keeps its own record, your agents talk in one room, and everything lives on a machine that belongs to you.</p>
         </div>
 
         <div className="lp-cols">
-          <article className="lp-card" data-reveal style={d(0)}>
-            <div className="lp-card-k">Humans</div>
-            <h3>Judgment stays with people.</h3>
+          <article className="lp-card lp-card-dark" data-reveal style={d(0)}>
+            <div className="lp-card-k">Case file</div>
+            <h3>A case file that never forgets.</h3>
             <ul className="lp-list">
-              <li><b>Worker.</b> No credential, good judgment. Asks the bench, approves or overrides.</li>
-              <li><b>Supervisor.</b> Watches every case live. Alarms escalate to them when a payer goes quiet.</li>
-              <li><b>Poster.</b> A clinic or firm. Reviews the deliverable; pay releases on approval.</li>
+              <li>Every job is a living record: documents, deadlines and the decision log.</li>
+              <li>It wakes itself on deadlines. No reply from the payer in ten days, it escalates.</li>
+              <li>It survives any crash or restart. Nothing is lost.</li>
             </ul>
+            <div className="lp-powered">Powered by Terse Durable Actors</div>
           </article>
 
-          <article className="lp-card lp-card-dark" data-reveal style={d(120)}>
-            <div className="lp-card-k">Terse Durable Actor</div>
-            <h3>One actor per case.</h3>
-            <ul className="lp-list">
-              <li><code>@Persisted</code> claim, documents, deadlines and decision log.</li>
-              <li><code>@Emittable</code> state streams to every screen over WebSocket.</li>
-              <li>Alarms: the actor wakes itself. No payer reply in 10 days, escalate.</li>
-              <li>Kill the server and the case comes back intact.</li>
-            </ul>
-          </article>
-
-          <article className="lp-card lp-card-blue" data-reveal style={d(240)}>
-            <div className="lp-card-k">Agent Relay bench</div>
-            <h3><code>#case-4471</code></h3>
-            <p className="lp-card-p">One thread per question. Reactions are votes. Every message carries a <code>session_ref</code> to the transcript that produced it.</p>
+          <article className="lp-card lp-card-blue" data-reveal style={d(120)}>
+            <div className="lp-card-k">Agents</div>
+            <h3>Your agents in one room.</h3>
+            <p className="lp-card-p">The three specialists discuss each job in a shared channel. Every message links back to the exact agent session that wrote it, so you can audit any recommendation.</p>
             <div className="lp-agents">
               <div className="lp-agent"><span className="lp-av av-p">P</span><div><b>Policy agent</b><small>payer policy lookup</small></div></div>
               <div className="lp-agent"><span className="lp-av av-b">B</span><div><b>Billing codes agent</b><small>CPT, modifiers, LCDs</small></div></div>
               <div className="lp-agent"><span className="lp-av av-a">A</span><div><b>Appeals agent</b><small>drafting, deadlines</small></div></div>
             </div>
+            <div className="lp-powered">Powered by Agent Relay</div>
+          </article>
+
+          <article className="lp-card" data-reveal style={d(240)}>
+            <div className="lp-card-k">Your machine</div>
+            <h3>Your own machine in the cloud.</h3>
+            <ul className="lp-list">
+              <li>Documents, agents and session logs live on a private machine per business.</li>
+              <li>The people you hire log into that machine, with VS Code right in the browser.</li>
+              <li>Nothing leaves it.</li>
+            </ul>
+            <div className="lp-powered">Powered by Superserve</div>
           </article>
         </div>
       </section>
@@ -161,8 +235,8 @@ export function Landing() {
       {/* ---------- Steps ---------- */}
       <section className="lp-section lp-steps-sec">
         <div className="lp-head" data-reveal>
-          <div className="lp-eyebrow">How one case flows</div>
-          <h2>From posted to paid in six moves.</h2>
+          <div className="lp-eyebrow">Getting started</div>
+          <h2>Three easy steps.</h2>
         </div>
         <ol className="lp-steps">
           {STEPS.map((s, i) => (
@@ -173,6 +247,9 @@ export function Landing() {
             </li>
           ))}
         </ol>
+        <p className="lp-steps-close" data-reveal>
+          Behind the scenes, specialist agents read your documents and give the worker a recommendation to approve. Every decision is on the record.
+        </p>
       </section>
 
       {/* ---------- Closing CTA + footer ---------- */}
@@ -224,7 +301,7 @@ function Rotating({ words }: { words: string[] }) {
     return () => clearInterval(t)
   }, [words.length])
   return (
-    <span className="lp-rotate" aria-live="polite">
+    <span className="lp-rotate lp-rotate-line" aria-live="polite">
       <span key={i} className={`lp-script lp-accent ${out ? 'is-out' : moved ? 'is-in' : ''}`}>{words[i]}</span>
     </span>
   )
