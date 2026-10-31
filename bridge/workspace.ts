@@ -52,13 +52,21 @@ export async function provisionWorkspace(owner: string, store: CaseStore, onRead
   put(ws);
   (async () => {
     try {
-      let vmId = '';
-      const created = await ss(['sandbox', 'create', '--name', slug, '--timeout', '7d', '--json'], { timeoutMs: 120_000 });
-      if (created.ok) vmId = JSON.parse(created.out).id;
-      else {
-        const got = await ss(['sandbox', 'get', slug, '--json']);
-        if (!got.ok) throw new Error(created.out.slice(0, 300));
-        vmId = JSON.parse(got.out).id;
+      // Names are not unique on Superserve: reuse an existing VM with this name before creating one.
+      let vmId = existing?.vmId ?? '';
+      if (!vmId) {
+        const listed = await ss(['sandbox', 'list', '--json'], { timeoutMs: 60_000 });
+        if (listed.ok) {
+          const match = (JSON.parse(listed.out) as any[]).filter((x) => x.name === slug && x.status !== 'deleted').sort((a, b) => String(a.created_at).localeCompare(String(b.created_at)))[0];
+          if (match) vmId = match.id;
+        }
+      }
+      if (!vmId) {
+        const created = await ss(['sandbox', 'create', '--name', slug, '--timeout', '7d', '--json'], { timeoutMs: 120_000 });
+        if (!created.ok) throw new Error(created.out.slice(0, 300));
+        vmId = JSON.parse(created.out).id;
+      } else {
+        await ss(['sandbox', 'resume', vmId, '--json'], { timeoutMs: 120_000 }).catch(() => {});
       }
       put({ ...ws, vmId });
       // Ship the bench: agents/ (prompts, docs, launcher) + .env with Relay + OpenAI keys.
@@ -66,10 +74,10 @@ export async function provisionWorkspace(owner: string, store: CaseStore, onRead
       await Bun.spawn(['tar', 'czf', tar, '-C', ROOT, 'agents'], { env: { ...process.env, COPYFILE_DISABLE: '1' } }).exited;
       const envLines = Object.entries(process.env).filter(([k]) => k === 'RELAY_WORKSPACE_KEY' || k === 'OPENAI_API_KEY' || k.startsWith('RELAY_TOKEN_')).map(([k, v]) => `${k}=${v}`).join('\n') + '\n';
       await Bun.write(join(ROOT, 'vm.env'), envLines);
-      const cp1 = await ss(['cp', tar, `${slug}:/home/user/agents.tar.gz`]);
-      const cp2 = await ss(['cp', join(ROOT, 'vm.env'), `${slug}:/home/user/.env`]);
+      const cp1 = await ss(['cp', tar, `${vmId}:/home/user/agents.tar.gz`]);
+      const cp2 = await ss(['cp', join(ROOT, 'vm.env'), `${vmId}:/home/user/.env`]);
       if (!cp1.ok || !cp2.ok) throw new Error('copy failed: ' + (cp1.out + cp2.out).slice(0, 300));
-      const setup = await exec(slug, [
+      const setup = await exec(vmId, [
         'cd /home/user && rm -rf agents && tar xzf agents.tar.gz 2>/dev/null && chown -R root:root agents && chmod +x agents/*.sh',
         'command -v codex >/dev/null || npm install -g @openai/codex@0.166.0 >/tmp/npm.log 2>&1',
         'OA=$(grep "^OPENAI_API_KEY=" .env | cut -d= -f2-); [ -n "$OA" ] && printf "%s" "$OA" | codex login --with-api-key >/dev/null 2>&1 || true',
@@ -92,7 +100,7 @@ export async function provisionWorkspace(owner: string, store: CaseStore, onRead
 export async function startBench(caseId: string, ws: Workspace, rounds = 30): Promise<Workspace> {
   if (ws.status !== 'ready') throw new Error(`workspace ${ws.slug} is ${ws.status}`);
   const script = ROLES.map((r) => `(cd /home/user && CODEX_SANDBOX_MODE=danger-full-access nohup agents/launch.sh ${r} ${caseId} ${rounds} > /home/user/${r}-${caseId}.log 2>&1 &)`).join('; ') + '; sleep 2; pgrep -x codex | wc -l';
-  const r = await exec(ws.slug, script, 60_000);
+  const r = await exec(ws.vmId || ws.slug, script, 60_000);
   const running = r.ok && Number(r.out.trim().split('\n').pop()) > 0;
   const next = put({ ...ws, agents: ROLES.map((role) => ({ role, running })) });
   console.log(`[workspace] bench started in ${ws.slug} for case ${caseId}: ${r.out.trim().split('\n').pop()} codex processes`);
@@ -104,8 +112,8 @@ export async function inspectWorkspace(slug: string) {
   const ws = load()[slug];
   if (!ws) return null;
   const [st, info] = await Promise.all([
-    ss(['sandbox', 'get', slug, '--json'], { timeoutMs: 30_000 }),
-    ws.status === 'ready' ? exec(slug, 'echo "==P"; pgrep -ax codex | sed "s/.*launch.sh //" | head -10; ps -eo args | grep "[l]aunch.sh" | awk "{print \\$2}" | sort -u; echo "==F"; find /home/user/agents/docs -type f -printf "%p %s\\n" 2>/dev/null | sed "s#/home/user/##"; echo "==S"; find /home/user/.codex/sessions -name "*.jsonl" -printf "%T@ %p\\n" 2>/dev/null | sort -rn | head -12 | sed "s#/home/user/.codex/sessions/##"', 30_000) : Promise.resolve({ ok: false, out: '' }),
+    ss(['sandbox', 'get', ws.vmId || slug, '--json'], { timeoutMs: 30_000 }),
+    ws.status === 'ready' ? exec(ws.vmId || slug, 'echo "==P"; pgrep -ax codex | sed "s/.*launch.sh //" | head -10; ps -eo args | grep "[l]aunch.sh" | awk "{print \\$2}" | sort -u; echo "==F"; find /home/user/agents/docs -type f -printf "%p %s\\n" 2>/dev/null | sed "s#/home/user/##"; echo "==S"; find /home/user/.codex/sessions -name "*.jsonl" -printf "%T@ %p\\n" 2>/dev/null | sort -rn | head -12 | sed "s#/home/user/.codex/sessions/##"', 30_000) : Promise.resolve({ ok: false, out: '' }),
   ]);
   let status = ws.status;
   try { if (st.ok) { const s = JSON.parse(st.out).status; if (s === 'paused') status = 'paused'; if (s === 'active' && ws.status === 'paused') status = 'ready'; } } catch {}
@@ -115,5 +123,5 @@ export async function inspectWorkspace(slug: string) {
   const running = new Set(procs.map((l) => l.trim().split(/\s+/)[0]));
   const files = sect('F').map((l) => { const [path, size] = l.trim().split(/\s+/); return { path, size: Number(size) || undefined }; });
   const sessions = sect('S').map((l) => { const [ts, path] = l.trim().split(/\s+/); return { id: (path ?? '').split('/').pop()?.replace('.jsonl', '') ?? path, updatedAt: ts ? new Date(Number(ts) * 1000).toISOString() : undefined }; });
-  return { ...ws, status, agents: ROLES.map((role) => ({ role, running: running.has(role) })), files, sessions, shell: `superserve shell ${slug}` };
+  return { ...ws, status, agents: ROLES.map((role) => ({ role, running: running.has(role) })), files, sessions, shell: `superserve shell ${ws.vmId || slug}` };
 }
