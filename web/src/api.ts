@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react'
 import type { Board, Case, Job } from './types'
 import { fixtureCase, makeBoard } from './fixtures'
 
+// In `vite dev`, /api is proxied to the bridge on :8788 (no CORS needed). Elsewhere hit it directly.
 export const BRIDGE_URL: string =
-  (import.meta.env.VITE_BRIDGE_URL as string | undefined) ?? 'http://localhost:8788'
+  (import.meta.env.VITE_BRIDGE_URL as string | undefined) ?? (import.meta.env.DEV ? '' : 'http://localhost:8788')
 
 const RETRY_MS = 5000
 
@@ -35,6 +36,7 @@ function getEntry<T>(key: string): Entry<T> {
 }
 
 function setEntry<T>(key: string, patch: Partial<Entry<T>>) {
+  if (patch.data && key.startsWith('case:')) patch = { ...patch, data: normalizeCase(patch.data, key.slice(5)) as T }
   const next = { ...getEntry<T>(key), ...patch }
   entries.set(key, next as Entry<unknown>)
   listeners.get(key)?.forEach((l) => l())
@@ -46,6 +48,29 @@ function subscribe(key: string, l: Listener) {
   set.add(l)
   return () => {
     set!.delete(l)
+  }
+}
+
+/** Bridge state may omit fields (e.g. `id` is the actor id, not persisted). Fill safe defaults. */
+function normalizeCase(raw: unknown, id: string): Case {
+  const c = (raw ?? {}) as Partial<Case>
+  return {
+    ...c,
+    id: c.id ?? id,
+    title: c.title ?? `Case ${id}`,
+    domain: c.domain ?? 'medical-billing',
+    status: c.status ?? 'open',
+    poster: c.poster ?? { name: 'Poster' },
+    worker: c.worker ?? null,
+    facts: { payer: '', amount: 0, denialCode: '', dateOfService: '', reason: '', ...(c.facts ?? {}) },
+    documents: c.documents ?? [],
+    deadline: c.deadline ?? new Date().toISOString(),
+    alarms: c.alarms ?? [],
+    relay: c.relay ?? { channel: `case-${id}` },
+    thread: (c.thread ?? []).map((m) => ({ ...m, reactions: m.reactions ?? {} })),
+    recommendation: c.recommendation ?? null,
+    decisionLog: c.decisionLog ?? [],
+    pay: c.pay ?? { amount: 0, released: false },
   }
 }
 

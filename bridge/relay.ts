@@ -35,7 +35,7 @@ export async function openCaseChannel(caseId: string, title: string) {
   const relay = getRelay();
   const hookP = webhooks.get(caseId)
     ? Promise.resolve(webhooks.get(caseId)!)
-    : withRetry('webhooks.createInbound', () => relay.webhooks.createInbound({ channel, name: `case-actor-${caseId}` })).then((wh) => {
+    : withRetry('webhooks.createInbound', () => relay.webhooks.createInbound({ channel })).then((wh) => {
         const h = { url: wh.url, token: wh.token };
         webhooks.set(caseId, h);
         saveCache();

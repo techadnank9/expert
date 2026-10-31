@@ -95,7 +95,7 @@ export async function getAgent(name: Who | string, type: 'agent' | 'human' | 'sy
 }
 
 /** Retry transient hosted-Relay errors (503 database_overloaded, 429). */
-export async function withRetry<T>(label: string, fn: () => Promise<T>, tries = 6): Promise<T> {
+export async function withRetry<T>(label: string, fn: () => Promise<T>, tries = 10): Promise<T> {
   for (let i = 1; ; i++) {
     try {
       return await fn();

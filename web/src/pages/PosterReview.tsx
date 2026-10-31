@@ -111,9 +111,9 @@ export function PosterReview() {
             </div>
             <div className="card g10">
               <div className="label">AFTER YOU APPROVE</div>
-              <div className="row" style={{ gap: 10 }}><span className="muted">Nov 10</span><span>Alarm checks for a payer response, nudges {worker} if quiet</span></div>
-              <div className="row" style={{ gap: 10 }}><span className="muted">Nov 12</span><span>Escalates to a supervisor if still unresolved</span></div>
-              <div className="row" style={{ gap: 10 }}><span className="muted">Then</span><span>You are notified of the payer's decision in this same case</span></div>
+              <div className="row" style={{ gap: 10 }}><span className="muted" style={{ flex: '0 0 48px' }}>Nov 10</span><span>Alarm checks for a payer response, nudges {worker} if quiet</span></div>
+              <div className="row" style={{ gap: 10 }}><span className="muted" style={{ flex: '0 0 48px' }}>Nov 12</span><span>Escalates to a supervisor if still unresolved</span></div>
+              <div className="row" style={{ gap: 10 }}><span className="muted" style={{ flex: '0 0 48px' }}>Then</span><span>You are notified of the payer's decision in this same case</span></div>
             </div>
             <div className="note">Rate the result after the payer responds. Ratings feed the worker's approval score and the bench's calibration.</div>
           </div>

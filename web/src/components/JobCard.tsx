@@ -58,7 +58,7 @@ export function JobCard({ job, featured, onClaim }: Props) {
         </div>
         <div className="muted">
           {taken
-            ? `Claimed by ${nameOf(job.worker) || 'another worker'}. Shown so you can see what moves fast.`
+            ? `Claimed by ${(nameOf(job.worker) || 'another worker').replace(/\.$/, '')}. Shown so you can see what moves fast.`
             : `${nameOf(job.poster)}. ${job.summary ?? ''}`}
         </div>
         <div className="job-meta">

@@ -88,7 +88,7 @@ export function PosterProgress() {
               {c.worker ? (
                 <>
                   <div className="row center" style={{ gap: 12 }}>
-                    <div className="me me-green" style={{ width: 44, height: 44, fontSize: 14 }}>{initials(c.worker.name)}</div>
+                    <div className="me me-green" style={{ width: 44, height: 44, flex: '0 0 44px', fontSize: 14 }}>{initials(c.worker.name)}</div>
                     <div className="fact" style={{ gap: 0 }}>
                       <div className="strong">{shortName(c.worker.name)}</div>
                       <div className="sm muted">Former front desk lead, 212 jobs, 94% approved first pass</div>
