@@ -1,0 +1,16 @@
+{
+  "name": "understudy-actor",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "terse actor dev",
+    "deploy": "terse deploy"
+  },
+  "dependencies": {
+    "terse-sdk": "^0.14.9"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "typescript": "^5"
+  }
+}

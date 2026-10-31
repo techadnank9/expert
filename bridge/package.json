@@ -1,0 +1,14 @@
+{
+  "name": "understudy-bridge",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "setup": "bun setup.ts",
+    "start": "bun index.ts",
+    "smoke": "bun smoke.ts"
+  },
+  "dependencies": {
+    "@agent-relay/sdk": "15.0.1",
+    "zod": "^4.4.3"
+  }
+}
