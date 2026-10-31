@@ -24,6 +24,12 @@ const ROOT = join(import.meta.dir, '..');
 const FILE = process.env.WORKSPACES_FILE ?? join(import.meta.dir, '.workspaces.json');
 const BIN = process.env.SUPERSERVE_BIN ?? 'superserve';
 const ROLES = ['policy', 'billing', 'appeals'];
+// Keep code-server alive with a tiny supervisor loop; idempotent (checks the port first).
+const IDE_START = [
+  `printf '#!/bin/bash\nwhile true; do code-server --config /home/user/.config/code-server/config.yaml /home/user/agents >> /home/user/code-server.log 2>&1; sleep 2; done\n' > /home/user/ide.sh`,
+  'chmod +x /home/user/ide.sh',
+  '(curl -s -o /dev/null -m 2 localhost:8080/login) || (cd /home/user && setsid nohup /home/user/ide.sh > /dev/null 2>&1 < /dev/null & disown)',
+].join(' && ');
 
 const load = (): Record<string, Workspace> => (existsSync(FILE) ? JSON.parse(readFileSync(FILE, 'utf8')) : {});
 const save = (all: Record<string, Workspace>) => writeFileSync(FILE, JSON.stringify(all, null, 2));
@@ -84,6 +90,7 @@ export async function provisionWorkspace(owner: string, store: CaseStore, onRead
         'command -v codex >/dev/null || npm install -g @openai/codex@0.166.0 >/tmp/npm.log 2>&1',
         'OA=$(grep "^OPENAI_API_KEY=" .env | cut -d= -f2-); [ -n "$OA" ] && printf "%s" "$OA" | codex login --with-api-key >/dev/null 2>&1 || true',
         'cd agents && (echo "{}" | timeout 240 ./relay-mcp.sh policy warm >/dev/null 2>&1 || true)', // warm the npx cache
+        'cd /home/user/agents && KEY=$(grep "^RELAY_WORKSPACE_KEY=" ../.env | cut -d= -f2-) && (for i in 1 2 3; do timeout 240 npx -y agent-relay@next init --key "$KEY" --name hirexpert --tools codex --delivery mcp --scope global >/tmp/relay-init.log 2>&1 && break; sleep 15; done; true)', // connect this VM to Agent Relay
         'echo SETUP_OK',
       ].join(' && '), 420_000);
       if (!setup.ok || !setup.out.includes('SETUP_OK')) throw new Error('setup failed: ' + setup.out.slice(-300));
@@ -95,8 +102,8 @@ export async function provisionWorkspace(owner: string, store: CaseStore, onRead
           'command -v code-server >/dev/null || (curl -fsSL https://code-server.dev/install.sh | sh >/tmp/cs.log 2>&1)',
           'mkdir -p /home/user/.config/code-server',
           `printf "bind-addr: 0.0.0.0:8080\nauth: password\npassword: ${idePassword}\ncert: false\n" > /home/user/.config/code-server/config.yaml`,
-          '(ss -ltn 2>/dev/null | grep -q ":8080") || (cd /home/user && setsid nohup code-server --config /home/user/.config/code-server/config.yaml /home/user/agents > /home/user/code-server.log 2>&1 < /dev/null & disown)',
-          'sleep 3; curl -s -o /dev/null -w "%{http_code}" localhost:8080/ || true',
+          IDE_START,
+          'sleep 4; curl -s -o /dev/null -w "%{http_code}" localhost:8080/login || true',
         ].join(' && '), 420_000);
         const pub = await ss(['preview', 'publish', vmId, '8080', '--json'], { timeoutMs: 60_000 });
         if (pub.ok) ideUrl = JSON.parse(pub.out).url;
@@ -132,6 +139,7 @@ export async function inspectWorkspace(slug: string) {
     ss(['sandbox', 'get', ws.vmId || slug, '--json'], { timeoutMs: 30_000 }),
     ws.status === 'ready' ? exec(ws.vmId || slug, 'echo "==P"; pgrep -ax codex | sed "s/.*launch.sh //" | head -10; ps -eo args | grep "[l]aunch.sh" | awk "{print \\$2}" | sort -u; echo "==F"; find /home/user/agents/docs -type f -printf "%p %s\\n" 2>/dev/null | sed "s#/home/user/##"; echo "==S"; find /home/user/.codex/sessions -name "*.jsonl" -printf "%T@ %p\\n" 2>/dev/null | sort -rn | head -12 | sed "s#/home/user/.codex/sessions/##"', 30_000) : Promise.resolve({ ok: false, out: '' }),
   ]);
+  if (ws.status === 'ready' && ws.vmId && ws.ideUrl) exec(ws.vmId, IDE_START, 30_000).catch(() => {}); // self-heal the workstation
   let status = ws.status;
   try { if (st.ok) { const s = JSON.parse(st.out).status; if (s === 'paused') status = 'paused'; if (s === 'active' && ws.status === 'paused') status = 'ready'; } } catch {}
   const out = info.ok ? info.out : '';
