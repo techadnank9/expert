@@ -114,6 +114,7 @@ export function DurableStatePanel({ id, c, live, onFire, onFireDue, top }: Panel
         </div>
         <div className="kv"><span>Open thread</span><span>{c.relay?.threadRootId ?? 'none'}</span></div>
         <div className="kv"><span>Last write</span><span>{ago(live.lastWrite, now)}</span></div>
+        <div className="sm muted" style={{ marginTop: 6 }}>Case memory and alarms live in a <strong>Terse Durable Actor</strong>: it survives restarts and wakes itself on deadlines.</div>
 
         {DEV && <div className="dev">
           <div className="sm muted">Dev only: alarms</div>

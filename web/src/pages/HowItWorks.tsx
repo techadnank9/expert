@@ -54,34 +54,34 @@ const FLOW: Step[] = [
     b: <>The claim is atomic: first caller wins. The worker is granted access to the business VM and opens VS Code in the browser.</>,
   },
   {
-    t: 'Start bench',
-    who: 'Codex agents · Business VM',
+    t: 'The worker does the work',
+    who: 'Worker · Business VM',
     tone: 'purple',
-    b: <>Three Codex agents start inside the VM (policy, billing codes, appeals), join the channel and read the documents.</>,
+    b: <>The worker drafts the deliverable in the workspace and submits it for verification. Three Codex agents inside the VM (policy, billing codes, appeals) read it against the documents.</>,
   },
   {
-    t: 'Agents answer with sources',
+    t: 'Agents verify with sources',
     who: 'Agent Relay thread',
     tone: 'purple',
-    b: <>Each agent replies in one thread with citations and a <code>session_ref</code>. The appeals agent posts a <strong>Recommendation</strong>.</>,
+    b: <>Each agent replies VERIFIED or FIX NEEDED in one thread, with citations and a <code>session_ref</code>. The appeals agent posts the <strong>verdict</strong>.</>,
   },
   {
     t: 'Agents vote',
     who: 'Relay reactions',
     tone: 'green',
-    b: <>Thumbs-up reactions on the Recommendation are the votes. 3 of 3 means the bench agrees.</>,
+    b: <>Thumbs-up reactions on the verdict are the votes. 3 of 3 means the work is verified.</>,
   },
   {
     t: 'The worker decides',
     who: 'Worker · case actor',
     tone: 'green',
-    b: <>The worker approves or overrides. Either way it is written to the decision log in the Case actor.</>,
+    b: <>The worker fixes what was flagged and resubmits, or accepts the verdict and sends the work to the business. Either way it is written to the decision log in the Case actor.</>,
   },
   {
     t: 'The business reviews and pays',
     who: 'Business · review',
     tone: 'ink',
-    b: <>The business reads the decision with its sources and pays. If a deadline slips, Terse alarms nudge and then escalate to the Supervisor view.</>,
+    b: <>The business reads the verified work with its sources and pays. If a deadline slips, Terse alarms nudge and then escalate to the Supervisor view.</>,
   },
 ]
 
@@ -267,8 +267,8 @@ export function HowItWorks() {
         <span className="hw-kicker hw-intro" style={d(0)}>Architecture</span>
         <h1 className="hw-title hw-intro" style={d(80)}>How HireXpert works</h1>
         <p className="hw-sub hw-intro" style={d(160)}>
-          Three AI agents work each job inside the business's own machine, a hired worker approves, and every step is
-          kept in a durable record.
+          A hired worker does each job inside the business's own machine, three AI agents verify the work, and every step
+          is kept in a durable record.
         </p>
       </section>
 

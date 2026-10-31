@@ -3,3 +3,5 @@ shots/case-full.png
 frame-*.png
 demo-raw.mp4
 caps/*.html
+recorder/node_modules/
+recorder/out/

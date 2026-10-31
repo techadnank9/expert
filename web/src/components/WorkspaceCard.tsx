@@ -192,6 +192,7 @@ export function WorkspaceCard({ id, c, readOnly, workerName = 'Maya R.' }: Props
       {detail?.ideUrl ? (
         <div className="fact" style={{ gap: 6 }}>
           <a className="btn btn-dark btn-36" href={detail.ideUrl} target="_blank" rel="noreferrer" style={{ alignSelf: 'stretch', justifyContent: 'center' }}>Open workstation (VS Code in the VM)</a>
+          <div className="sm muted">Private VM on <strong>Superserve</strong>. Your files, your agents and their session logs stay inside it.</div>
           {detail.idePassword && w.grantedTo.length > 0 ? <div className="sm muted">Password: <span className="mono" style={{ color: 'var(--ink)' }}>{detail.idePassword}</span></div> : <div className="sm muted">Password is shared with the worker once access is granted.</div>}
         </div>
       ) : (

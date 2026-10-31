@@ -128,6 +128,7 @@ export function Onboard() {
               {ws && <FilesAndSessions ws={ws} />}
               <div className="sm muted">Your workstation</div>
               {ws?.ideUrl && (<a className="btn btn-dark btn-36" href={ws.ideUrl} target="_blank" rel="noreferrer" style={{ justifyContent: 'center' }}>Open workstation (VS Code in the VM)</a>)}
+              {ws?.ideUrl && <div className="sm muted">Private VM on <strong>Superserve</strong>, provisioned for your business.</div>}
               {ws?.idePassword && <div className="sm muted">Workstation password: <span className="mono">{ws.idePassword}</span></div>}
               <details className="sm muted"><summary style={{ cursor: 'pointer' }}>Advanced: shell access</summary><ShellBlock cmd={ws?.shell ?? `superserve shell ${slug}`} /></details>
               {offline && <div className="sm muted">Bridge offline, simulated workspace.</div>}
