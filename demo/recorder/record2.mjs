@@ -11,6 +11,7 @@ const JOB = arg('--job', '4736');
 const SLUG = arg('--slug', 'biz-harbor-dental-group');
 const TITLE = arg('--title', 'Appeal a denied lumbar MRI claim');
 const OUT = join(process.cwd(), 'out'); mkdirSync(OUT, { recursive: true });
+const ONLY = arg('--only', '03,04,05,06,07').split(',');
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const api = async (p) => { const r = await fetch(BRIDGE + p); return r.ok ? r.json() : null; };
 const glide = async (page, to, ms = 1400) => { await page.evaluate(([to, ms]) => new Promise((r) => { const s = window.scrollY, d = to - s, t0 = performance.now(); const f = (t) => { const k = Math.min(1, (t - t0) / ms), e = 1 - Math.pow(1 - k, 3); window.scrollTo(0, s + d * e); k < 1 ? requestAnimationFrame(f) : r(); }; requestAnimationFrame(f); }), [to, ms]); };
@@ -19,6 +20,7 @@ const human = async (loc, text, delay = 28) => { await loc.click(); await loc.fi
 
 const browser = await chromium.launch({ headless: true });
 async function clip(name, fn) {
+  if (!ONLY.some((o) => name.startsWith(o))) { console.log(`[${name}] skipped`); return; }
   const ctx = await browser.newContext({ viewport: { width: 1920, height: 1080 }, recordVideo: { dir: OUT, size: { width: 1920, height: 1080 } }, colorScheme: 'light' });
   const page = await ctx.newPage(); page.setDefaultTimeout(30_000);
   let ok = true;
@@ -74,7 +76,7 @@ await clip('05-submit-work', async (page) => {
 });
 
 console.log('waiting for verification of', JOB);
-for (let i = 0; i < 80; i++) { const c = await api(`/api/case/${JOB}`); if (c?.recommendation && c.recommendation.agrees.length >= 3) break; await sleep(8000); }
+for (let i = 0; i < (ONLY.includes('06') ? 80 : 0); i++) { const c = await api(`/api/case/${JOB}`); if (c?.recommendation && c.recommendation.agrees.length >= 3) break; await sleep(8000); }
 
 await clip('06-verdict', async (page) => {
   await page.goto(BASE + `/case/${JOB}`); await settle(2600);

@@ -134,7 +134,7 @@ export function startServer(store: CaseStore, port = Number(process.env.BRIDGE_P
                 if (!s && job) {
                   s = await store.callCase(id, 'create', [{
                     id, title: job.title, domain: job.domain ?? 'medical-billing', poster: { name: job.poster },
-                    facts: job.facts ?? { payer: '', amount: job.pay ?? 0, denialCode: '', dateOfService: '', reason: '' },
+                    facts: job.facts ?? factsFromText(`${job.title ?? ''}\n${job.context ?? job.summary ?? ''}`),
                     documents: job.documents ?? [], deadline: job.deadline, pay: { amount: job.pay ?? 0 }, estMinutes: job.estMinutes ?? 45,
                   }]);
                 }
@@ -238,4 +238,15 @@ async function bizGrant(slug: string, worker: string) {
 }
 async function bizAddJob(slug: string, caseId: string) {
   try { const { actors } = await import('../actor/client/generated/index.js'); const b = (actors as any).Business.get(slug); if (await b.exists()) await b.addJob(caseId); } catch {}
+}
+
+
+/** Best-effort claim facts from free text when the post form sends none (payer, $ amount, CPT/denial code, date). */
+function factsFromText(text: string) {
+  const amount = Number((text.match(/\$\s?([\d,]+(?:\.\d{2})?)/) ?? [])[1]?.replace(/,/g, '') ?? 0);
+  const denialCode = (text.match(/\b(CO|PR|OA|CR)-?\d{1,3}\b/i) ?? [])[0]?.toUpperCase().replace(/^(\w\w)(\d)/, '$1-$2') ?? '';
+  const payer = (text.match(/payer is ([A-Z][\w&.' -]+?)(?:[.,;\n]|$)/i) ?? [])[1]?.trim() ?? '';
+  const dateOfService = (text.match(/\b(20\d\d-\d\d-\d\d)\b/) ?? [])[1] ?? '';
+  const reason = text.split('\n').slice(1).join(' ').trim().slice(0, 240);
+  return { payer, amount, denialCode, dateOfService, reason };
 }
