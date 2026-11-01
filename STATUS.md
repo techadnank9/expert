@@ -110,3 +110,7 @@ Updated: 13:08
 ## 17:15 (second session) — live demo video
 - demo/demo-live.mp4 (also docs/demo-live.mp4): 1:56, silent, no captions, real Playwright-driven walkthrough of the live app (onboard Harbor Dental Group -> VM ready -> post job 4736 -> worker claims 4471 -> submits work -> bench verifies with fixes, 3 votes -> accept -> business review -> supervisor -> how it works). Recorder: demo/recorder/record.mjs; assembly: demo/assemble.sh. Read-aloud script: demo/NARRATION.md.
 - Product: humans do the work, agents verify (submitDeliverable -> verification round; verifier prompts; verdict card; My jobs history; sponsor labels in product).
+
+## 18:20 (second session) — final demo cut
+- demo/demo-live-subtitled.mp4 (docs/demo-live.mp4): 1:59, 1.8x, burned-in subtitles from NARRATION.md, SRT sidecar. Clips 3-7 re-recorded on the Harbor Dental job 4736: VS Code login shown on camera, correct job claimed, work submitted, verdict with 3 votes, accept, business review, supervisor, how it works.
+- Bridge: now watches every case it creates or touches (was only seeded cases); claim facts derived from posted text. Superserve pauses idle sandboxes; `superserve exec` auto-resumes them, bridge restarted after a pause.
