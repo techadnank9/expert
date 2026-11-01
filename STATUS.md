@@ -114,3 +114,7 @@ Updated: 13:08
 ## 18:20 (second session) — final demo cut
 - demo/demo-live-subtitled.mp4 (docs/demo-live.mp4): 1:59, 1.8x, burned-in subtitles from NARRATION.md, SRT sidecar. Clips 3-7 re-recorded on the Harbor Dental job 4736: VS Code login shown on camera, correct job claimed, work submitted, verdict with 3 votes, accept, business review, supervisor, how it works.
 - Bridge: now watches every case it creates or touches (was only seeded cases); claim facts derived from posted text. Superserve pauses idle sandboxes; `superserve exec` auto-resumes them, bridge restarted after a pause.
+
+## 18:45 (second session) — final cut
+- demo/demo-live-subtitled.mp4 (docs/demo-live.mp4): 1:30 at 1.8x, burned-in subtitles, SRT. Worker clips on job 4120 (Harbor Dental Group, facts set, documents uploaded to its VM). Verdict was "Not verified: reconcile claim identity and make source records accessible", 3 of 3 votes, accepted, business approved.
+- Known gap: laptop verifiers read agents/docs on the laptop, not the business VM uploads; only the in-VM bench (startBench) sees uploaded documents. For demos with uploads, run the VM bench.
